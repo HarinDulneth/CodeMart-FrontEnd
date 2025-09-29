@@ -1,0 +1,73 @@
+body {
+  height: 300vh;
+  overflow-x: hidden;
+}
+
+h1,
+h2 {
+  font-weight: 400;
+  max-width: none;
+}
+
+.comparisonSection {
+  position: relative;
+  padding-bottom: 56.25%; /* to maintain aspect ratio (responsive!) */
+}
+.comparisonImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.afterImage {
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  transform: translate(100%, 0px);
+}
+.afterImage img {
+  transform: translate(-100%, 0px);
+}
+.comparisonImage img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+}
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+}
+
+/* Hover gradient glow wrapper for image comparison sections */
+.glow-hover {
+  position: relative;
+  border-radius: 16px;
+  z-index: 0; /* establish stacking context */
+}
+.glow-hover::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, #6366f1, #a855f7, #f97316, #22d3ee, #6366f1);
+  filter: blur(24px);
+  opacity: 0;
+  transition: opacity 250ms ease, transform 250ms ease;
+  z-index: -1; /* render behind content */
+  pointer-events: none;
+}
+.glow-hover:hover::before {
+  opacity: 0.75;
+  transform: scale(1.02);
+}
+/* Ensure the content stays above the glow */
+.glow-hover > * {
+  position: relative;
+  z-index: 1;
+}
