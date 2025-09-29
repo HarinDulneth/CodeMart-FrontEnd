@@ -269,6 +269,7 @@ const Home = () => {
         </div>
       </section>
 
+      
      
 
       {/* How It Works */}
