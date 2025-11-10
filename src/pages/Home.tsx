@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import novs from '../assets/novs.png'
 import vs from '../assets/vs.png'
+import TeamCarousel from '../components/TeamCarousel'
 
 const Home = () => {
 
@@ -57,7 +58,7 @@ const Home = () => {
       description: 'Secure React Native banking application',
       price: 499,
       rating: 4.9,
-      image: 'https://images.pexels.com/photos/4968371/pexels-photo-4968371.jpeg?auto=compress&cs=tinysrgb&w=800',
+      image: 'https://neontri.com/wp-content/uploads/2024/04/Illustration-Innovative_Features_That_will_Define_Mobile_Banking_Apps_By_2030_512x512_v001.png',
       category: 'Mobile Development',
       seller: 'FinTech Solutions'
     },
@@ -207,11 +208,12 @@ const Home = () => {
       {/* Featured Projects */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Projects
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-14">
+            {/* <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Top Projects
+            </h2> */}
+            <h1 className="featured-projects-title">Top Projects</h1>
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
               Discover high-quality software projects from our top developers
             </p>
           </div>
@@ -269,7 +271,7 @@ const Home = () => {
         </div>
       </section>
 
-      
+      <TeamCarousel />
      
 
       {/* How It Works */}

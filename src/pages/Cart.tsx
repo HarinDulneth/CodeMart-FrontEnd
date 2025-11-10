@@ -17,7 +17,7 @@ const Cart = () => {
       title: 'Mobile Banking App',
       price: 499,
       quantity: 1,
-      image: 'https://images.pexels.com/photos/4968371/pexels-photo-4968371.jpeg?auto=compress&cs=tinysrgb&w=400',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPvFEq3dFroKZW6wbaowlS1a774oslhrtd9A&s',
       seller: 'FinTech Solutions'
     }
   ]);

@@ -72,3 +72,59 @@ h2 {
   z-index: 1;
 }
 
+.about-title {
+  font-size: 7.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  position: absolute;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
+  background: linear-gradient(
+    to bottom,
+    rgb(8 42 123 / 35%) 30%,
+    rgb(255 255 255 / 0%) 76%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  z-index: 1;
+}
+
+/* Modified version for featured projects section */
+.featured-projects-title {
+  font-size: 7.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  position: relative;
+  margin: 0 auto -30px auto;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
+  background: linear-gradient(
+    to bottom,
+    rgb(8 42 123 / 35%) 53%,
+    rgb(255 255 255 / 0%) 76%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+
+
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 4.5rem;
+  }
+  
+  .featured-projects-title {
+    font-size: 4.5rem;
+  }
+}
