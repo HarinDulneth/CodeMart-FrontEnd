@@ -11,6 +11,7 @@ import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import './App.css';
+import HowItWorksScroll from './components/ui/How/HowItWorks';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
           </Routes>
         </main>
+        <HowItWorksScroll />
         <Footer />
       </div>
     </Router>

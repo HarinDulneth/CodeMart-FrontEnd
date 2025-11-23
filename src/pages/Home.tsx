@@ -5,9 +5,10 @@ import lap from '../assets/lap.png'
 import './Home.css'
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import novs from '../assets/novs.png'
-import vs from '../assets/vs.png'
+import novs from '../assets/projectex.png'
+import vs from '../assets/vs1.png'
 import TeamCarousel from '../components/TeamCarousel'
+
 
 const Home = () => {
 
@@ -273,52 +274,19 @@ const Home = () => {
 
       <TeamCarousel />
      
-
+    {/* <HowItWorks/> */}
       {/* How It Works */}
-      <section className="py-16 bg-white">
+      {/* <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How It Works
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Get started in just three simple steps
-            </p>
-          </div>
+         
+       
+           
+          </div> */}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center animate-fade-in">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">1</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Browse & Search</h3>
-              <p className="text-gray-600">
-                Discover thousands of high-quality software projects across different categories and technologies.
-              </p>
-            </div>
-
-            <div className="text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">2</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Purchase & Download</h3>
-              <p className="text-gray-600">
-                Securely purchase your chosen projects and get instant access to source code and documentation.
-              </p>
-            </div>
-
-            <div className="text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-white">3</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Customize & Deploy</h3>
-              <p className="text-gray-600">
-                Customize the code to fit your needs and deploy your application with confidence.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        
+        {/* </div> */}
+      {/* </section> */}
     </div>
   );
 };
