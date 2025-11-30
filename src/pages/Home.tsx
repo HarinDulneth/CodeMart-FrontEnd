@@ -123,14 +123,14 @@ const Home = () => {
                
                 
 
-              <section className="comparisonSection">
+              {/* <section className="comparisonSection">
           <div className="comparisonImage beforeImage">
             <img src={novs} alt="before" className='rounded-xl p-0 m-0'/>
           </div>
           <div className="comparisonImage afterImage">
             <img src={vs} alt="after" className='rounded-xl p-0 m-0'/>
           </div>
-        </section>
+        </section> */}
               </div>
             </div>
 
