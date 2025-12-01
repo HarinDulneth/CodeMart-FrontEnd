@@ -9,6 +9,21 @@ h2 {
   max-width: none;
 }
 
+.gradient-animate {
+  animation: hueRotate 12s linear infinite;
+}
+
+@keyframes hueRotate {
+  from {
+    filter: hue-rotate(0deg);
+  }
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+
+
 .comparisonSection {
   position: relative;
   padding-bottom: 75.25%; 

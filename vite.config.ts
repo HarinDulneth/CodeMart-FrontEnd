@@ -7,4 +7,17 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.ASPNETCORE_HTTPS_PORT 
+          ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
+          : process.env.ASPNETCORE_URLS 
+          ? process.env.ASPNETCORE_URLS.split(';')[0]
+          : 'https://localhost:7198',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
