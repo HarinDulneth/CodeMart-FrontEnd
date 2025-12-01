@@ -107,7 +107,7 @@ const Home = () => {
     absolute inset-x-0 top-0 h-[50vh]
     pointer-events-none -z-2
     gradient-animate
-    bg-[radial-gradient(115%_100%_at_75%_0%,rgba(150,50,255,0.5)_0%,rgba(200,100,255,0.5)_40%,transparent_95%)]
+    bg-[radial-gradient(115%_100%_at_70%_0%,rgba(150,50,255,0.5)_0%,rgba(200,100,255,0.5)_40%,transparent_95%)]
   "
       ></div>
 
