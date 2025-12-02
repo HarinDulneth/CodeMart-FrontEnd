@@ -86,12 +86,36 @@ const Home = () => {
     },
   ];
 
+  // const stats = [
+  //   { label: "Projects Sold", value: "10,000+", icon: Code2 },
+  //   { label: "Happy Customers", value: "5,000+", icon: Users },
+  //   { label: "Average Rating", value: "4.8", icon: Star },
+  //   { label: "Secure Transactions", value: "100%", icon: Shield },
+  // ];
+
   const stats = [
-    { label: "Projects Sold", value: "10,000+", icon: Code2 },
-    { label: "Happy Customers", value: "5,000+", icon: Users },
-    { label: "Average Rating", value: "4.8", icon: Star },
-    { label: "Secure Transactions", value: "100%", icon: Shield },
-  ];
+  {
+    value: "420%",
+    label: "More Speed",
+    description: "Ut porttitor leo a diam sollicitudin. Integer enim neque volutpat ac."
+  },
+  {
+    value: "21.2K",
+    label: "Total Ratings",
+    description: "Maecenas pharetra convallis posuere morbi. Scelerisque felis."
+  },
+  {
+    value: "110X",
+    label: "Efficiency Level",
+    description: "Lacinia at quis risus sed vulputate. Lectus mauris ultrices eros."
+  },
+  {
+    value: "16M",
+    label: "Total Users",
+    description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
+  }
+];
+
 
   return (
     <div className="animate-fade-in relative">
@@ -189,7 +213,7 @@ const Home = () => {
         </section>
 
         {/* Project Spotlight Section */}
-        <section className="py-20 bg-white">
+        <section className="py-10 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               {/* Left Content */}
@@ -221,8 +245,8 @@ const Home = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="pt-10 pb-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="pb-24 bg-white">
+          {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
                 <div
@@ -239,6 +263,40 @@ const Home = () => {
                   <p className="text-gray-600">{stat.label}</p>
                 </div>
               ))}
+            </div>
+          </div> */}
+          <div className="max-w-7xl mx-auto pt-5">
+            
+            {/* Outer rounded card */}
+            <div className="bg-white pb-10 pt-5 md:p-5">
+
+              {/* Heading */}
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                We only deliver results.
+              </h2>
+
+              <p className="text-gray-500 mt-2 text-lg">
+                We don’t use excuses or something. Okay maybe sometimes.
+              </p>
+
+              {/* Stats Grid */}
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+                {stats.map((stat, index) => (
+                  <div key={index} className="space-y-2">
+                    <h3 className="text-4xl font-bold text-gray-500">
+                      {stat.value}
+                    </h3>
+
+                    <p className="text-gray-700 font-semibold">{stat.label}</p>
+
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                      {stat.description}
+                    </p>
+                  </div>
+                ))}
+
+              </div>
             </div>
           </div>
         </section>
