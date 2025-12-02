@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
 import TeamCarousel from "../components/TeamCarousel";
+import HowItWorksScroll from "../components/ui/How/HowItWorks";
 
 const Home = () => {
   useEffect(() => {
@@ -250,7 +251,7 @@ const Home = () => {
                 Top Projects
               </h2> */}
               <h1 className="featured-projects-title">Top Projects</h1>
-              <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-2xl text-gray-600 max-w-3xl mx-auto mt-10">
                 Discover high-quality software projects from our top developers
               </p>
             </div>
