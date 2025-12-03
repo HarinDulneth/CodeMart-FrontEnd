@@ -70,10 +70,11 @@ The platform is fully responsive and optimized for performance, with clean, main
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
           {/* Image Gallery */}
+          <div className='flex flex-col gap-6'>
           <div className="animate-fade-in">
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-4">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-xl mb-4">
               <img
                 src={project.images[selectedImage]}
                 alt={project.title}
@@ -98,10 +99,23 @@ The platform is fully responsive and optimized for performance, with clean, main
               ))}
             </div>
           </div>
+          <div>
+              <div className="bg-white rounded-2xl p-8 shadow-xl mb-8 animate-fade-in">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Description</h2>
+              <div className="prose prose-gray max-w-none">
+                {project.longDescription.split('\n\n').map((paragraph, index) => (
+                  <p key={index} className="mb-4 text-gray-600 leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+          </div>
 
           {/* Project Info */}
           <div className="animate-slide-up">
-            <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <div className="bg-white rounded-2xl p-8 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
                   {project.category}
@@ -152,6 +166,24 @@ The platform is fully responsive and optimized for performance, with clean, main
                 </div>
               </div>
 
+              {/* Minimal quick-info tiles (no icons) */}
+              <div className="flex gap-4 mb-8">
+                <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-green-500">
+                  <div className="text-xs text-gray-500">Support Duration</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">6 Months</div>
+                </div>
+
+                <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-purple-500">
+                  <div className="text-xs text-gray-500">Updates</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">Lifetime</div>
+                </div>
+
+                <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-blue-500">
+                  <div className="text-xs text-gray-500">Documentation</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">Included</div>
+                </div>
+              </div>
+
               {/* Purchase Actions */}
               <div className="space-y-4 mb-8">
                 <div className="flex items-center space-x-4">
@@ -173,7 +205,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   </div>
                 </div>
 
-                <button className="w-full btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-lg transition-all duration-300">
+                <button className="w-full btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all duration-300">
                   Add to Cart - ${project.price * quantity}
                 </button>
 
@@ -205,19 +237,10 @@ The platform is fully responsive and optimized for performance, with clean, main
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
           <div className="lg:col-span-2">
             {/* Description */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm mb-8 animate-fade-in">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Description</h2>
-              <div className="prose prose-gray max-w-none">
-                {project.longDescription.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-600 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </div>
+          
 
             {/* Features */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm mb-8 animate-fade-in">
+            <div className="bg-white rounded-2xl p-8 shadow-xl mb-8 animate-fade-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Features Included</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {project.features.map((feature, index) => (
@@ -230,7 +253,7 @@ The platform is fully responsive and optimized for performance, with clean, main
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm animate-fade-in">
+            <div className="bg-white rounded-2xl p-8 shadow-xl animate-fade-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
               <div className="space-y-6">
                 {testimonials.map((review, index) => (
@@ -269,7 +292,7 @@ The platform is fully responsive and optimized for performance, with clean, main
           {/* Sidebar */}
           <div>
             {/* Seller Info */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 animate-fade-in">
+            <div className="bg-white rounded-2xl p-6 shadow-xl mb-6 animate-fade-in">
               <h3 className="text-xl font-bold text-gray-900 mb-4">About the Seller</h3>
               <div className="flex items-center space-x-4 mb-4">
                 <img
@@ -301,7 +324,7 @@ The platform is fully responsive and optimized for performance, with clean, main
             </div>
 
             {/* Project Details */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm animate-fade-in">
+            <div className="bg-white rounded-2xl p-6 shadow-xl animate-fade-in">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Project Details</h3>
               <div className="space-y-4">
                 <div className="flex items-center text-sm">
@@ -323,6 +346,34 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <div>
                     <span className="text-gray-500">Last Updated:</span>
                     <p className="font-semibold">{project.lastUpdated}</p>
+                  </div>
+                </div>
+
+                {/* New: File Includes */}
+                <div className="flex items-start text-sm">
+                  <Download className="h-5 w-5 text-gray-400 mr-3" />
+                  <div>
+                    <span className="text-gray-500">File Includes:</span>
+                    <ul className="mt-1 list-disc list-inside text-gray-900 font-semibold">
+                      <li>ZIP folder</li>
+                      <li>Full source code</li>
+                      <li>Documentation</li>
+                      <li>.env.example</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* New: Requirements */}
+                <div className="flex items-start text-sm">
+                  <Shield className="h-5 w-5 text-gray-400 mr-3" />
+                  <div>
+                    <span className="text-gray-500">Requirements:</span>
+                    <ul className="mt-1 list-disc list-inside text-gray-900 font-semibold">
+                      <li>Node 18+</li>
+                      <li>MongoDB 6+</li>
+                      <li>npm / yarn</li>
+                      <li>Stripe account</li>
+                    </ul>
                   </div>
                 </div>
               </div>
