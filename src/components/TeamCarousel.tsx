@@ -139,7 +139,7 @@ const TeamCarousel: React.FC = () => {
     <div className="team-carousel-section">
       <h1 className="about-title">REVIEWS</h1>
       
-      <div className="carousel-container pt-20" ref={carouselRef}>
+      <div className="carousel-container" ref={carouselRef}>
         <button className="nav-arrow left" onClick={handlePrevious}>‹</button>
         <div className="carousel-track">
           {teamMembers.map((member, index) => (
