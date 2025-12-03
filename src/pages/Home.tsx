@@ -12,6 +12,7 @@ import HowItWorksScroll from "../components/ui/How/HowItWorks";
 import DemoOne from "../components/DemoOne";
 
 const Home = () => {
+  
   useEffect(() => {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
@@ -44,6 +45,40 @@ const Home = () => {
           0
         );
     });
+
+    document.querySelectorAll(".ticker").forEach((ticker) => {
+  const inner = ticker.querySelector(".ticker-wrap");
+  if (!inner) return; // prevent null error
+
+  const content = inner.querySelector(".ticker-text");
+  if (!content) return; // prevent null error
+
+  const duration = ticker.getAttribute("data-duration") || "10";
+
+  // Clone content
+  inner.append(content.cloneNode(true));
+
+  const animations: gsap.core.Tween[] = [];
+
+  inner.querySelectorAll(".ticker-text").forEach((element) => {
+    const animation = gsap.to(element, {
+      x: "-100%",
+      repeat: -1,
+      duration: Number(duration),
+      ease: "linear",
+    });
+    animations.push(animation);
+  });
+
+  ticker.addEventListener("mouseenter", () => {
+    animations.forEach((anim) => anim.pause());
+  });
+
+  ticker.addEventListener("mouseleave", () => {
+    animations.forEach((anim) => anim.play());
+  });
+});
+
 
     // Cleanup function
     return () => {
@@ -301,6 +336,32 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        <div className="techslider">
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
+          </div>
+        </div>
+      </div>
+
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            •Web{" "}<span className="accent">Applications</span> {"  "}
+            •Mobile{" "}<span className="accent">Applications</span>{"  "}
+            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
+            • ML{" "}<span className="accent">Models</span>{"  "}
+            • API{" "}<span className="accent">&</span> Microservices{"  "}
+            •Database{" "}<span className="accent">Schemas</span> {"  "}
+            •Automation{" "}<span className="accent">Scripts</span> {"  "}
+            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
+            •DevOps{" "}<span className="accent">Tools</span>{"  "}
+          </div>
+        </div>
+      </div>
+    </div>
 
         {/* Featured Projects */}
         <section className="py-16 bg-gray-50">

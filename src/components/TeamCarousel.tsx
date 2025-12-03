@@ -157,8 +157,7 @@ const TeamCarousel: React.FC = () => {
       </div>
 
       <div className="member-info">
-        <h2 className="member-name pt-10">{teamMembers[currentIndex].name}</h2>
-        <p className="member-role">{teamMembers[currentIndex].role}</p>
+        
       </div>
 
       <div className="dots">
