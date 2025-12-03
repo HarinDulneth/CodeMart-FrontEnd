@@ -110,7 +110,7 @@ const SellProject = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-xl border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Sell Your Project</h1>
           <p className="text-gray-600">Share your amazing software project with the world</p>
@@ -120,7 +120,7 @@ const SellProject = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <FileText className="h-6 w-6 mr-2 text-indigo-600" />
               Basic Information
@@ -194,7 +194,7 @@ const SellProject = () => {
           </div>
 
           {/* Pricing */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <DollarSign className="h-6 w-6 mr-2 text-green-600" />
               Pricing
@@ -224,7 +224,7 @@ const SellProject = () => {
           </div>
 
           {/* Technologies */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <Tag className="h-6 w-6 mr-2 text-purple-600" />
               Technologies Used
@@ -270,7 +270,7 @@ const SellProject = () => {
           </div>
 
           {/* Features */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Features</h2>
             
             <div className="space-y-3">
@@ -307,7 +307,7 @@ const SellProject = () => {
           </div>
 
           {/* Images */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <Image className="h-6 w-6 mr-2 text-blue-600" />
               Project Images
@@ -370,7 +370,7 @@ const SellProject = () => {
           </div>
 
           {/* Submit */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
