@@ -20,7 +20,7 @@
   text-transform: uppercase;
   letter-spacing: -0.02em;
   position: absolute;
-  top: 45px;
+  top: 25px;
   left: 50%;
   transform: translateX(-50%);
   pointer-events: none;
@@ -29,7 +29,7 @@
   background: linear-gradient(
     to bottom,
     rgb(8 42 123 / 35%) 30%,
-    rgb(255 255 255 / 0%) 76%
+    rgb(255 255 255 / 0%) 75%
   );
   -webkit-background-clip: text;
   background-clip: text;

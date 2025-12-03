@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './TeamCarousel.css';
 import Group1 from '../assets/Group 1.png';
+import Group2 from '../assets/Group 2.png';
+import Group3 from '../assets/Group 3.png';
 import Group4 from '../assets/Group 4.png';
+import Group5 from '../assets/Group 5.png';
+import Group6 from '../assets/Group 6.png';
 interface TeamMember {
   name: string;
   role: string;
@@ -22,12 +26,12 @@ const TeamCarousel: React.FC = () => {
     { 
       name: "Michael Steward", 
       role: "Creative Director",
-      image: Group4
+      image: Group2
     },
     { 
       name: "Emma Rodriguez", 
       role: "Lead Developer",
-      image: Group1
+      image: Group3
     },
     { 
       name: "Julia Gimmel", 
@@ -37,12 +41,12 @@ const TeamCarousel: React.FC = () => {
     { 
       name: "Lisa Anderson", 
       role: "Marketing Manager",
-      image: Group1
+      image: Group5
     },
     { 
       name: "James Wilson", 
       role: "Product Manager",
-      image: Group4
+      image: Group6
     }
   ];
 
@@ -135,7 +139,7 @@ const TeamCarousel: React.FC = () => {
     <div className="team-carousel-section">
       <h1 className="about-title">REVIEWS</h1>
       
-      <div className="carousel-container" ref={carouselRef}>
+      <div className="carousel-container pt-20" ref={carouselRef}>
         <button className="nav-arrow left" onClick={handlePrevious}>‹</button>
         <div className="carousel-track">
           {teamMembers.map((member, index) => (
@@ -153,7 +157,7 @@ const TeamCarousel: React.FC = () => {
       </div>
 
       <div className="member-info">
-        <h2 className="member-name">{teamMembers[currentIndex].name}</h2>
+        <h2 className="member-name pt-10">{teamMembers[currentIndex].name}</h2>
         <p className="member-role">{teamMembers[currentIndex].role}</p>
       </div>
 

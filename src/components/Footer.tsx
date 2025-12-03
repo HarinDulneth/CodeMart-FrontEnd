@@ -70,28 +70,28 @@ const Footer = () => {
       {/* Actual Footer Content - Overlapping */}
       <div 
         ref={contentRef}
-        className="relative bg-gray-900 text-white rounded-t-3xl shadow-2xl z-20 max-w-[1700px] mx-auto"
+        className="relative bg-gradient-to-br from-white to-gray-100 text-white rounded-t-3xl shadow-2xl z-20 max-w-[1700px] mx-auto"
       >
         <div className="px-6 sm:px-8 lg:px-12 py-32">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Logo and Description */}
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center space-x-2 text-2xl font-bold mb-4">
-              <Code className="h-8 w-8 text-indigo-400" />
-              <span>CodeMarket</span>
+              <Code className="h-8 w-8 text-black" />
+              <span className='text-black'>CodeMart</span>
             </Link>
-            <p className="text-gray-400 mb-4">
+            <p className="text-black/75 mb-4">
               The premier marketplace for buying and selling software projects. 
               Connect with developers worldwide and find your next project or sell your creation.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#" className="text-black/75 hover:text-white transition-colors">
                 <Github className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#" className="text-black/75 hover:text-white transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#" className="text-black/75 hover:text-white transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
@@ -99,20 +99,20 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 text-black/95">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/projects" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/projects" className="text-black/75 hover:text-white transition-colors">
                   Browse Projects
                 </Link>
               </li>
               <li>
-                <Link to="/sell" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/sell" className="text-black/75 hover:text-white transition-colors">
                   Sell Project
                 </Link>
               </li>
               <li>
-                <Link to="/profile" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/profile" className="text-black/75 hover:text-white transition-colors">
                   My Profile
                 </Link>
               </li>
@@ -121,25 +121,25 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="text-lg font-semibold mb-4 text-black/95">Support</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className="text-black/75 hover:text-white transition-colors">
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className="text-black/75 hover:text-white transition-colors">
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className="text-black/75 hover:text-white transition-colors">
                   Terms of Service
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className="text-black/75 hover:text-white transition-colors">
                   Privacy Policy
                 </a>
               </li>
@@ -148,17 +148,17 @@ const Footer = () => {
 
           {/* Developers */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Developers</h3>
+            <h3 className="text-lg font-semibold mb-4 text-black/95">Developers</h3>
             <div className="space-y-4">
               {/* Sanjana Dissanayaka */}
-              <div className="bg-gray-800 rounded-lg p-3">
-                <h4 className="text-white font-medium text-sm mb-2">Sanjana Dissanayaka</h4>
+              <div className="bg-[#e2e3e3] rounded-lg p-3">
+                <h4 className="text-[#4b4b4b] font-medium text-sm mb-2">Sanjana Dissanayaka</h4>
                 <div className="flex space-x-2">
                   <a 
                     href="https://github.com/sanjana-dissanayaka" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-[#4b4b4b] hover:text-white transition-colors"
                     title="GitHub Profile"
                   >
                     <Github className="h-4 w-4" />
@@ -167,7 +167,7 @@ const Footer = () => {
                     href="https://linkedin.com/in/sanjana-dissanayaka" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-[#4b4b4b] hover:text-white transition-colors"
                     title="LinkedIn Profile"
                   >
                     <Linkedin className="h-4 w-4" />
@@ -176,14 +176,14 @@ const Footer = () => {
               </div>
 
               {/* Harin Dulneth */}
-              <div className="bg-gray-800 rounded-lg p-3">
-                <h4 className="text-white font-medium text-sm mb-2">Harin Dulneth</h4>
+              <div className="bg-[#e2e3e3] rounded-lg p-3">
+                <h4 className="text-[#4b4b4b] font-medium text-sm mb-2">Harin Dulneth</h4>
                 <div className="flex space-x-2">
                   <a 
                     href="https://github.com/harin-dulneth" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-[#4b4b4b] hover:text-white transition-colors"
                     title="GitHub Profile"
                   >
                     <Github className="h-4 w-4" />
@@ -192,7 +192,7 @@ const Footer = () => {
                     href="https://linkedin.com/in/harin-dulneth" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-[#4b4b4b] hover:text-white transition-colors"
                     title="LinkedIn Profile"
                   >
                     <Linkedin className="h-4 w-4" />
@@ -207,27 +207,27 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-gray-800">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="text-center">
-              <h4 className="text-lg font-semibold mb-4">Join Our Community</h4>
-              <p className="text-gray-400 text-sm">
+              <h4 className="text-lg font-semibold mb-4 text-[#4b4b4b]">Join Our Community</h4>
+              <p className="text-[#646565] text-sm">
                 Connect with thousands of developers, share your projects, and discover amazing software solutions.
               </p>
             </div>
             <div className="text-center">
-              <h4 className="text-lg font-semibold mb-4">Start Selling Today</h4>
-              <p className="text-gray-400 text-sm">
+              <h4 className="text-lg font-semibold mb-4 text-[#4b4b4b]">Start Selling Today</h4>
+              <p className="text-[#646565] text-sm">
                 Turn your code into cash. List your projects and start earning from your development work.
               </p>
             </div>
             <div className="text-center">
-              <h4 className="text-lg font-semibold mb-4">Quality Assured</h4>
-              <p className="text-gray-400 text-sm">
+              <h4 className="text-lg font-semibold mb-4 text-[#4b4b4b]">Quality Assured</h4>
+              <p className="text-[#646565] text-sm">
                 Every project is reviewed by our team to ensure high quality and functionality.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-black/50">
           <p>&copy; 2025 CodeMarket. All rights reserved.</p>
         </div>
         </div>

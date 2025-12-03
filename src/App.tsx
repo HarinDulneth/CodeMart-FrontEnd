@@ -26,6 +26,7 @@ function App() {
                 <>
                   <Home />
                   <HowItWorksScroll />
+                  <Footer />
                 </>
               }
             />
@@ -38,7 +39,6 @@ function App() {
             <Route path="/cart" element={<Cart />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );

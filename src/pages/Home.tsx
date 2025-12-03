@@ -9,6 +9,7 @@ import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
 import TeamCarousel from "../components/TeamCarousel";
 import HowItWorksScroll from "../components/ui/How/HowItWorks";
+import DemoOne from "../components/DemoOne";
 
 const Home = () => {
   useEffect(() => {
@@ -390,6 +391,7 @@ const Home = () => {
 
       {/* </div> */}
       {/* </section> */}
+      
     </div>
   );
 };
