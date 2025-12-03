@@ -62,8 +62,16 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center pb-12 pt-7 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full space-y-8 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br  from-indigo-50 via-white to-purple-50 flex items-center justify-center mt-20  py-12 pb-12 pt-7 px-4 sm:px-6 lg:px-8">
+       <div
+        className="
+    absolute inset-x-0 top-0 h-[30vh]
+    pointer-events-none -z-2
+    gradient-animate
+    bg-[radial-gradient(115%_100%_at_70%_0%,rgba(150,50,255,0.5)_0%,rgba(200,100,255,0.5)_40%,transparent_95%)]
+  "
+      ></div>
+      <div className="max-w-xl w-full space-y-16 animate-fade-in">
         {/* Header */}
         <div className="text-center">
           <Link
@@ -84,7 +92,7 @@ const SignUp = () => {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
