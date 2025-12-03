@@ -27,7 +27,7 @@ h2 {
         flex-direction: column;
         justify-content: center;
         gap: 50px;
-        min-height: 100vh;
+        min-height: 42vh;
         overflow: hidden;
         font-family: "Oswald", sans-serif;
       }
