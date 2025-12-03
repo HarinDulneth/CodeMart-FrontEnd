@@ -14,10 +14,9 @@
 }
 
 .sticky-header h1 {
-  font-size: 20vw;
+  font-size: 15vw;
   font-weight: lighter;
-  color: transparent;
-  -webkit-text-stroke: 2px #fff;
+  color: #F3F4F6;
   text-align: center;
 }
 
@@ -37,28 +36,56 @@
   overflow: hidden;
 }
 
-.card-1 {
-  background-color: #0f0f0f;
+/* .card {
+  position: relative;
+  background: #171717;
+  border-radius: 1em;
+} */
+
+/* .card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(43, 18, 178, 0.7),
+    rgba(83, 18, 178, 0.7),
+    rgba(120, 18, 178, 0.7),
+    rgba(171, 48, 194, 0.7),
+    rgba(194, 48, 153, 0.7)
+  );
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  z-index: -1;
+} */
+
+.card {
+  background-color: #171717;
   background-size: cover;
-  border: 2px solid rgba(236, 183, 76, 0.35);
+  border: 1px solid #6A7282
 }
 
 .card-2 {
-  background-color: #0f0f0f;
+  background-color: #171717;
   background-size: cover;
-  border: 2px solid rgba(125, 216, 205, 0.35);
+  border: 1px solid #6A7282
 }
 
 .card-3 {
-  background-color: #0f0f0f;
+  background-color: #171717;
   background-size: cover;
-  border: 2px solid rgba(224, 255, 87, 0.35);
+  border: 1px solid #6A7282
 }
 
 .card-4 {
-  background-color: #0f0f0f;
+  background-color: #171717;
   background-size: cover;
-  border: 2px solid rgba(125, 216, 205, 0.35);
+  border: 1px solid #6A7282
 }
 
 .card-phase {
@@ -73,13 +100,14 @@
 
 .card-phase p {
   font-size: 24px;
+  font-weight:400;
 }
 
-.card-1 .card-phase {
-  background-color: #ecb74c;
+.card .card-phase {
+  background-color: #F3F4F6;
 }
 
-.card-2 .card-phase {
+/* .card-2 .card-phase {
   background-color: #7dd8cd;
 }
 
@@ -88,8 +116,8 @@
 }
 
 .card-4 .card-phase {
-  background-color: #7dd8cd;
-}
+  background-color: #AF63E5;
+} */
 
 .card-title {
   text-align: center;
@@ -105,25 +133,27 @@
   line-height: 90%;
 }
 
-.card-1 .card-title {
-  color: #ecb74c;
+.card .card-title {
+  color: #F3F4F6;
 }
 
+.gradientText {
+  background: #527282;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+
 .card-2 .card-title {
-  color: #7dd8cd;
+  color: #F3F4F6;
 }
 
 .card-3 .card-title {
-  color: #e0ff57;
+  color: #F3F4F6;
 }
 
 .card-4 .card-title {
-  color: #7dd8cd;
-}
-
-.card-title h1 span {
-  color: transparent;
-  -webkit-text-stroke: 1.25px #fff;
+  color: #F3F4F6;
 }
 
 .progress-bar {

@@ -20,7 +20,16 @@ function App() {
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <>
+                  <Home />
+                  <HowItWorksScroll />
+                  <Footer />
+                </>
+              }
+            />
             <Route path="/projects" element={<AllProjects />} />
             <Route path="/project/:id" element={<ProjectDetail />} />
             <Route path="/sell" element={<SellProject />} />
@@ -30,8 +39,6 @@ function App() {
             <Route path="/cart" element={<Cart />} />
           </Routes>
         </main>
-        <HowItWorksScroll />
-        <Footer />
       </div>
     </Router>
   );

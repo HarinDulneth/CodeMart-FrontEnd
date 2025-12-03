@@ -167,7 +167,7 @@ export default function HowItWorksScroll() {
         </div>
         <div className={styles["card-title"]}>
           <h1>
-            Beta <span>Launch</span>
+            Beta <span className={styles.gradientText}>Launch</span>
           </h1>
           <p>From May 15th</p>
         </div>

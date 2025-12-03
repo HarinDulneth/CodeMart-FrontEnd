@@ -134,6 +134,23 @@ export const api = {
       }
       return response;
     },
+    signup: async (userData: any)=>{
+      const response = await apiRequest<{ token: string }>('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      });
+      if (response.token) {
+        setAuthToken(response.token);
+        try {
+          const user = await api.auth.getMe();
+          setCurrentUser(user);
+          return { token: response.token, user };
+        } catch (err) {
+          return { token: response.token, user: null };
+        }
+      }
+      return response;
+    },
     getMe: async () => {
       return apiRequest<any>('/auth/me');
     },
@@ -150,12 +167,6 @@ export const api = {
     },
     getById: async (id: string | number) => {
       return apiRequest<any>(`/user/${id}`);
-    },
-    create: async (userData: any) => {
-      return apiRequest<any>('/user/add', {
-        method: 'POST',
-        body: JSON.stringify(userData),
-      });
     },
     getSelling: async (id: string | number) => {
       return apiRequest<any[]>(`/user/${id}/selling`);
