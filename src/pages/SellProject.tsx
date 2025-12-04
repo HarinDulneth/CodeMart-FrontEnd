@@ -147,7 +147,6 @@ const SellProject = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Project submitted:", formData);
     uploadZip();
   };
 
