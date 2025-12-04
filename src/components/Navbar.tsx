@@ -61,6 +61,20 @@ const Navbar = () => {
                     0
                   </span>
                 </Link>
+                <Link to="/dashboard" className="relative group">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] p-[2px] hover:shadow-lg transition-all duration-200">
+                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                      <img 
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Dashboard
+                  </span>
+                </Link>
                 <Link to="/signin" className="text-gray-700 hover:text-indigo-600 transition-colors">
                   Sign In
                 </Link>
@@ -120,6 +134,14 @@ const Navbar = () => {
                   >
                     <ShoppingCart className="h-5 w-5 mr-2" />
                     Cart (0)
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5 mr-2" />
+                    Dashboard
                   </Link>
                   <Link
                     to="/signin"
