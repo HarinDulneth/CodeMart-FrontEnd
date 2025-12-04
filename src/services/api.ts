@@ -178,7 +178,7 @@ export const api = {
       return apiRequest<any[]>(`/user/${id}/boughtprojects`);
     },
   },
-
+  
   // Project endpoints
   projects: {
     getAll: async () => {
