@@ -194,7 +194,7 @@ const SellProject = () => {
   };
 
   const removeZip = () => {
-  setZipFiles([]);
+    setZipFiles([]);
 
     if (zipInputRef.current) {
       zipInputRef.current.value = "";
@@ -568,8 +568,12 @@ const SellProject = () => {
                   <FolderArchive className="h-10 w-10 text-indigo-600 mr-4" />
 
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800 truncate">{file.name}</p>
-                    <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                    <p className="font-medium text-gray-800 truncate">
+                      {file.name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {(file.size / 1024).toFixed(1)} KB
+                    </p>
                   </div>
 
                   <button
