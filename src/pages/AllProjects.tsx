@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Star, Filter, Search, ChevronDown } from "lucide-react";
 import api from "../services/api";
@@ -16,49 +16,46 @@ const AllProjects = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-useEffect(() => {
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response = await api.projects.getAll();
-      console.log("All Projects fetched", response)
-      const normalized = response.map(p => ({
-        id: p.id,
-        Name: p.name,
-        Category: p.category,
-        Owner: p.owner,
-        Description: p.description,
-        Price: p.price,
-        ImageUrls: p.imageUrls ?? [],
-        PrimaryLanguages: p.primaryLanguages ?? [],
-        SecondryLanguages: p.secondaryLanguages ?? [],
-        Review: p.review ?? [],
-      }));
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const response = await api.projects.getAll();
+        console.log("All Projects fetched", response);
+        const normalized = response.map((p) => ({
+          id: p.id,
+          Name: p.name,
+          Category: p.category,
+          Owner: p.owner,
+          Description: p.description,
+          Price: p.price,
+          ImageUrls: p.imageUrls ?? [],
+          PrimaryLanguages: p.primaryLanguages ?? [],
+          SecondryLanguages: p.secondaryLanguages ?? [],
+          Review: p.review ?? [],
+        }));
 
-      setAllProjects(normalized);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+        setAllProjects(normalized);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const calculateRating = (project: any) => {
+    if (!project?.Review || project.Review.length === 0) return 0;
+
+    const total = project.Review.reduce(
+      (sum: number, r: any) => sum + r.Rating,
+      0
+    );
+
+    return (total / project.Review.length).toFixed(1); // Returns ex: "4.5"
   };
-
-  fetchProjects();
-}, []);
-
-const calculateRating = (project: any) => {
-  if (!project?.Review || project.Review.length === 0) return 0;
-
-  const total = project.Review.reduce(
-    (sum: number, r: any) => sum + r.Rating,
-    0
-  );
-
-  return (total / project.Review.length).toFixed(1); // Returns ex: "4.5"
-};
-
-
-
 
   const categories = [
     "All",
@@ -76,13 +73,7 @@ const calculateRating = (project: any) => {
     "$300-$500",
     "Over $500",
   ];
-  const ratingRanges = [
-    "All",
-    "Above 4",
-    "4-3",
-    "Below 3",
-    
-  ];
+  const ratingRanges = ["All", "Above 4", "4-3", "Below 3"];
   const sortOptions = [
     "Popular",
     "Newest",
@@ -198,7 +189,7 @@ const calculateRating = (project: any) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
-           <div className="lg:w-64">
+          <div className="lg:w-64">
             <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6 lg:hidden">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
@@ -302,7 +293,6 @@ const calculateRating = (project: any) => {
                     ))}
                   </div>
                 </div>
-                
               </div>
             </div>
           </div>
@@ -339,8 +329,6 @@ const calculateRating = (project: any) => {
                   className="bg-white rounded-2xl shadow-sm overflow-hidden card-shadow animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                 
-
                   <img
                     src={project.ImageUrls[0]}
                     alt={project.Name}
@@ -355,9 +343,7 @@ const calculateRating = (project: any) => {
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
                         <span className="ml-1 text-sm text-gray-600">
-                          
                           {calculateRating(project)}
-
                         </span>
                         <span className="text-xs text-gray-500 ml-1">
                           ({project.Review.length})
@@ -389,7 +375,7 @@ const calculateRating = (project: any) => {
                           ${project.Price}
                         </span>
                         <p className="text-xs text-gray-500">
-                         by {project.Owner.fullName} 
+                          by {project.Owner.fullName}
                         </p>
                       </div>
                       <Link
