@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, Code } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, Code, Upload } from "lucide-react";
 import api from "../services/api";
+import { createClient } from "@supabase/supabase-js";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -15,14 +16,76 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
+  const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY
+  );
+
+  const [dragActive, setDragActive] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File[]>([]);
+  const [profilePreview, setProfilePreview] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const uploadProfilePicture = async () => {
+      if (!imageFile) return null;
+
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `profile-${Date.now()}.${fileExt}`;
+      const filePath = `profile-pictures/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("Project-Files")
+        .upload(filePath, imageFile);
+
+      if (uploadError) {
+        console.error("Upload failed:", uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from("Project-Files")
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    };
+
+
+  const handleImageFiles = (files) => {
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    setImageFile(file);
+
+    const imgUrl = URL.createObjectURL(file);
+    setProfilePreview(imgUrl);
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageFiles(e.dataTransfer.files);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -36,6 +99,7 @@ const SignUp = () => {
       alert("Please accept the terms and conditions");
       return;
     }
+    const profilePicUrl = await uploadProfilePicture()
     console.log("Sign up data:", formData);
     // Handle sign up logic here
     try {
@@ -46,7 +110,7 @@ const SignUp = () => {
         Password: formData.password,
         Occupation: formData.occupation,
         CompanyName: formData.companyName,
-        ProfilePicture: formData.ProfilePicture,
+        ProfilePicture: profilePicUrl,
       };
       const response = await api.auth.signup(userData);
       // Token and user are automatically stored by the API service
@@ -177,7 +241,7 @@ const SignUp = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    name="comapny"
+                    name="companyName"
                     value={formData.companyName}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -247,6 +311,50 @@ const SignUp = () => {
                   )}
                 </button>
               </div>
+            </div>
+              
+            {/* Profile Picture */}
+            {profilePreview && (
+              <div className="flex justify-center mb-6">
+                <img
+                  src={profilePreview}
+                  alt="Profile Preview"
+                  className="w-32 h-32 object-cover rounded-full border-4 border-indigo-600 shadow"
+                />
+              </div>
+            )}
+
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                dragActive
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-300 hover:border-gray-400"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-lg font-medium text-gray-900 mb-2">
+                Upload Profile Picture
+              </p>
+              <p className="text-gray-600 mb-4">
+                Drag and drop images here, or click to select files
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageFiles(e.target.files)}
+                className="hidden"
+                id="image-upload"
+              />
+              <label
+                htmlFor="image-upload"
+                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                Select an Image
+              </label>
             </div>
 
             {/* Terms and Conditions */}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from './components/ui/sonner';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -10,37 +12,43 @@ import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
+import Dashboard from './pages/Dashboard';
 import './App.css';
 import HowItWorksScroll from './components/ui/How/HowItWorks';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <Home />
-                  <HowItWorksScroll />
-                  <Footer />
-                </>
-              }
-            />
-            <Route path="/projects" element={<AllProjects />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
-            <Route path="/sell" element={<SellProject />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/cart" element={<Cart />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <Router>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+        
+          <main className="flex-1">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Navbar />
+                    <Home />
+                    <HowItWorksScroll />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route path="/projects" element={<><Navbar /><AllProjects /></>} />
+              <Route path="/project/:id" element={<><Navbar /><ProjectDetail /></>} />
+              <Route path="/sell" element={<><Navbar /><SellProject /></>} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/profile" element={<><Navbar /><Profile /></>} />
+              <Route path="/cart" element={<><Navbar /><Cart /></>} />
+              <Route path="/dashboard" element={<><Navbar /></>} />
+            </Routes>
+          </main>
+        </div>
+        <Toaster />
+      </Router>
+    </ThemeProvider>
   );
 }
 

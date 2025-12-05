@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Code } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, Menu, X, Code } from "lucide-react";
+import { getCurrentUser,getAuthToken } from "@/services/api";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLogged, setIsLogged] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -14,15 +16,31 @@ const Navbar = () => {
     }
   };
 
+  useEffect(()=>{
+    const token  = getAuthToken()
+    if(token){
+      setIsLogged(true)
+    }
+  },[])
+
+
+  const getProfilePic = ()=>{
+   return getCurrentUser()?.profilePicture ?? null;
+ 
+  }
+ 
+
   return (
     <div className="sticky top-0 z-50 bg-white">
       <div className="relative overflow-visible">
         <nav className="bg-white border border-b-gray-300 relative z-50">
-
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
-              <Link to="/" className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6">
+              <Link
+                to="/"
+                className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6"
+              >
                 <Code className="h-8 w-8 text-[rgb(95,0,205)]" />
                 <span className="bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] bg-clip-text text-transparent pb-1">
                   CodeMart
@@ -31,16 +49,25 @@ const Navbar = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
-                <Link to="/projects" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/projects"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Browse Projects
                 </Link>
-                <Link to="/sell" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/sell"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Sell Project
                 </Link>
               </div>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-lg mx-8">
+              <form
+                onSubmit={handleSearch}
+                className="hidden md:flex items-center flex-1 max-w-lg mx-8"
+              >
                 <div className="relative w-full">
                   <input
                     type="text"
@@ -55,13 +82,42 @@ const Navbar = () => {
 
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link to="/cart" className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors">
+                {
+                  isLogged?<><Link
+                  to="/cart"
+                  className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors"
+                >
                   <ShoppingCart className="h-6 w-6" />
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     0
                   </span>
+                </Link></>:""
+                }
+                
+                <Link to="/dashboard" className="relative group">
+                {
+                  isLogged?<><div className="w-10 h-10 rounded-full bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] p-[2px] hover:shadow-lg transition-all duration-200">
+                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                    <img
+                        src={
+                          getProfilePic() ??
+                          "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                        }
+                        alt="Profile"
+                        className="w-full h-full object-cover"/>
+                      
+                    </div>
+                  </div></>:""
+                }
+                  
+                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Dashboard
+                  </span>
                 </Link>
-                <Link to="/signin" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                {!isLogged?<><Link
+                  to="/signin"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Sign In
                 </Link>
                 <Link
@@ -69,7 +125,8 @@ const Navbar = () => {
                   className="bg-[rgb(75,0,185)] text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors"
                 >
                   Sign Up
-                </Link>
+                </Link></>:""}
+                
               </div>
 
               {/* Mobile menu button */}
@@ -78,7 +135,11 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="text-gray-600 hover:text-gray-800 focus:outline-none"
                 >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  {isMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
                 </button>
               </div>
             </div>
@@ -122,6 +183,23 @@ const Navbar = () => {
                     Cart (0)
                   </Link>
                   <Link
+                    to="/dashboard"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {
+                        isLogged?<><img
+                        src={
+                          getProfilePic() ??
+                          "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                        }
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      /></>:""
+                      }
+                    Dashboard
+                  </Link>
+                  <Link
                     to="/signin"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
                     onClick={() => setIsMenuOpen(false)}
@@ -139,7 +217,7 @@ const Navbar = () => {
               </div>
             )}
           </div>
-        </nav>      
+        </nav>
       </div>
     </div>
   );

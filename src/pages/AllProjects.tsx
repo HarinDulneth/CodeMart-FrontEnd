@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Star, Filter, Search, ChevronDown } from "lucide-react";
+import api from "../services/api";
 
 const AllProjects = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,50 @@ const AllProjects = () => {
   const [priceRange, setPriceRange] = useState("All");
   const [sortBy, setSortBy] = useState("Popular");
   const [showFilters, setShowFilters] = useState(false);
+  const [allProjects, setAllProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const response = await api.projects.getAll();
+        console.log("All Projects fetched", response);
+        const normalized = response.map((p) => ({
+          id: p.id,
+          Name: p.name,
+          Category: p.category,
+          Owner: p.owner,
+          Description: p.description,
+          Price: p.price,
+          ImageUrls: p.imageUrls ?? [],
+          PrimaryLanguages: p.primaryLanguages ?? [],
+          SecondryLanguages: p.secondaryLanguages ?? [],
+          Review: p.review ?? [],
+        }));
+
+        setAllProjects(normalized);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const calculateRating = (project: any) => {
+    if (!project?.Review || project.Review.length === 0) return 0;
+
+    const total = project.Review.reduce(
+      (sum: number, r: any) => sum + r.Rating,
+      0
+    );
+
+    return (total / project.Review.length).toFixed(1); // Returns ex: "4.5"
+  };
 
   const categories = [
     "All",
@@ -28,6 +73,7 @@ const AllProjects = () => {
     "$300-$500",
     "Over $500",
   ];
+  const ratingRanges = ["All", "Above 4", "4-3", "Below 3"];
   const sortOptions = [
     "Popular",
     "Newest",
@@ -225,10 +271,31 @@ const AllProjects = () => {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Review Range
+                  </label>
+                  <div className="space-y-2">
+                    {ratingRanges.map((range) => (
+                      <label key={range} className="flex items-center">
+                        <input
+                          type="radio"
+                          name="review"
+                          value={range}
+                          checked={priceRange === range}
+                          onChange={(e) => setPriceRange(e.target.value)}
+                          className="text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="ml-2 text-sm text-gray-600">
+                          {range}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
           {/* Main Content */}
           <div className="flex-1">
             {/* Sort and Results */}
@@ -256,49 +323,43 @@ const AllProjects = () => {
 
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {projects.map((project, index) => (
+              {allProjects.map((project, index) => (
                 <div
                   key={project.id}
                   className="bg-white rounded-2xl shadow-sm overflow-hidden card-shadow animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  {project.featured && (
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-center py-1">
-                      <span className="text-sm font-semibold">Featured</span>
-                    </div>
-                  )}
-
                   <img
-                    src={project.image}
-                    alt={project.title}
+                    src={project.ImageUrls[0]}
+                    alt={project.Name}
                     className="w-full h-48 object-cover"
                   />
 
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
-                        {project.category}
+                        {project.Category}
                       </span>
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
                         <span className="ml-1 text-sm text-gray-600">
-                          {project.rating}
+                          {calculateRating(project)}
                         </span>
                         <span className="text-xs text-gray-500 ml-1">
-                          ({project.reviews})
+                          ({project.Review.length})
                         </span>
                       </div>
                     </div>
 
                     <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
-                      {project.title}
+                      {project.Name}
                     </h3>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {project.description}
+                      {project.Description}
                     </p>
 
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {project.tags.map((tag) => (
+                      {project.PrimaryLanguages.map((tag) => (
                         <span
                           key={tag}
                           className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded"
@@ -311,10 +372,10 @@ const AllProjects = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-2xl font-bold text-gray-900">
-                          ${project.price}
+                          ${project.Price}
                         </span>
                         <p className="text-xs text-gray-500">
-                          by {project.seller}
+                          by {project.Owner.fullName}
                         </p>
                       </div>
                       <Link

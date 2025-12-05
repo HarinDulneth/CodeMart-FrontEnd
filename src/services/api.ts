@@ -11,7 +11,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL
 /**
  * Get authentication token from localStorage
  */
-const getAuthToken = (): string | null => {
+export const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
@@ -93,8 +93,21 @@ const apiRequest = async <T = any>(
     
     if (!response.ok) {
       // Extract error message from various response formats
+      // Handle ASP.NET Core validation errors
+      if (data.errors && typeof data.errors === 'object') {
+        const validationErrors = Object.entries(data.errors)
+          .map(([field, messages]: [string, any]) => {
+            const msgArray = Array.isArray(messages) ? messages : [messages];
+            return `${field}: ${msgArray.join(', ')}`;
+          })
+          .join('; ');
+        const errorMessage = data.title 
+          ? `${data.title}. ${validationErrors}` 
+          : validationErrors;
+        throw new Error(JSON.stringify(data));
+      }
       const errorMessage = data.message || data.error || data.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
+      throw new Error(JSON.stringify(data));
     }
 
     return data;
