@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Code } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, Menu, X, Code } from "lucide-react";
+import { getCurrentUser } from "@/services/api";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -14,15 +15,19 @@ const Navbar = () => {
     }
   };
 
+  const profilePic = getCurrentUser().profilePicture;
+
   return (
     <div className="sticky top-0 z-50 bg-white">
       <div className="relative overflow-visible">
         <nav className="bg-white border border-b-gray-300 relative z-50">
-
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
-              <Link to="/" className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6">
+              <Link
+                to="/"
+                className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6"
+              >
                 <Code className="h-8 w-8 text-[rgb(95,0,205)]" />
                 <span className="bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] bg-clip-text text-transparent pb-1">
                   CodeMart
@@ -31,16 +36,25 @@ const Navbar = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
-                <Link to="/projects" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/projects"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Browse Projects
                 </Link>
-                <Link to="/sell" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/sell"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Sell Project
                 </Link>
               </div>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-lg mx-8">
+              <form
+                onSubmit={handleSearch}
+                className="hidden md:flex items-center flex-1 max-w-lg mx-8"
+              >
                 <div className="relative w-full">
                   <input
                     type="text"
@@ -55,7 +69,10 @@ const Navbar = () => {
 
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link to="/cart" className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/cart"
+                  className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors"
+                >
                   <ShoppingCart className="h-6 w-6" />
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     0
@@ -64,9 +81,12 @@ const Navbar = () => {
                 <Link to="/dashboard" className="relative group">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] p-[2px] hover:shadow-lg transition-all duration-200">
                     <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                      <img 
-                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
-                        alt="Profile" 
+                      <img
+                        src={
+                          profilePic ??
+                          "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                        }
+                        alt="Profile"
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -75,7 +95,10 @@ const Navbar = () => {
                     Dashboard
                   </span>
                 </Link>
-                <Link to="/signin" className="text-gray-700 hover:text-indigo-600 transition-colors">
+                <Link
+                  to="/signin"
+                  className="text-gray-700 hover:text-indigo-600 transition-colors"
+                >
                   Sign In
                 </Link>
                 <Link
@@ -92,7 +115,11 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="text-gray-600 hover:text-gray-800 focus:outline-none"
                 >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  {isMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
                 </button>
               </div>
             </div>
@@ -140,7 +167,13 @@ const Navbar = () => {
                     className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User className="h-5 w-5 mr-2" />
+                    <img
+                      src={
+                        profilePic ??
+                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                      }
+                      className="h-5 w-5 mr-2"
+                    />
                     Dashboard
                   </Link>
                   <Link
@@ -161,7 +194,7 @@ const Navbar = () => {
               </div>
             )}
           </div>
-        </nav>      
+        </nav>
       </div>
     </div>
   );
