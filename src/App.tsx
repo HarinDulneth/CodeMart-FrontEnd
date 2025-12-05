@@ -21,27 +21,28 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="light">
       <Router>
         <div className="min-h-screen bg-gray-50 flex flex-col">
-          <Navbar />
+        
           <main className="flex-1">
             <Routes>
               <Route
                 path="/"
                 element={
                   <>
+                    <Navbar />
                     <Home />
                     <HowItWorksScroll />
                     <Footer />
                   </>
                 }
               />
-              <Route path="/projects" element={<AllProjects />} />
-              <Route path="/project/:id" element={<ProjectDetail />} />
-              <Route path="/sell" element={<SellProject />} />
+              <Route path="/projects" element={<><Navbar /><AllProjects /></>} />
+              <Route path="/project/:id" element={<><Navbar /><ProjectDetail /></>} />
+              <Route path="/sell" element={<><Navbar /><SellProject /></>} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<><Navbar /><Profile /></>} />
+              <Route path="/cart" element={<><Navbar /><Cart /></>} />
+              <Route path="/dashboard" element={<><Navbar /></>} />
             </Routes>
           </main>
         </div>
