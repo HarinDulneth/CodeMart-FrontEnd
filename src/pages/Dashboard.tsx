@@ -33,6 +33,7 @@ import {
   transactions,
   dashboardStats,
 } from "@/data/dummyData";
+import { getCurrentUser } from "@/services/api";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
@@ -56,6 +57,8 @@ export default function Dashboard() {
   const handleDeleteProject = (projectId: number) => {
     toast.error("Project deleted");
   };
+
+  const user = getCurrentUser();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -164,7 +167,7 @@ export default function Dashboard() {
         );
 
       case 'profile':
-        return <ProfileSection user={currentUser} />;
+        return <ProfileSection user={user} />;
 
       case 'wishlist':
         return (

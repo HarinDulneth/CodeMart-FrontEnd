@@ -1,19 +1,48 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { User } from "@/data/dummyData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Camera, Save, X } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/services/api";
+import { createClient } from "@supabase/supabase-js";
 
 interface ProfileSectionProps {
   user: User;
+  onUserUpdate?: (updatedUser: User) => void;
 }
 
-export function ProfileSection({ user }: ProfileSectionProps) {
+export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
+  const [currentUser, setCurrentUserState] = useState<User>(user);
+  const [dragActive, setDragActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update local state when user prop changes
+  useEffect(() => {
+    setCurrentUserState(user);
+    setFormData({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      occupation: user.occupation,
+      companyName: user.companyName,
+    });
+  }, [user]);
+
   const [formData, setFormData] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -22,21 +51,149 @@ export function ProfileSection({ user }: ProfileSectionProps) {
     companyName: user.companyName,
   });
 
-  const handleSave = () => {
-    // In real app, this would call the API
-    toast.success("Profile updated successfully!");
-    setIsEditing(false);
+  const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY
+  );
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      let profilePictureUrl = currentUser.profilePicture;
+
+      if (imageFile) {
+        const uploadedUrl = await uploadProfilePicture();
+        if (uploadedUrl) {
+          profilePictureUrl = uploadedUrl;
+        } else {
+          toast.error("Failed to upload profile picture");
+          setLoading(false);
+          return;
+        }
+      }
+
+      const userData = {
+        FirstName: formData.firstName,
+        LastName: formData.lastName,
+        Email: formData.email,
+        Occupation: formData.occupation,
+        CompanyName: formData.companyName,
+        ProfilePicture: profilePictureUrl,
+      };
+
+      const response = await api.users.update(currentUser.id, userData);
+      console.log("Update successful:", response);
+
+      if (response?.user) {
+        setCurrentUserState(response.user);
+        if (onUserUpdate) {
+          onUserUpdate(response.user);
+        }
+      }
+
+      toast.success("Profile updated successfully!");
+      setIsEditing(false);
+      setImageFile(null);
+      setProfilePreview(null);
+    } catch (err: any) {
+      console.error("Update failed:", err);
+      const errorMessage = err.message || "Failed to update profile.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadProfilePicture = async (): Promise<string | null> => {
+    if (!imageFile) return null;
+
+    const fileExt = imageFile.name.split(".").pop();
+    const fileName = `profile-${currentUser.id}-${Date.now()}.${fileExt}`;
+    const filePath = `profile-pictures/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("Project-Files")
+      .upload(filePath, imageFile, {
+        contentType: imageFile.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Upload failed:", uploadError);
+      return null;
+    }
+
+    const { data } = await supabase.storage
+      .from("Project-Files")
+      .getPublicUrl(filePath);
+
+    return data?.publicUrl || null;
+  };
+
+  const handleImageFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setImageFile(file);
+    const imgUrl = URL.createObjectURL(file);
+    setProfilePreview(imgUrl);
+  };
+
+  const handleAvatarClick = () => {
+    if (isEditing && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageFiles(e.dataTransfer.files);
+    }
   };
 
   const handleCancel = () => {
     setFormData({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      occupation: user.occupation,
-      companyName: user.companyName,
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      email: currentUser.email,
+      occupation: currentUser.occupation,
+      companyName: currentUser.companyName,
     });
     setIsEditing(false);
+    setImageFile(null);
+    setProfilePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -52,22 +209,50 @@ export function ProfileSection({ user }: ProfileSectionProps) {
           {/* Profile Picture */}
           <div className="flex items-center gap-6">
             <div className="relative group">
-              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                <AvatarImage src={user.profilePicture} alt={`${user.firstName} ${user.lastName}`} />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleImageFiles(e.target.files)}
+              />
+              <Avatar
+                className={`h-24 w-24 cursor-pointer transition-all ${
+                  isEditing ? "hover:ring-2 hover:ring-primary" : ""
+                }`}
+                onClick={handleAvatarClick}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <AvatarImage
+                  src={profilePreview || currentUser.profilePicture}
+                  alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                />
                 <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                  {user.firstName[0]}{user.lastName[0]}
+                  {currentUser.firstName[0]}
+                  {currentUser.lastName?.[0] || ""}
                 </AvatarFallback>
               </Avatar>
-              <button className="absolute inset-0 flex items-center justify-center bg-foreground/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                <Camera className="h-6 w-6 text-background" />
-              </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Camera className="h-6 w-6 text-white" />
+                </button>
+              )}
             </div>
             <div>
               <h3 className="text-lg font-semibold text-foreground">
-                {user.firstName} {user.lastName}
+                {currentUser.firstName} {currentUser.lastName}
               </h3>
-              <p className="text-muted-foreground">{user.occupation}</p>
-              <p className="text-sm text-muted-foreground">{user.companyName}</p>
+              <p className="text-muted-foreground">{currentUser.occupation}</p>
+              <p className="text-sm text-muted-foreground">
+                {currentUser.companyName}
+              </p>
             </div>
           </div>
 
@@ -78,7 +263,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               <Input
                 id="firstName"
                 value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
                 disabled={!isEditing}
                 className="transition-colors"
               />
@@ -88,7 +275,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               <Input
                 id="lastName"
                 value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
                 disabled={!isEditing}
                 className="transition-colors"
               />
@@ -99,7 +288,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 disabled={!isEditing}
                 className="transition-colors"
               />
@@ -109,7 +300,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               <Input
                 id="occupation"
                 value={formData.occupation}
-                onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, occupation: e.target.value })
+                }
                 disabled={!isEditing}
                 className="transition-colors"
               />
@@ -119,7 +312,9 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               <Input
                 id="companyName"
                 value={formData.companyName}
-                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, companyName: e.target.value })
+                }
                 disabled={!isEditing}
                 className="transition-colors"
               />
@@ -134,15 +329,13 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} disabled={loading}>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  {loading ? "Saving Changes in..." : "Save Changes"}
                 </Button>
               </>
             ) : (
-              <Button onClick={() => setIsEditing(true)}>
-                Edit Profile
-              </Button>
+              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
             )}
           </div>
         </CardContent>
@@ -160,21 +353,29 @@ export function ProfileSection({ user }: ProfileSectionProps) {
           <div className="flex items-center justify-between py-3 border-b border-border">
             <div>
               <p className="font-medium text-foreground">Change Password</p>
-              <p className="text-sm text-muted-foreground">Update your password regularly for security</p>
+              <p className="text-sm text-muted-foreground">
+                Update your password regularly for security
+              </p>
             </div>
             <Button variant="outline">Change</Button>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-border">
             <div>
-              <p className="font-medium text-foreground">Two-Factor Authentication</p>
-              <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
+              <p className="font-medium text-foreground">
+                Two-Factor Authentication
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Add an extra layer of security
+              </p>
             </div>
             <Button variant="outline">Enable</Button>
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
               <p className="font-medium text-destructive">Delete Account</p>
-              <p className="text-sm text-muted-foreground">Permanently delete your account and data</p>
+              <p className="text-sm text-muted-foreground">
+                Permanently delete your account and data
+              </p>
             </div>
             <Button variant="destructive">Delete</Button>
           </div>
