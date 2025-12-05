@@ -62,12 +62,12 @@ const SignIn = () => {
           >
             <Code className="h-8 w-8 text-indigo-600" />
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              CodeMarket
+              CodeMart
             </span>
           </Link>
           <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
           <p className="mt-2 text-gray-600">
-            Sign in to your CodeMarket account
+            Sign in to your CodeMart account
           </p>
         </div>
 

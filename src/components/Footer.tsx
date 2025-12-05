@@ -155,7 +155,7 @@ const Footer = () => {
                 <h4 className="text-[#a2a2a2] font-medium text-sm mb-2">Sanjana Dissanayaka</h4>
                 <div className="flex space-x-2">
                   <a 
-                    href="https://github.com/sanjana-dissanayaka" 
+                    href="https://github.com/sanjanadissa" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#a2a2a2] hover:text-white transition-colors"
@@ -164,7 +164,7 @@ const Footer = () => {
                     <Github className="h-4 w-4" />
                   </a>
                   <a 
-                    href="https://linkedin.com/in/sanjana-dissanayaka" 
+                    href="https://www.linkedin.com/in/sanjana-dissanayake-b04963302/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#a2a2a2] hover:text-white transition-colors"
@@ -180,7 +180,7 @@ const Footer = () => {
                 <h4 className="text-[#a2a2a2] font-medium text-sm mb-2">Harin Dulneth</h4>
                 <div className="flex space-x-2">
                   <a 
-                    href="https://github.com/harin-dulneth" 
+                    href="https://github.com/HarinDulneth" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#a2a2a2] hover:text-white transition-colors"
@@ -189,7 +189,7 @@ const Footer = () => {
                     <Github className="h-4 w-4" />
                   </a>
                   <a 
-                    href="https://linkedin.com/in/harin-dulneth" 
+                    href="https://www.linkedin.com/in/harin-dulneth-1b8455352/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#a2a2a2] hover:text-white transition-colors"

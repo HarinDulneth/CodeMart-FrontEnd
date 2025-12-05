@@ -93,8 +93,21 @@ const apiRequest = async <T = any>(
     
     if (!response.ok) {
       // Extract error message from various response formats
+      // Handle ASP.NET Core validation errors
+      if (data.errors && typeof data.errors === 'object') {
+        const validationErrors = Object.entries(data.errors)
+          .map(([field, messages]: [string, any]) => {
+            const msgArray = Array.isArray(messages) ? messages : [messages];
+            return `${field}: ${msgArray.join(', ')}`;
+          })
+          .join('; ');
+        const errorMessage = data.title 
+          ? `${data.title}. ${validationErrors}` 
+          : validationErrors;
+        throw new Error(JSON.stringify(data));
+      }
       const errorMessage = data.message || data.error || data.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
+      throw new Error(JSON.stringify(data));
     }
 
     return data;
@@ -178,7 +191,7 @@ export const api = {
       return apiRequest<any[]>(`/user/${id}/boughtprojects`);
     },
   },
-
+  
   // Project endpoints
   projects: {
     getAll: async () => {

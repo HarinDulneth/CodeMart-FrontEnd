@@ -1,119 +1,297 @@
-import React, { useState } from 'react';
-import { Upload, X, Plus, DollarSign, Tag, FileText, Image } from 'lucide-react';
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import {
+  Upload,
+  X,
+  Plus,
+  DollarSign,
+  Tag,
+  FileText,
+  Image,
+  FolderArchive,
+} from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
 
 const SellProject = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    price: '',
-    description: '',
-    longDescription: '',
-    technologies: [],
-    features: [''],
-    images: []
+  const [formData, setFormData] = useState<{
+    Name: string;
+    Category: string;
+    Price: string;
+    Description: string;
+    PrimaryLanguages: string[];
+    SecondaryLanguages: string[];
+    features: string[];
+  }>({
+    Name: "",
+    Category: "",
+    Price: "",
+    Description: "",
+    PrimaryLanguages: [],
+    SecondaryLanguages: [],
+    features: [],
   });
 
+  const zipInputRef = useRef(null);
+  const navigate = useNavigate();
+  const supabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL!,
+    import.meta.env.VITE_SUPABASE_ANON_KEY!
+  );
+
   const [dragActive, setDragActive] = useState(false);
-  const [newTech, setNewTech] = useState('');
+  const [newTech, setNewTech] = useState("");
+  const [newTech2, setNewTech2] = useState("");
+  const [zipFiles, setZipFiles] = useState<File[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const categories = [
-    'Web Development',
-    'Mobile Development',
-    'AI/ML',
-    'Desktop Apps',
-    'APIs',
-    'Games',
-    'Data Science',
-    'DevOps'
+    "Web Development",
+    "Mobile Development",
+    "AI/ML",
+    "Desktop Apps",
+    "APIs",
+    "Games",
+    "Data Science",
+    "DevOps",
   ];
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Map frontend category strings to backend enum values
+  const mapCategoryToEnum = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      "Web Development": "WebDevelopment",
+      "Mobile Development": "MobileDevelopment",
+      "AI/ML": "ArtificialIntelligence",
+      "Desktop Apps": "DesktopApps",
+      APIs: "APIs",
+      Games: "GameDevelopment",
+      "Data Science": "ArtificialIntelligence", // Map to AI as closest match
+      DevOps: "DevOps",
+    };
+    return categoryMap[category] || category;
   };
 
-  const handleFeatureChange = (index, value) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFeatureChange = (index: number, value: string) => {
     const newFeatures = [...formData.features];
     newFeatures[index] = value;
-    setFormData(prev => ({ ...prev, features: newFeatures }));
+    setFormData((prev) => ({ ...prev, features: newFeatures }));
   };
 
   const addFeature = () => {
-    setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
+    setFormData((prev) => ({ ...prev, features: [...prev.features, ""] }));
   };
 
-  const removeFeature = (index) => {
+  const removeFeature = (index: number) => {
     const newFeatures = formData.features.filter((_, i) => i !== index);
-    setFormData(prev => ({ ...prev, features: newFeatures }));
+    setFormData((prev) => ({ ...prev, features: newFeatures }));
   };
 
-  const addTechnology = () => {
-    if (newTech.trim() && !formData.technologies.includes(newTech.trim())) {
-      setFormData(prev => ({ 
-        ...prev, 
-        technologies: [...prev.technologies, newTech.trim()] 
-      }));
-      setNewTech('');
+  const addTechnology = (primary = false) => {
+    if (primary) {
+      if (
+        newTech.trim() &&
+        !formData.PrimaryLanguages.includes(newTech.trim())
+      ) {
+        setFormData((prev) => ({
+          ...prev,
+          PrimaryLanguages: [...prev.PrimaryLanguages, newTech.trim()],
+        }));
+        setNewTech("");
+      }
+    } else {
+      if (
+        newTech2.trim() &&
+        !formData.SecondaryLanguages.includes(newTech2.trim())
+      ) {
+        setFormData((prev) => ({
+          ...prev,
+          SecondaryLanguages: [...prev.SecondaryLanguages, newTech2.trim()],
+        }));
+        setNewTech2("");
+      }
     }
   };
 
-  const removeTechnology = (tech) => {
-    setFormData(prev => ({
-      ...prev,
-      technologies: prev.technologies.filter(t => t !== tech)
-    }));
+  const removeTechnology = (tech: string, primary = false) => {
+    if (primary) {
+      setFormData((prev) => ({
+        ...prev,
+        PrimaryLanguages: prev.PrimaryLanguages.filter((t) => t !== tech),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        SecondaryLanguages: prev.SecondaryLanguages.filter((t) => t !== tech),
+      }));
+    }
   };
 
-  const handleDrag = (e) => {
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
+      handleImageFiles(e.dataTransfer.files);
     }
   };
 
-  const handleFiles = (files) => {
-    const imageFiles = Array.from(files).filter(file => 
-      file.type.startsWith('image/')
+  const handleZipFiles = (files: FileList | null) => {
+    const allowedExtensions = [
+      ".zip",
+      ".rar",
+      ".7z",
+      ".gz",
+      ".tgz",
+      ".bz2",
+      ".xz",
+      ".tar.gz",
+      ".tar.bz2",
+      ".tar.xz",
+    ];
+
+    if (!files) return;
+    const uploaded = Array.from(files).filter((file) => {
+      return allowedExtensions.some((ext) =>
+        file.name.toLowerCase().endsWith(ext)
+      );
+    });
+
+    setZipFiles(uploaded.slice(0, 1));
+  };
+
+  const handleImageFiles = (files: FileList | null) => {
+    if (!files) return;
+    const imageFilesArray = Array.from(files).filter((file) =>
+      file.type.startsWith("image/")
     );
-    
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, ...imageFiles].slice(0, 5) // Max 5 images
-    }));
+
+    setImageFiles((prev) => [...prev, ...imageFilesArray].slice(0, 3));
   };
 
-  const removeImage = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
+  const removeImage = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e) => {
+  const removeZip = () => {
+  setZipFiles([]);
+
+    if (zipInputRef.current) {
+      zipInputRef.current.value = "";
+    }
+  };
+
+  async function uploadToSupabase(file: File, isZip = false) {
+    if (!file) return null;
+
+    const filePath = `codemart.org/${Date.now()}_${file.name}`;
+
+    const { data: uploadFiles, error: uploadError } = await supabase.storage
+      .from("Project-Files")
+      .upload(filePath, file, {
+        contentType: isZip ? "application/zip" : file.type,
+      });
+
+    if (uploadError) {
+      console.error(uploadError);
+      return null;
+    }
+    if (isZip) {
+      const { data, error } = await supabase.storage
+        .from("Project-Files")
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7);
+      if (error) {
+        console.error(error);
+        return null;
+      }
+      return data?.signedUrl;
+    } else {
+      const { data } = await supabase.storage
+        .from("Project-Files")
+        .getPublicUrl(filePath);
+
+      return data?.publicUrl;
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Project submitted:', formData);
-    // Handle form submission here
+    setLoading(true);
+
+    let zipUrl = null;
+    if (zipFiles.length > 0) {
+      zipUrl = await uploadToSupabase(zipFiles[0], true);
+    }
+
+    const uploadedImages: string[] = [];
+    for (const img of imageFiles) {
+      const url = await uploadToSupabase(img);
+      if (url) uploadedImages.push(url);
+    }
+
+    console.log("ZIP URL:", zipUrl);
+    console.log("IMAGE URLs:", uploadedImages);
+
+    try {
+      // Map category string to enum value
+      const categoryEnum = mapCategoryToEnum(formData.Category);
+
+      // Prepare project data matching the backend DTO structure
+      const projectData = {
+        Name: formData.Name,
+        Category: categoryEnum, // Send enum value instead of string
+        Description: formData.Description,
+        Price: parseFloat(formData.Price) || 0, // Convert string to number
+        ProjectUrl: zipUrl || "", // Use the uploaded zipUrl, match DTO field name
+        ImageUrls: uploadedImages,
+        PrimaryLanguages: formData.PrimaryLanguages,
+        SecondaryLanguages: formData.SecondaryLanguages, // Fix typo
+      };
+
+      console.log("Sending project data:", projectData);
+      const response = await api.projects.create(projectData);
+      // Token and user are automatically stored by the API service
+      console.log("SignUp successful:", response);
+
+      // Redirect to home page on success
+      navigate("/");
+    } catch (err: any) {
+      console.error("SignUp failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-xl border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sell Your Project</h1>
-          <p className="text-gray-600">Share your amazing software project with the world</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Sell Your Project
+          </h1>
+          <p className="text-gray-600">
+            Share your amazing software project with the world
+          </p>
         </div>
       </div>
 
@@ -125,7 +303,7 @@ const SellProject = () => {
               <FileText className="h-6 w-6 mr-2 text-indigo-600" />
               Basic Information
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -133,8 +311,8 @@ const SellProject = () => {
                 </label>
                 <input
                   type="text"
-                  name="title"
-                  value={formData.title}
+                  name="Name"
+                  value={formData.Name}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   placeholder="Enter your project title"
@@ -147,15 +325,17 @@ const SellProject = () => {
                   Category *
                 </label>
                 <select
-                  name="category"
-                  value={formData.category}
+                  name="Category"
+                  value={formData.Category}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   required
                 >
                   <option value="">Select a category</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -163,27 +343,11 @@ const SellProject = () => {
 
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Short Description *
-              </label>
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Brief description of your project (max 150 characters)"
-                maxLength={150}
-                required
-              />
-            </div>
-
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Detailed Description *
+                Description *
               </label>
               <textarea
-                name="longDescription"
-                value={formData.longDescription}
+                name="Description"
+                value={formData.Description}
                 onChange={handleInputChange}
                 rows={6}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -199,7 +363,7 @@ const SellProject = () => {
               <DollarSign className="h-6 w-6 mr-2 text-green-600" />
               Pricing
             </h2>
-            
+
             <div className="max-w-md">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Price (USD) *
@@ -208,8 +372,8 @@ const SellProject = () => {
                 <span className="absolute left-3 top-3 text-gray-500">$</span>
                 <input
                   type="number"
-                  name="price"
-                  value={formData.price}
+                  name="Price"
+                  value={formData.Price}
                   onChange={handleInputChange}
                   className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   placeholder="0"
@@ -229,7 +393,8 @@ const SellProject = () => {
               <Tag className="h-6 w-6 mr-2 text-purple-600" />
               Technologies Used
             </h2>
-            
+
+            {/* Primary Languages */}
             <div className="mb-4">
               <div className="flex space-x-2">
                 <input
@@ -237,21 +402,23 @@ const SellProject = () => {
                   value={newTech}
                   onChange={(e) => setNewTech(e.target.value)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Add a technology (e.g., React, Node.js)"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
+                  placeholder="Add Primary Languages (e.g., React, .NET)"
+                  onKeyPress={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), addTechnology(true))
+                  }
                 />
                 <button
                   type="button"
-                  onClick={addTechnology}
+                  onClick={() => addTechnology(true)}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Add
                 </button>
               </div>
             </div>
-
             <div className="flex flex-wrap gap-2">
-              {formData.technologies.map((tech, index) => (
+              {formData.PrimaryLanguages.map((tech, index) => (
                 <span
                   key={index}
                   className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center"
@@ -259,7 +426,47 @@ const SellProject = () => {
                   {tech}
                   <button
                     type="button"
-                    onClick={() => removeTechnology(tech)}
+                    onClick={() => removeTechnology(tech, true)}
+                    className="ml-2 text-indigo-600 hover:text-indigo-800"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+
+            {/* Secondary Languages */}
+            <div className="mb-4">
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newTech2}
+                  onChange={(e) => setNewTech2(e.target.value)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Add Secondary Languages (e.g., Python, Node.js)"
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addTechnology())
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => addTechnology()}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.SecondaryLanguages.map((tech, index) => (
+                <span
+                  key={index}
+                  className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center"
+                >
+                  {tech}
+                  <button
+                    type="button"
+                    onClick={() => removeTechnology(tech, false)}
                     className="ml-2 text-indigo-600 hover:text-indigo-800"
                   >
                     <X className="h-3 w-3" />
@@ -271,8 +478,10 @@ const SellProject = () => {
 
           {/* Features */}
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Features</h2>
-            
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Project Features
+            </h2>
+
             <div className="space-y-3">
               {formData.features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -306,18 +515,87 @@ const SellProject = () => {
             </button>
           </div>
 
+          {/* Project Files */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <Image className="h-6 w-6 mr-2 text-blue-600" />
+              Project Zip File
+            </h2>
+
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                dragActive
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-300 hover:border-gray-400"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-lg font-medium text-gray-900 mb-2">
+                Upload project zip file
+              </p>
+              <p className="text-gray-600 mb-4">
+                Drag and drop files here, or click to select files
+              </p>
+              <input
+                ref={zipInputRef}
+                type="file"
+                multiple
+                accept=".zip,.rar,.7z,.tar,.gz,.tgz,.bz2,.xz,.tar.gz,.tar.bz2,.tar.xz"
+                onChange={(e) => handleZipFiles(e.target.files)}
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                Select Files
+              </label>
+            </div>
+          </div>
+
+          {zipFiles.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              {zipFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="relative flex items-center p-4 border rounded-lg bg-gray-50"
+                >
+                  <FolderArchive className="h-10 w-10 text-indigo-600 mr-4" />
+
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 truncate">{file.name}</p>
+                    <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={removeZip} // only 1 zip allowed in your code
+                    className="ml-4 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Images */}
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <Image className="h-6 w-6 mr-2 text-blue-600" />
               Project Images
             </h2>
-            
+
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                dragActive 
-                  ? 'border-indigo-600 bg-indigo-50' 
-                  : 'border-gray-300 hover:border-gray-400'
+                dragActive
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-300 hover:border-gray-400"
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -335,7 +613,7 @@ const SellProject = () => {
                 type="file"
                 multiple
                 accept="image/*"
-                onChange={(e) => handleFiles(e.target.files)}
+                onChange={(e) => handleImageFiles(e.target.files)}
                 className="hidden"
                 id="image-upload"
               />
@@ -347,9 +625,9 @@ const SellProject = () => {
               </label>
             </div>
 
-            {formData.images.length > 0 && (
+            {imageFiles.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                {formData.images.map((image, index) => (
+                {imageFiles.map((image, index) => (
                   <div key={index} className="relative">
                     <img
                       src={URL.createObjectURL(image)}
