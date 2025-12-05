@@ -42,7 +42,7 @@ function App() {
               <Route path="/signin" element={<SignIn />} />
               <Route path="/profile" element={<><Navbar /><Profile /></>} />
               <Route path="/cart" element={<><Navbar /><Cart /></>} />
-              <Route path="/dashboard" element={<><Navbar /></>} />
+              <Route path="/dashboard" element={<><Navbar /><Dashboard /></>} />
             </Routes>
           </main>
         </div>
