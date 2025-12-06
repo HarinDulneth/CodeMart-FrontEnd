@@ -23,7 +23,7 @@ export function StatsCard({
 }: StatsCardProps) {
   return (
     <div className={cn(
-      "rounded-xl p-6 shadow-card transition-all duration-200 hover:shadow-md animate-fade-in",
+      "rounded-xl p-6 shadow-xl transition-all duration-200 hover:shadow-2xl animate-fade-in",
       variant === 'default' && "bg-card",
       variant === 'primary' && "gradient-primary text-primary-foreground",
       variant === 'success' && "gradient-success text-success-foreground"

@@ -10,8 +10,12 @@ import {
   FileText,
   Image,
   FolderArchive,
+  Video,
+  FileArchive,
+  Loader2,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/services/supabase";
+import { toast } from "sonner";
 
 const SellProject = () => {
   const [formData, setFormData] = useState<{
@@ -32,18 +36,16 @@ const SellProject = () => {
     features: [],
   });
 
-  const zipInputRef = useRef(null);
+  const zipInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
 
   const [dragActive, setDragActive] = useState(false);
   const [newTech, setNewTech] = useState("");
   const [newTech2, setNewTech2] = useState("");
   const [zipFiles, setZipFiles] = useState<File[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [videoFile, setVideoFile] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
   const categories = [
@@ -151,8 +153,17 @@ const SellProject = () => {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImageFiles(e.dataTransfer.files);
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+
+    if (files[0].type.startsWith("video/")) {
+      handleVideoFiles(files);
+    }
+    else if (files[0].type.startsWith("image/")) {
+      handleImageFiles(files);
+    }
+    else {
+      handleZipFiles(files);
     }
   };
 
@@ -180,13 +191,37 @@ const SellProject = () => {
     setZipFiles(uploaded.slice(0, 1));
   };
 
+  const handleVideoFiles = (files: FileList | null) => {
+    const allowedExtensions = [
+      ".mp4",
+      ".mov",
+      ".avi",
+      ".mkv",
+      ".wmv",
+      ".flv",
+      ".webm",
+      ".mpeg",
+      ".mpg",
+      ".m4v"
+    ];
+
+    if (!files) return;
+    const uploaded = Array.from(files).filter((file) => {
+      return allowedExtensions.some((ext) =>
+        file.name.toLowerCase().endsWith(ext)
+      );
+    });
+
+    setVideoFile(uploaded.slice(0, 1));
+  };
+
   const handleImageFiles = (files: FileList | null) => {
     if (!files) return;
     const imageFilesArray = Array.from(files).filter((file) =>
       file.type.startsWith("image/")
     );
 
-    setImageFiles((prev) => [...prev, ...imageFilesArray].slice(0, 3));
+    setImageFiles((prev) => [...prev, ...imageFilesArray].slice(0, 5));
   };
 
   const removeImage = (index: number) => {
@@ -201,12 +236,20 @@ const SellProject = () => {
     }
   };
 
+  const removevideo = () => {
+    setVideoFile([]);
+
+    if (videoInputRef.current) {
+      videoInputRef.current.value = "";
+    }
+  };
+
   async function uploadToSupabase(file: File, isZip = false) {
     if (!file) return null;
 
     const filePath = `codemart.org/${Date.now()}_${file.name}`;
 
-    const { data: uploadFiles, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("Project-Files")
       .upload(filePath, file, {
         contentType: isZip ? "application/zip" : file.type,
@@ -238,45 +281,94 @@ const SellProject = () => {
     e.preventDefault();
     setLoading(true);
 
-    let zipUrl = null;
-    if (zipFiles.length > 0) {
-      zipUrl = await uploadToSupabase(zipFiles[0], true);
-    }
-
-    const uploadedImages: string[] = [];
-    for (const img of imageFiles) {
-      const url = await uploadToSupabase(img);
-      if (url) uploadedImages.push(url);
-    }
-
-    console.log("ZIP URL:", zipUrl);
-    console.log("IMAGE URLs:", uploadedImages);
-
     try {
-      // Map category string to enum value
+      // Upload files to Supabase
+      let zipUrl = null;
+      if (zipFiles.length > 0) {
+        toast.info("Uploading project files...");
+        zipUrl = await uploadToSupabase(zipFiles[0], true);
+        if (!zipUrl) {
+          toast.error("Failed to upload project file. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      let videoUrl = null;
+      if (videoFile.length > 0) {
+        toast.info("Uploading video...");
+        videoUrl = await uploadToSupabase(videoFile[0]);
+        if (!videoUrl) {
+          toast.error("Failed to upload video. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      const uploadedImages: string[] = [];
+      if (imageFiles.length > 0) {
+        toast.info("Uploading images...");
+        for (const img of imageFiles) {
+          const url = await uploadToSupabase(img);
+          if (url) uploadedImages.push(url);
+        }
+      }
+
+      // Prepare project data
       const categoryEnum = mapCategoryToEnum(formData.Category);
 
-      // Prepare project data matching the backend DTO structure
       const projectData = {
         Name: formData.Name,
-        Category: categoryEnum, // Send enum value instead of string
+        Category: categoryEnum,
         Description: formData.Description,
-        Price: parseFloat(formData.Price) || 0, // Convert string to number
-        ProjectUrl: zipUrl || "", // Use the uploaded zipUrl, match DTO field name
+        Price: parseFloat(formData.Price) || 0,
+        ProjectUrl: zipUrl || "",
         ImageUrls: uploadedImages,
         PrimaryLanguages: formData.PrimaryLanguages,
-        SecondaryLanguages: formData.SecondaryLanguages, // Fix typo
+        SecondaryLanguages: formData.SecondaryLanguages,
+        VideoUrl: videoUrl || "",
       };
 
-      console.log("Sending project data:", projectData);
-      const response = await api.projects.create(projectData);
-      // Token and user are automatically stored by the API service
-      console.log("SignUp successful:", response);
-
+      toast.info("Publishing project...");
+      await api.projects.create(projectData);
+      
+      toast.success("Project published successfully!");
+      
       // Redirect to home page on success
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err: any) {
-      console.error("SignUp failed:", err);
+      console.error("Publish failed:", err);
+      
+      // Extract error message from various error formats
+      let errorMessage = "Failed to publish project. Please try again.";
+      
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          if (errorData.errors && typeof errorData.errors === 'object') {
+            const validationErrors = Object.entries(errorData.errors)
+              .map(([field, messages]: [string, any]) => {
+                const msgArray = Array.isArray(messages) ? messages : [messages];
+                return `${field}: ${msgArray.join(', ')}`;
+              })
+              .join('; ');
+            errorMessage = validationErrors;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.title) {
+            errorMessage = errorData.title;
+          }
+        }
+      } catch (parseError) {
+        // If parsing fails, use the error message as is
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -284,7 +376,7 @@ const SellProject = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-xl border-b">
+      <div className="bg-white shadow-2xl border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Sell Your Project
@@ -395,7 +487,7 @@ const SellProject = () => {
             </h2>
 
             {/* Primary Languages */}
-            <div className="mb-4">
+            <div className="mb-3">
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -436,7 +528,7 @@ const SellProject = () => {
             </div>
 
             {/* Secondary Languages */}
-            <div className="mb-4">
+            <div className="mb-3 mt-5">
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -518,7 +610,7 @@ const SellProject = () => {
           {/* Project Files */}
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <Image className="h-6 w-6 mr-2 text-blue-600" />
+              <FileArchive className="h-6 w-6 mr-2 text-blue-600" />
               Project Zip File
             </h2>
 
@@ -547,10 +639,10 @@ const SellProject = () => {
                 accept=".zip,.rar,.7z,.tar,.gz,.tgz,.bz2,.xz,.tar.gz,.tar.bz2,.tar.xz"
                 onChange={(e) => handleZipFiles(e.target.files)}
                 className="hidden"
-                id="file-upload"
+                id="zip-upload"
               />
               <label
-                htmlFor="file-upload"
+                htmlFor="zip-upload"
                 className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
               >
                 Select Files
@@ -651,6 +743,81 @@ const SellProject = () => {
             )}
           </div>
 
+          {/* Video */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <Video className="h-6 w-6 mr-2 text-blue-600" />
+              Demonstration Video
+            </h2>
+
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                dragActive
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-300 hover:border-gray-400"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-lg font-medium text-gray-900 mb-2">
+                Add a demonstration video
+              </p>
+              <p className="text-gray-600 mb-4">
+                Drag and drop files here, or click to select files
+              </p>
+              <input
+                ref={videoInputRef}
+                type="file"
+                multiple
+                accept=".mp4,.mov,.avi,.mkv,.wmv,.flv,.webm,.mpeg,.mpg,.m4v"
+                onChange={(e) => handleVideoFiles(e.target.files)}
+                className="hidden"
+                id="video-upload"
+              />
+              <label
+                htmlFor="video-upload"
+                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                Select Files
+              </label>
+            </div>
+          </div>
+
+          {videoFile.length > 0 && (
+            <div className=" md:grid-cols-2 mt-6">
+              {videoFile.map((file, index) => (
+                <div
+                  key={index}
+                  className="relative flex items-center p-4 border rounded-lg bg-gray-50"
+                >
+                 <video
+                    src={URL.createObjectURL(file)}
+                    controls
+                    className="w-40 h-24 rounded-lg object-cover mr-4"
+                  />
+
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 truncate">{file.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {(file.size / 1024).toFixed(1)} KB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removevideo}
+                    className="ml-4 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Submit */}
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -662,9 +829,17 @@ const SellProject = () => {
               </button>
               <button
                 type="submit"
-                className="flex-1 btn-primary text-white py-3 rounded-lg font-semibold"
+                disabled={loading}
+                className="flex-1 btn-primary text-white py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Publish Project
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publishing...
+                  </>
+                ) : (
+                  "Publish Project"
+                )}
               </button>
             </div>
           </div>
