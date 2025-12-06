@@ -190,6 +190,23 @@ export const api = {
     getBoughtProjects: async (id: string | number) => {
       return apiRequest<any[]>(`/user/${id}/boughtprojects`);
     },
+    getCartItems:async (id: string | number)=>{
+      return apiRequest<any[]>(`/user/${id}/cart`) 
+    },
+    update: async (id: string| number, userData: any) => {
+      const user = await apiRequest<any>(`/user/update/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(userData),
+      });
+      if (user) {
+        try {
+          setCurrentUser(user);
+          return { user };
+        } catch (err) {
+          return null;
+        }
+      }
+    },
   },
   
   // Project endpoints

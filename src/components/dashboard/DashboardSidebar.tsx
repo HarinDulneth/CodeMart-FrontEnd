@@ -1,40 +1,61 @@
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  User, 
-  Heart, 
-  ShoppingCart, 
-  Receipt, 
-  Package, 
-  Store, 
+import {
+  LayoutDashboard,
+  User,
+  Heart,
+  ShoppingCart,
+  Receipt,
+  Package,
+  Store,
   DollarSign,
   Settings,
-  LogOut
+  LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { currentUser } from "@/data/dummyData";
+import api from "@/services/api";
+import { useNavigate } from "react-router-dom";
 
-type TabId = 'overview' | 'profile' | 'wishlist' | 'cart' | 'transactions' | 'bought' | 'selling' | 'revenue' | 'settings';
+type TabId =
+  | "overview"
+  | "profile"
+  | "wishlist"
+  | "cart"
+  | "transactions"
+  | "bought"
+  | "selling"
+  | "revenue"
+  | "settings";
 
 interface DashboardSidebarProps {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
 }
 
-const menuItems: { id: TabId; label: string; icon: typeof LayoutDashboard }[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'wishlist', label: 'Wishlist', icon: Heart },
-  { id: 'cart', label: 'Cart', icon: ShoppingCart },
-  { id: 'transactions', label: 'Transactions', icon: Receipt },
-  { id: 'bought', label: 'Purchased', icon: Package },
-  { id: 'selling', label: 'My Products', icon: Store },
-  { id: 'revenue', label: 'Revenue', icon: DollarSign },
-  { id: 'settings', label: 'Settings', icon: Settings },
-];
+const menuItems: { id: TabId; label: string; icon: typeof LayoutDashboard }[] =
+  [
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "profile", label: "Profile", icon: User },
+    { id: "wishlist", label: "Wishlist", icon: Heart },
+    { id: "cart", label: "Cart", icon: ShoppingCart },
+    { id: "transactions", label: "Transactions", icon: Receipt },
+    { id: "bought", label: "Purchased", icon: Package },
+    { id: "selling", label: "My Products", icon: Store },
+    { id: "revenue", label: "Revenue", icon: DollarSign },
+    { id: "settings", label: "Settings", icon: Settings },
+  ];
 
-export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarProps) {
+export function DashboardSidebar({
+  activeTab,
+  onTabChange,
+}: DashboardSidebarProps) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    api.auth.logout();
+    navigate("/signin");
+  };
   return (
     <aside className="w-64 bg-card border-r border-border min-h-screen p-4 flex flex-col">
       {/* User Info */}
@@ -42,14 +63,17 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
         <Avatar className="h-10 w-10">
           <AvatarImage src={currentUser.profilePicture} />
           <AvatarFallback className="bg-primary text-primary-foreground">
-            {currentUser.firstName[0]}{currentUser.lastName[0]}
+            {currentUser.firstName[0]}
+            {currentUser.lastName[0]}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
           <p className="font-semibold text-foreground truncate">
             {currentUser.firstName} {currentUser.lastName}
           </p>
-          <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>
+          <p className="text-xs text-muted-foreground truncate">
+            {currentUser.email}
+          </p>
         </div>
       </div>
 
@@ -74,7 +98,11 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
 
       {/* Logout */}
       <div className="pt-4 border-t border-border mt-4">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+          onClick={handleLogout}
+        >
           <LogOut className="h-5 w-5" />
           Sign Out
         </Button>

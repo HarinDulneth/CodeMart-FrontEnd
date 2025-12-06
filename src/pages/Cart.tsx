@@ -1,26 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { getCurrentUser } from "@/services/api";
+import api from "../services/api";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      title: 'E-commerce Platform',
-      price: 299,
-      quantity: 1,
-      image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=400',
-      seller: 'TechCorp'
-    },
-    {
-      id: 2,
-      title: 'Mobile Banking App',
-      price: 499,
-      quantity: 1,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPvFEq3dFroKZW6wbaowlS1a774oslhrtd9A&s',
-      seller: 'FinTech Solutions'
-    }
-  ]);
+
+  const [cartItems, setCartItems] = useState([]);
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
@@ -30,6 +16,37 @@ const Cart = () => {
       )
     );
   };
+  
+  const user = getCurrentUser();
+
+ useEffect(() => {
+  const fetchCart = async () => {
+    try {
+      const response = await api.users.getCartItems(user.id);
+      console.log("getting cart items successful:", response);
+
+      const normalized = response.map((p) => ({
+        id: p.id,
+        Name: p.name,
+        Category: p.category,
+        Owner: p.owner,
+        Description: p.description,
+        Price: p.price,
+        ImageUrls: p.imageUrls ?? [],
+        PrimaryLanguages: p.primaryLanguages ?? [],
+        SecondryLanguages: p.secondaryLanguages ?? [],
+        Review: p.review ?? [],
+        quantity: 1,
+      }));
+
+      setCartItems(normalized);
+    } catch (err) {
+      console.error("getting cart items failed:", err);
+    }
+  };
+
+  fetchCart();
+}, []);
 
   const removeItem = (id) => {
     setCartItems(items => items.filter(item => item.id !== id));
@@ -85,14 +102,14 @@ const Cart = () => {
                   >
                     <div className="flex items-center space-x-4">
                       <img
-                        src={item.image}
-                        alt={item.title}
+                        src={item.ImageUrls[0]}
+                        alt={item.Name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />
                       
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                        <p className="text-gray-600">by {item.seller}</p>
+                        <h2 className="text-lg font-semibold text-gray-900">{item.Name}</h2>
+                        {/* <p className="text-gray-600">by {item.seller}</p> */}
                         <div className="flex items-center justify-between mt-4">
                           <div className="flex items-center space-x-3">
                             <button
@@ -115,7 +132,7 @@ const Cart = () => {
                           
                           <div className="flex items-center space-x-4">
                             <span className="text-xl font-bold text-gray-900">
-                              ${item.price * item.quantity}
+                              ${item.Price * item.quantity}
                             </span>
                             <button
                               onClick={() => removeItem(item.id)}
