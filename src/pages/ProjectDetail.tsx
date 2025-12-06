@@ -124,12 +124,29 @@ The platform is fully responsive and optimized for performance, with clean, main
               <div className="bg-white rounded-2xl p-8 shadow-xl mb-8 animate-fade-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Description</h2>
               <div className="prose prose-gray max-w-none">
-                {project.longDescription.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-600 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
+  {(() => {
+    const text = project.description || "";
+
+    // Split into sentences
+    const sentences = text.split(". ").filter(s => s.trim() !== "");
+
+    const middle = Math.ceil(sentences.length / 2);
+
+    const p1 = sentences.slice(0, middle).join(". ") + ".";
+    const p2 = sentences.slice(middle).join(". ");
+    const finalP2 = p2 ? p2 + "." : "";
+
+    return (
+      <>
+        <p className="mb-4 text-gray-600 leading-relaxed">{p1}</p>
+        {finalP2 && (
+          <p className="mb-4 text-gray-600 leading-relaxed">{finalP2}</p>
+        )}
+      </>
+    );
+  })()}
+</div>
+
             </div>
           </div>
           </div>
