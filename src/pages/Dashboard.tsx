@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardSidebar, TabId } from "@/components/dashboard/DashboardSidebar";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
@@ -33,15 +33,13 @@ import {
   transactions,
   dashboardStats,
 } from "@/data/dummyData";
-import { getCurrentUser } from "@/services/api";
+import api, { getCurrentUser } from "@/services/api";
 import Cart from "./Cart";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-
-  const handleRemoveFromWishlist = (projectId: number) => {
-    toast.success("Removed from wishlist");
-  };
+  const [wishlistProjects, setWishlistProjects] = useState<TabId>('overview');
+  const [addedToWishList, setAddedtoWishList] = useState(false);
 
   const handleRemoveFromCart = (projectId: number) => {
     toast.success("Removed from cart");
@@ -59,7 +57,67 @@ export default function Dashboard() {
     toast.error("Project deleted");
   };
 
+
   const user = getCurrentUser();
+  const userId = user.id;
+
+  const handleRemoveFromWishlist = async (id: string | number) => {
+      try {
+        if (!id) {
+          toast.error("Project ID is missing");
+          return;
+        }
+        if (!userId) {
+          toast.error("Please log in to manage your wishlist");
+          return;
+        }
+  
+        if (addedToWishList) {
+          await api.users.removeFromWishList(userId, id);
+          setAddedtoWishList(false);
+          toast.success("Removed from wishlist!");
+        } else {
+          await api.users.addtoWishList(userId, id);
+          setAddedtoWishList(true);
+          toast.success("Added to wishlist!");
+        }
+      } catch (err: any) {
+        console.error("Wishlist operation failed:", err);
+  
+        let errorMessage = addedToWishList
+          ? "Failed to remove from wishlist. Please try again."
+          : "Failed to add to wishlist. Please try again.";
+        try {
+          if (err instanceof Error) {
+            const errorData = JSON.parse(err.message);
+            errorMessage = errorData.message || errorData.title || errorMessage;
+          }
+        } catch (parseError) {
+          if (err instanceof Error) {
+            errorMessage = err.message;
+          }
+        }
+  
+        toast.error(errorMessage);
+      }
+    };
+
+  useEffect(() => {
+    const fetchWishList = async () => {
+      try {
+        if (!user.id) {
+          console.warn('No project id provided in route params');
+          return;
+        }
+        const wishlistProjects = await api.users.getWishlist(user.id);
+        setWishlistProjects(wishlistProjects);
+      } catch (err) {
+        console.error("getting wishlist failed:", err);
+      }
+    }
+
+    fetchWishList();
+  }, [user.id])
 
   const renderContent = () => {
     switch (activeTab) {

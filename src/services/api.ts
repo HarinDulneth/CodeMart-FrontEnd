@@ -207,6 +207,16 @@ export const api = {
         }
       }
     },
+    addtoWishList: async (userId: string | number, projectId: string | number) => {
+      return apiRequest<any>(`/user/addtowishlist?userId=${userId}&projectId=${projectId}`, {
+        method: 'PUT',
+      });
+    },
+    removeFromWishList: async (userId: string | number, projectId: string | number) => {
+      return apiRequest<any>(`/user/removefromwishlist?userId=${userId}&projectId=${projectId}`, {
+        method: 'PUT',
+      });
+    }
   },
   
   // Project endpoints

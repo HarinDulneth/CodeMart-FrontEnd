@@ -59,17 +59,16 @@ const SellProject = () => {
     "DevOps",
   ];
 
-  // Map frontend category strings to backend enum values
   const mapCategoryToEnum = (category: string): string => {
     const categoryMap: Record<string, string> = {
       "Web Development": "WebDevelopment",
       "Mobile Development": "MobileDevelopment",
       "AI/ML": "ArtificialIntelligence",
       "Desktop Apps": "DesktopApps",
-      APIs: "APIs",
-      Games: "GameDevelopment",
-      "Data Science": "ArtificialIntelligence", // Map to AI as closest match
-      DevOps: "DevOps",
+      "APIs": "APIs",
+      "Games": "GameDevelopment",
+      "Data Science": "ArtificialIntelligence",
+      "DevOps": "DevOps",
     };
     return categoryMap[category] || category;
   };
@@ -314,7 +313,6 @@ const SellProject = () => {
         }
       }
 
-      // Prepare project data
       const categoryEnum = mapCategoryToEnum(formData.Category);
 
       const projectData = {
