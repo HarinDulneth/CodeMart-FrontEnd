@@ -54,7 +54,7 @@ const AllProjects = () => {
       0
     );
 
-    return (total / project.Review.length).toFixed(1); // Returns ex: "4.5"
+    return (total / project.Review.length).toFixed(1);
   };
 
   const categories = [
@@ -175,7 +175,7 @@ const AllProjects = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-2xl border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             All Projects

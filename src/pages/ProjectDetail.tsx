@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Star, Shield, Download, Heart, Share2, User, Clock, Code, Globe } from 'lucide-react';
+import api from "../services/api";
 
 const ProjectDetail = () => {
-  const { id } = useParams();
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [projects,setProjects] = useState({})
+  const { id } = useParams<{ id: string }>();
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        if (!id) {
+          console.warn('No project id provided in route params');
+          return;
+        }
+        const response = await api.projects.getById(id);
+        setProjects(response);
+        console.log(response);
+      } catch (err) {
+        console.error("getting cart items failed:", err);
+      }
+    };
+
+    fetchProject();
+  }, [id])
 
   const project = {
     id: 1,
@@ -118,7 +139,7 @@ The platform is fully responsive and optimized for performance, with clean, main
             <div className="bg-white rounded-2xl p-8 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
-                  {project.category}
+                  {projects.category}
                 </span>
                 <div className="flex space-x-2">
                   <button className="p-2 text-gray-600 hover:text-red-500 transition-colors">
@@ -130,8 +151,8 @@ The platform is fully responsive and optimized for performance, with clean, main
                 </div>
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{project.title}</h1>
-              <p className="text-gray-600 mb-6">{project.description}</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">{projects.name}</h1>
+              <p className="text-gray-600 mb-6">{projects.description}</p>
 
               {/* Rating and Reviews */}
               <div className="flex items-center mb-6">

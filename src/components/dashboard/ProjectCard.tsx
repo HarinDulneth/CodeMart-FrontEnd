@@ -42,7 +42,7 @@ export function ProjectCard({
   };
 
   return (
-    <div className="group bg-card rounded-xl shadow-card overflow-hidden transition-all duration-200 hover:shadow-md animate-slide-up">
+    <div className="group bg-card rounded-xl shadow-xl overflow-hidden transition-all duration-200 hover:shadow-2xl animate-slide-up">
       <div className="relative aspect-video overflow-hidden bg-muted">
         <img
           src={project.imageUrls[0]}
