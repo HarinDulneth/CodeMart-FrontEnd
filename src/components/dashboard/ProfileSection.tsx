@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Camera, Save, X } from "lucide-react";
+import { Camera, Eye, EyeOff, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { createClient } from "@supabase/supabase-js";
@@ -24,14 +24,16 @@ interface ProfileSectionProps {
 export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
   const [currentUser, setCurrentUserState] = useState<User>(user);
   const [dragActive, setDragActive] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update local state when user prop changes
   useEffect(() => {
     setCurrentUserState(user);
     setFormData({
@@ -40,6 +42,8 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
       email: user.email,
       occupation: user.occupation,
       companyName: user.companyName,
+      password: "",
+      confirmPassword: "",
     });
   }, [user]);
 
@@ -49,6 +53,8 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
     email: user.email,
     occupation: user.occupation,
     companyName: user.companyName,
+    password: "",
+    confirmPassword: "",
   });
 
   const supabase = createClient(
@@ -61,6 +67,7 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
     setError(null);
     try {
       let profilePictureUrl = currentUser.profilePicture;
+      let userData = {};
 
       if (imageFile) {
         const uploadedUrl = await uploadProfilePicture();
@@ -73,14 +80,34 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
         }
       }
 
-      const userData = {
-        FirstName: formData.firstName,
-        LastName: formData.lastName,
-        Email: formData.email,
-        Occupation: formData.occupation,
-        CompanyName: formData.companyName,
-        ProfilePicture: profilePictureUrl,
-      };
+      if (formData.password != "") {
+        if (formData.confirmPassword != formData.password) {
+          setPasswordMatch(true);
+          setIsEditingPassword(true);
+          setLoading(false);
+          return;
+        } else {
+          setPasswordMatch(false);
+        }
+        userData = {
+          FirstName: formData.firstName,
+          LastName: formData.lastName,
+          Email: formData.email,
+          Occupation: formData.occupation,
+          CompanyName: formData.companyName,
+          ProfilePicture: profilePictureUrl,
+          Password: formData.password,
+        };
+      } else {
+        userData = {
+          FirstName: formData.firstName,
+          LastName: formData.lastName,
+          Email: formData.email,
+          Occupation: formData.occupation,
+          CompanyName: formData.companyName,
+          ProfilePicture: profilePictureUrl,
+        };
+      }
 
       const response = await api.users.update(currentUser.id, userData);
       console.log("Update successful:", response);
@@ -94,8 +121,11 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
 
       toast.success("Profile updated successfully!");
       setIsEditing(false);
+      setIsEditingPassword(false);
+      setPasswordMatch(false);
       setImageFile(null);
       setProfilePreview(null);
+      setFormData((prev) => ({ ...prev, password: "", confirmPassword: "" }));
     } catch (err: any) {
       console.error("Update failed:", err);
       const errorMessage = err.message || "Failed to update profile.";
@@ -187,8 +217,12 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
       email: currentUser.email,
       occupation: currentUser.occupation,
       companyName: currentUser.companyName,
+      password: "",
+      confirmPassword: "",
     });
     setIsEditing(false);
+    setIsEditingPassword(false);
+    setPasswordMatch(false);
     setImageFile(null);
     setProfilePreview(null);
     if (fileInputRef.current) {
@@ -350,14 +384,119 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-border">
-            <div>
-              <p className="font-medium text-foreground">Change Password</p>
-              <p className="text-sm text-muted-foreground">
-                Update your password regularly for security
-              </p>
+          <div className="flex flex-col border-b border-border pb-3">
+            <div className="flex items-center justify-between py-3">
+              <div className="flex flex-col">
+                <p className="font-medium text-foreground">Change Password</p>
+                <p className="text-sm text-muted-foreground">
+                  Update your password regularly for security
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditingPassword(!isEditingPassword)}
+              >
+                Change
+              </Button>
             </div>
-            <Button variant="outline">Change</Button>
+            <div className="grid gap-6 md:grid-cols-2">
+              {(isEditingPassword || passwordMatch) && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">New Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            password: e.target.value,
+                          });
+                          if (passwordMatch) {
+                            setPasswordMatch(false);
+                          }
+                        }}
+                        disabled={!isEditing && !isEditingPassword}
+                        className="transition-colors pr-10"
+                        placeholder="Enter new password"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {(isEditingPassword || passwordMatch) && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          });
+                          // Clear error when user starts typing
+                          if (passwordMatch) {
+                            setPasswordMatch(false);
+                          }
+                        }}
+                        disabled={!isEditing && !isEditingPassword}
+                        className="transition-colors pr-10"
+                        placeholder="Confirm new password"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            {passwordMatch && (
+              <p className="text-red-600 mt-2 text-sm">
+                Passwords don't match.
+              </p>
+            )}
+            {isEditingPassword && (
+              <>
+                <div className="flex justify-end">
+                  <Button
+                    className="mt-3"
+                    onClick={handleSave}
+                    disabled={loading}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
           <div className="flex items-center justify-between py-3 border-b border-border">
             <div>

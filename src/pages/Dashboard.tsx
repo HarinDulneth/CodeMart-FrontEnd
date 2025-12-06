@@ -34,6 +34,7 @@ import {
   dashboardStats,
 } from "@/data/dummyData";
 import { getCurrentUser } from "@/services/api";
+import Cart from "./Cart";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
@@ -194,48 +195,7 @@ export default function Dashboard() {
 
       case 'cart':
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Shopping Cart</h2>
-                <p className="text-muted-foreground">{cartItems.length} items in your cart</p>
-              </div>
-            </div>
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2 space-y-4">
-                {cartItems.map((item) => (
-                  <ProjectCard
-                    key={item.id}
-                    project={item.project}
-                    type="cart"
-                    onRemove={() => handleRemoveFromCart(item.project.id)}
-                  />
-                ))}
-              </div>
-              <Card className="h-fit sticky top-6">
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground truncate flex-1">{item.project.name}</span>
-                      <span className="font-medium">${item.project.price}</span>
-                    </div>
-                  ))}
-                  <div className="border-t border-border pt-4">
-                    <div className="flex justify-between font-semibold text-lg">
-                      <span>Total</span>
-                      <span className="text-primary">${dashboardStats.cartTotal}</span>
-                    </div>
-                  </div>
-                  <Button className="w-full" size="lg">
-                    Proceed to Checkout
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          <Cart />
         );
 
       case 'transactions':
