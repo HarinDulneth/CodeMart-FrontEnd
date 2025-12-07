@@ -39,6 +39,7 @@ import {
   cartItems,
   transactions,
   dashboardStats,
+  Project,
 } from "@/data/dummyData";
 import api, { getCurrentUser } from "@/services/api";
 import Cart from "./Cart";
@@ -51,12 +52,12 @@ export default function Dashboard() {
   const [sellingProjects, setSellingProjects] = useState<TabId>("selling");
   const [addedToWishList, setAddedtoWishList] = useState(false);
 
-  const handleRemoveFromCart = (projectId: number) => {
+  const handleRemoveFromCart = (projectId: Project) => {
     toast.success("Removed from cart");
   };
 
-  const handleAddToCart = (projectId: number) => {
-    toast.success("Added to cart!");
+  const handleAddToCart = (project: number) => {
+    return <ProfileSection user={user} />;
   };
 
   const handleEditProject = (projectId: number) => {
@@ -363,7 +364,7 @@ export default function Dashboard() {
                   key={project.id}
                   project={project}
                   type="selling"
-                  onEdit={() => handleEditProject(project.id)}
+                  onEdit={() => handleEditProject(project)}
                   onDelete={() => handleDeleteProject(project.id)}
                 />
               ))}

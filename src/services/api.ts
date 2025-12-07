@@ -147,6 +147,25 @@ export const api = {
       }
       return response;
     },
+    googleLogin: async (googleToken: string) => {
+      const response = await apiRequest<{ token: string }>("/auth/google-login", {
+        method: "POST",
+        body: JSON.stringify({ token: googleToken }),
+      });
+
+      if (response.token) {
+        setAuthToken(response.token);
+        try {
+          const user = await api.auth.getMe();
+          setCurrentUser(user);
+          return { token: response.token, user };
+        } catch {
+          return { token: response.token, user: null };
+        }
+      }
+      return response;
+    },
+
     signup: async (userData: any)=>{
       const response = await apiRequest<{ token: string }>('/auth/signup', {
         method: 'POST',

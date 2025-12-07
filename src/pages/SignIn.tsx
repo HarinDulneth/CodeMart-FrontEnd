@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Code } from "lucide-react";
 import api from "../services/api";
+import { GoogleLogin } from "@react-oauth/google";
+
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -176,7 +178,7 @@ const SignIn = () => {
 
             {/* Social Buttons */}
             <div className="grid grid-cols-2 gap-3">
-              <button
+              {/* <button
                 type="button"
                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -199,7 +201,31 @@ const SignIn = () => {
                   />
                 </svg>
                 Google
-              </button>
+              </button> */}
+
+              <GoogleLogin 
+                onSuccess={async (credentialResponse) => {
+                  const tokenFromGoogle = credentialResponse.credential;
+                  console.log("Google Token:", tokenFromGoogle);
+
+                  // Send token to backend to verify and login
+                  try {
+                    const response = await api.auth.googleLogin(tokenFromGoogle);
+
+                    console.log("Login success:", response);
+                    navigate("/");
+                  } catch (error) {
+                    console.log("Google login failed", error);
+                    setError("Google Sign-in failed.");
+                  }
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                  setError("Google Sign-in failed.");
+                }}
+              />
+
+
               <button
                 type="button"
                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
