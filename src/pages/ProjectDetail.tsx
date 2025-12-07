@@ -111,6 +111,9 @@ const ProjectDetail = () => {
         setAddedtoCart(true);
         toast.success("Added to cart!");
       }
+      
+      // Dispatch event to update navbar cart count
+      window.dispatchEvent(new Event('cartUpdated'));
     } catch (err: any) {
       console.error("Cart operation failed:", err);
 

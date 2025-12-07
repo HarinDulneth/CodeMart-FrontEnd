@@ -13,6 +13,7 @@ import SignIn from "./pages/SignIn";
 import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
+import EditProject from "./pages/EditProject";
 import "./App.css";
 import HowItWorksScroll from "./components/ui/How/HowItWorks";
 import ScrollToTop from "./ScrollToTop";
@@ -89,6 +90,15 @@ function App() {
                   <>
                     <Navbar />
                     <Dashboard />
+                  </>
+                }
+              />
+              <Route
+                path="/project/:id/edit"
+                element={
+                  <>
+                    <Navbar />
+                    <EditProject />
                   </>
                 }
               />

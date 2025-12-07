@@ -48,8 +48,15 @@ const Cart = () => {
   fetchCart();
 }, []);
 
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  const removeItem = async (id) => {
+    try {
+      await api.users.removeFromCart(user.id, id);
+      setCartItems(items => items.filter(item => item.id !== id));
+      // Dispatch event to update navbar cart count
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error("Failed to remove item from cart:", err);
+    }
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.Price * item.quantity), 0);
