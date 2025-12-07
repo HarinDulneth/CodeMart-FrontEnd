@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, ShoppingCart, User, Menu, X, Code } from "lucide-react";
-import { getCurrentUser,getAuthToken } from "@/services/api";
+import api, { getCurrentUser,getAuthToken } from "@/services/api";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLogged, setIsLogged] = useState(false);
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,16 +17,44 @@ const Navbar = () => {
     }
   };
 
+  const user = getCurrentUser();
+
   useEffect(()=>{
     const token  = getAuthToken()
     if(token){
       setIsLogged(true)
     }
+
+    const fetchCart = async () => {
+      try {
+        const response = await api.users.getCartItems(user.id);
+        console.log("getting cart items successful:", response);
+  
+        const normalized = response.map((p) => ({
+          id: p.id,
+          Name: p.name,
+          Category: p.category,
+          Owner: p.owner,
+          Description: p.description,
+          Price: p.price,
+          ImageUrls: p.imageUrls ?? [],
+          PrimaryLanguages: p.primaryLanguages ?? [],
+          SecondryLanguages: p.secondaryLanguages ?? [],
+          Review: p.review ?? [],
+          quantity: 1,
+        }));
+  
+        setCartItems(normalized);
+      } catch (err) {
+        console.error("getting cart items failed:", err);
+      }
+    };
+  
+    fetchCart();
   },[])
 
-
   const getProfilePic = ()=>{
-   return getCurrentUser()?.profilePicture ?? null;
+   return user?.profilePicture ?? null;
  
   }
  
@@ -89,7 +118,7 @@ const Navbar = () => {
                 >
                   <ShoppingCart className="h-6 w-6" />
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
+                    {cartItems?.length ?? 0}
                   </span>
                 </Link></>:""
                 }
@@ -180,7 +209,7 @@ const Navbar = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <ShoppingCart className="h-5 w-5 mr-2" />
-                    Cart (0)
+                    Cart ({cartItems?.length ?? 0})
                   </Link>
                   <Link
                     to="/dashboard"

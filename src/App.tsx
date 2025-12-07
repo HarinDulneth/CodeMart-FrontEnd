@@ -15,11 +15,13 @@ import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
 import "./App.css";
 import HowItWorksScroll from "./components/ui/How/HowItWorks";
+import ScrollToTop from "./ScrollToTop";
 
 function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <Router>
+         <ScrollToTop />  
         <div className="min-h-screen bg-gray-50 flex flex-col">
           <main className="flex-1">
             <Routes>

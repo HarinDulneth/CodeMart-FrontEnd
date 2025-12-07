@@ -1,37 +1,223 @@
-import React, {useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Star, Shield, Download, Heart, Share2, User, Clock, Code, Globe } from 'lucide-react';
-import api from "../services/api";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Star,
+  Shield,
+  Download,
+  Heart,
+  Share2,
+  User,
+  Clock,
+  Code,
+  Globe,
+} from "lucide-react";
+import api, { getCurrentUser } from "../services/api";
+import { toast } from "sonner";
 
 const ProjectDetail = () => {
-
+  const userId = getCurrentUser().id;
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [projects,setProjects] = useState({})
+  const [projects, setProjects] = useState({});
   const { id } = useParams<{ id: string }>();
+  const [showVideo, setShowVideo] = useState(!!projects.videoUrl);
+  const [addedToWishList, setAddedtoWishList] = useState(false);
+  const [addedToCart, setAddedtoCart] = useState(false);
+  const [boughtProject, setBoughtProject] = useState(false);
+
+  const categories = [
+    "Web Development",
+    "Mobile Development",
+    "AI/ML",
+    "Desktop Apps",
+    "APIs",
+    "Games",
+    "Data Science",
+    "DevOps",
+  ];
+
+  const mapCategoryToEnum = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      WebDevelopment: "Web Development",
+      MobileDevelopment: "Mobile Development",
+      ArtificialIntelligence: "Artificial Intelligence",
+      "Desktop Apps": "Deskto Apps",
+      APIs: "APIs",
+      Games: "Game Development",
+      DataScience: "Data Science",
+      DevOps: "DevOps",
+    };
+    return categoryMap[category] || category;
+  };
+
+  const handleToggleWishlist = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        toast.error("Please log in to manage your wishlist");
+        return;
+      }
+
+      if (addedToWishList) {
+        await api.users.removeFromWishList(userId, id);
+        setAddedtoWishList(false);
+        toast.success("Removed from wishlist!");
+      } else {
+        await api.users.addtoWishList(userId, id);
+        setAddedtoWishList(true);
+        toast.success("Added to wishlist!");
+      }
+    } catch (err: any) {
+      console.error("Wishlist operation failed:", err);
+
+      let errorMessage = addedToWishList
+        ? "Failed to remove from wishlist. Please try again."
+        : "Failed to add to wishlist. Please try again.";
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleToggleCart = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        toast.error("Please log in to manage your wishlist");
+        return;
+      }
+
+      if (addedToCart) {
+        await api.users.removeFromCart(userId, id);
+        setAddedtoCart(false);
+        toast.success("Removed from cart!");
+      } else {
+        await api.users.addtoCart(userId, id);
+        setAddedtoCart(true);
+        toast.success("Added to cart!");
+      }
+    } catch (err: any) {
+      console.error("Cart operation failed:", err);
+
+      let errorMessage = addedToCart
+        ? "Failed to remove from cart. Please try again."
+        : "Failed to add to cart. Please try again.";
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleBuy = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        toast.error("Please log in to buy items");
+        return;
+      }
+
+      await api.users.buyProject(userId, id);
+      setBoughtProject(true);
+      toast.success("Project purchased Successfully!");
+    } catch (err: any) {
+      console.error("Purchasing operation failed:", err);
+
+      let errorMessage = "Failed to purchase. Please try again."
+
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         if (!id) {
-          console.warn('No project id provided in route params');
+          console.warn("No project id provided in route params");
           return;
         }
         const response = await api.projects.getById(id);
         setProjects(response);
         console.log(response);
+        setShowVideo(!!response.videoUrl);
       } catch (err) {
-        console.error("getting cart items failed:", err);
+        console.error("getting project failed:", err);
+      }
+    };
+
+    const checkStatus = async () => {
+      try {
+        if (!userId || !id) return;
+        const wishlist = await api.users.getWishlist(userId);
+        const isInWishlist = wishlist.some(
+          (project: any) => project.id === parseInt(id)
+        );
+        setAddedtoWishList(isInWishlist);
+
+        const cart = await api.users.getCartItems(userId);
+        const isInCart = cart.some(
+          (project: any) => project.id === parseInt(id)
+        );
+        setAddedtoCart(isInCart);
+
+        const bought = await api.users.getBoughtProjects(userId);
+        const isBought = bought.some(
+          (project: any) => project.id === parseInt(id)
+        );
+        setBoughtProject(isBought);
+      } catch (err) {
+        console.error("checking wishlist status failed:", err);
       }
     };
 
     fetchProject();
-  }, [id])
+    checkStatus();
+  }, [id, userId]);
+
+  const category = mapCategoryToEnum(projects.category);
 
   const project = {
     id: 1,
-    title: 'E-commerce Platform',
-    description: 'Complete React & Node.js e-commerce solution with payment integration, user authentication, admin dashboard, and mobile-responsive design.',
+    title: "E-commerce Platform",
+    description:
+      "Complete React & Node.js e-commerce solution with payment integration, user authentication, admin dashboard, and mobile-responsive design.",
     longDescription: `This comprehensive e-commerce platform is built with modern technologies and best practices. It includes everything you need to launch your online store: user authentication, product management, shopping cart functionality, secure payment processing with Stripe, order management, admin dashboard, and much more.
 
 The platform is fully responsive and optimized for performance, with clean, maintainable code that's easy to customize and extend. Perfect for entrepreneurs, developers, and businesses looking to establish their online presence quickly and professionally.`,
@@ -39,53 +225,67 @@ The platform is fully responsive and optimized for performance, with clean, main
     rating: 4.8,
     reviews: 127,
     images: [
-      'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://neontri.com/wp-content/uploads/2024/04/Illustration-Innovative_Features_That_will_Define_Mobile_Banking_Apps_By_2030_512x512_v001.png',
-      'https://images.pexels.com/photos/3183165/pexels-photo-3183165.jpeg?auto=compress&cs=tinysrgb&w=800',
-      'https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=800'
+      "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://neontri.com/wp-content/uploads/2024/04/Illustration-Innovative_Features_That_will_Define_Mobile_Banking_Apps_By_2030_512x512_v001.png",
+      "https://images.pexels.com/photos/3183165/pexels-photo-3183165.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=800",
     ],
-    category: 'Web Development',
+    category: "Web Development",
     seller: {
-      name: 'TechCorp',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400',
+      name: "TechCorp",
+      avatar:
+        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400",
       rating: 4.9,
-      projects: 23
+      projects: 23,
     },
-    tags: ['React', 'Node.js', 'MongoDB', 'Stripe', 'JWT'],
+    tags: ["React", "Node.js", "MongoDB", "Stripe", "JWT"],
     features: [
-      'User Authentication & Authorization',
-      'Product Catalog Management',
-      'Shopping Cart & Checkout',
-      'Payment Integration (Stripe)',
-      'Order Management System',
-      'Admin Dashboard',
-      'Responsive Design',
-      'API Documentation'
+      "User Authentication & Authorization",
+      "Product Catalog Management",
+      "Shopping Cart & Checkout",
+      "Payment Integration (Stripe)",
+      "Order Management System",
+      "Admin Dashboard",
+      "Responsive Design",
+      "API Documentation",
     ],
-    technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'JWT', 'Stripe API'],
-    deliveryTime: '2-3 days',
-    lastUpdated: '2024-12-15'
+    technologies: [
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "JWT",
+      "Stripe API",
+    ],
+    deliveryTime: "2-3 days",
+    lastUpdated: "2024-12-15",
   };
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
+      name: "Sarah Johnson",
       rating: 5,
-      comment: 'Excellent project! Clean code and great documentation. Saved me months of development time.',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400'
+      comment:
+        "Excellent project! Clean code and great documentation. Saved me months of development time.",
+      avatar:
+        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
     },
     {
-      name: 'Michael Chen',
+      name: "Michael Chen",
       rating: 5,
-      comment: 'Professional quality code with all the features I needed. Great value for money!',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400'
+      comment:
+        "Professional quality code with all the features I needed. Great value for money!",
+      avatar:
+        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400",
     },
     {
-      name: 'Emily Davis',
+      name: "Emily Davis",
       rating: 4,
-      comment: 'Well-structured project with good documentation. Minor customization needed but overall great.',
-      avatar: 'https://images.pexels.com/photos/1819483/pexels-photo-1819483.jpeg?auto=compress&cs=tinysrgb&w=400'
-    }
+      comment:
+        "Well-structured project with good documentation. Minor customization needed but overall great.",
+      avatar:
+        "https://images.pexels.com/photos/1819483/pexels-photo-1819483.jpeg?auto=compress&cs=tinysrgb&w=400",
+    },
   ];
 
   return (
@@ -93,62 +293,107 @@ The platform is fully responsive and optimized for performance, with clean, main
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
           {/* Image Gallery */}
-          <div className='flex flex-col gap-6'>
-          <div className="animate-fade-in">
-            <div className="bg-white rounded-2xl overflow-hidden shadow-xl mb-4">
-              <img
-                src={project.images[selectedImage]}
-                alt={project.title}
-                className="w-full h-96 object-cover"
-              />
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {project.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`rounded-lg overflow-hidden ${
-                    selectedImage === index ? 'ring-2 ring-indigo-600' : 'hover:opacity-80'
-                  }`}
-                >
+          <div className="flex flex-col gap-6">
+            <div className="animate-fade-in">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-xl mb-4">
+                {projects.videoUrl ? (
+                  showVideo ? (
+                    <video
+                      controls
+                      className="w-full h-96 object-cover"
+                      src={projects.videoUrl}
+                      autoPlay={true}
+                    />
+                  ) : (
+                    <img
+                      src={projects.imageUrls?.[selectedImage]}
+                      alt={projects.name}
+                      className="w-full h-96 object-cover"
+                    />
+                  )
+                ) : (
                   <img
-                    src={image}
-                    alt={`${project.title} ${index + 1}`}
-                    className="w-full h-20 object-cover"
+                    src={projects.imageUrls?.[selectedImage]}
+                    alt={projects.name}
+                    className="w-full h-96 object-cover"
                   />
-                </button>
-              ))}
+                )}
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {projects.videoUrl ? (
+                  <button
+                    onClick={() => setShowVideo(true)}
+                    className={`rounded-lg overflow-hidden ${
+                      showVideo ? "ring-2 ring-indigo-600" : "hover:opacity-80"
+                    }`}
+                  >
+                    <video
+                      src={projects.videoUrl}
+                      className="w-full h-20 object-cover"
+                      muted
+                    />
+                  </button>
+                ) : (
+                  ""
+                )}
+
+                {projects.imageUrls?.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setSelectedImage(index);
+                      setShowVideo(false);
+                    }}
+                    className={`rounded-lg overflow-hidden ${
+                      !showVideo && selectedImage === index
+                        ? "ring-2 ring-indigo-600"
+                        : "hover:opacity-80"
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${projects.name} ${index + 1}`}
+                      className="w-full h-20 object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
+            <div>
               <div className="bg-white rounded-2xl p-8 shadow-xl mb-8 animate-fade-in">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Description</h2>
-              <div className="prose prose-gray max-w-none">
-  {(() => {
-    const text = project.description || "";
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Description
+                </h2>
+                <div className="prose prose-gray max-w-none">
+                  {(() => {
+                    const text = projects.description || "";
 
-    // Split into sentences
-    const sentences = text.split(". ").filter(s => s.trim() !== "");
+                    const sentences = text
+                      .split(". ")
+                      .filter((s) => s.trim() !== "");
 
-    const middle = Math.ceil(sentences.length / 2);
+                    const middle = Math.ceil(sentences.length / 2);
 
-    const p1 = sentences.slice(0, middle).join(". ") + ".";
-    const p2 = sentences.slice(middle).join(". ");
-    const finalP2 = p2 ? p2 + "." : "";
+                    const p1 = sentences.slice(0, middle).join(". ") + ".";
+                    const p2 = sentences.slice(middle).join(". ");
+                    const finalP2 = p2 ? p2 + "." : "";
 
-    return (
-      <>
-        <p className="mb-4 text-gray-600 leading-relaxed">{p1}</p>
-        {finalP2 && (
-          <p className="mb-4 text-gray-600 leading-relaxed">{finalP2}</p>
-        )}
-      </>
-    );
-  })()}
-</div>
-
+                    return (
+                      <>
+                        <p className="mb-4 text-gray-600 leading-relaxed">
+                          {p1}
+                        </p>
+                        {finalP2 && (
+                          <p className="mb-4 text-gray-600 leading-relaxed">
+                            {finalP2}
+                          </p>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
             </div>
-          </div>
           </div>
 
           {/* Project Info */}
@@ -156,11 +401,22 @@ The platform is fully responsive and optimized for performance, with clean, main
             <div className="bg-white rounded-2xl p-8 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
-                  {projects.category}
+                  {category}
                 </span>
                 <div className="flex space-x-2">
-                  <button className="p-2 text-gray-600 hover:text-red-500 transition-colors">
-                    <Heart className="h-5 w-5" />
+                  <button
+                    className="p-2 text-gray-600 hover:text-red-500 transition-colors"
+                    onClick={handleToggleWishlist}
+                  >
+                    <Heart
+                      className={`h-5 w-5 cursor-pointer 
+                        ${
+                          addedToWishList
+                            ? "text-pink-500 fill-pink-500"
+                            : "text-gray-500 hover:text-red-500"
+                        }
+                      `}
+                    />
                   </button>
                   <button className="p-2 text-gray-600 hover:text-indigo-600 transition-colors">
                     <Share2 className="h-5 w-5" />
@@ -168,8 +424,23 @@ The platform is fully responsive and optimized for performance, with clean, main
                 </div>
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{projects.name}</h1>
-              <p className="text-gray-600 mb-6">{projects.description}</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                {projects.name}
+              </h1>
+              {(() => {
+                const text = projects.description || "";
+                const sentences = text
+                  .split(".")
+                  .filter((s) => s.trim() !== "");
+
+                const firstTwo = sentences.slice(0, 2).join(". ") + ".";
+
+                return (
+                  <p className="mb-4 text-gray-600 leading-relaxed">
+                    {firstTwo}
+                  </p>
+                );
+              })()}
 
               {/* Rating and Reviews */}
               <div className="flex items-center mb-6">
@@ -179,46 +450,83 @@ The platform is fully responsive and optimized for performance, with clean, main
                       key={star}
                       className={`h-5 w-5 ${
                         star <= Math.floor(project.rating)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300'
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-lg font-semibold text-gray-900">{project.rating}</span>
+                  <span className="ml-2 text-lg font-semibold text-gray-900">
+                    {project.rating}
+                  </span>
                 </div>
-                <span className="text-gray-600">({project.reviews} reviews)</span>
+                <span className="text-gray-600">
+                  ({project.reviews} reviews)
+                </span>
               </div>
 
               {/* Price */}
               <div className="mb-8">
-                <span className="text-4xl font-bold text-gray-900">${project.price}</span>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <span className="text-4xl font-bold text-gray-900">
+                  ${projects.price}</span>
                 </div>
+
+              {/* Primary and Secondary Tags */}
+              <div className="mb-8">
+                {/* Primary Tags */}
+                {projects.primaryLanguages && projects.primaryLanguages.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Primary Languages</p>
+                    <div className="flex flex-wrap gap-2">
+                      {projects.primaryLanguages.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-sm font-semibold text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Secondary Tags */}
+                {projects.secondaryLanguages && projects.secondaryLanguages.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Secondary Languages</p>
+                    <div className="flex flex-wrap gap-2">
+                      {projects.secondaryLanguages.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-sm text-gray-600 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Minimal quick-info tiles (no icons) */}
               <div className="flex gap-4 mb-8">
                 <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-green-500">
                   <div className="text-xs text-gray-500">Support Duration</div>
-                  <div className="mt-1 text-sm font-semibold text-gray-900">6 Months</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">
+                    6 Months
+                  </div>
                 </div>
 
                 <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-purple-500">
                   <div className="text-xs text-gray-500">Updates</div>
-                  <div className="mt-1 text-sm font-semibold text-gray-900">Lifetime</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">
+                    Lifetime
+                  </div>
                 </div>
 
                 <div className="flex-1 p-3 bg-gray-50 rounded-lg border border-gray-100 border-l-4 border-l-blue-500">
                   <div className="text-xs text-gray-500">Documentation</div>
-                  <div className="mt-1 text-sm font-semibold text-gray-900">Included</div>
+                  <div className="mt-1 text-sm font-semibold text-gray-900">
+                    Included
+                  </div>
                 </div>
               </div>
 
@@ -233,7 +541,9 @@ The platform is fully responsive and optimized for performance, with clean, main
                     >
                       -
                     </button>
-                    <span className="px-4 py-1 border-l border-r border-gray-300">{quantity}</span>
+                    <span className="px-4 py-1 border-l border-r border-gray-300">
+                      {quantity}
+                    </span>
                     <button
                       onClick={() => setQuantity(quantity + 1)}
                       className="px-3 py-1 text-gray-600 hover:text-gray-800"
@@ -243,12 +553,27 @@ The platform is fully responsive and optimized for performance, with clean, main
                   </div>
                 </div>
 
-                <button className="w-full btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all duration-300">
-                  Add to Cart - ${project.price * quantity}
+                <button 
+                  className={`w-full ${
+                    addedToCart
+                      ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300" 
+                      : "btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  }`}
+                  onClick={handleToggleCart}
+                >
+                  {addedToCart 
+                    ? "Remove from Cart" 
+                    : `Add to Cart - $${project.price * quantity}`}
                 </button>
 
-                <button className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition-colors">
-                  Buy Now
+
+                <button 
+                  className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-all duration-300"
+                  onClick={handleBuy}
+                >
+                  {boughtProject 
+                    ? "Buy Again" 
+                    : "Buy Now"}
                 </button>
               </div>
 
@@ -256,15 +581,21 @@ The platform is fully responsive and optimized for performance, with clean, main
               <div className="grid grid-cols-3 gap-4 text-center border-t pt-6">
                 <div>
                   <Shield className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-gray-900">Quality Guarantee</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    Quality Guarantee
+                  </p>
                 </div>
                 <div>
                   <Download className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-gray-900">Instant Download</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    Instant Download
+                  </p>
                 </div>
                 <div>
                   <Globe className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-gray-900">Lifetime Updates</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    Lifetime Updates
+                  </p>
                 </div>
               </div>
             </div>
@@ -275,11 +606,12 @@ The platform is fully responsive and optimized for performance, with clean, main
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
           <div className="lg:col-span-2">
             {/* Description */}
-          
 
             {/* Features */}
             <div className="bg-white rounded-2xl p-8 shadow-xl mb-8 animate-fade-in">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Features Included</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Features Included
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {project.features.map((feature, index) => (
                   <div key={index} className="flex items-center">
@@ -292,10 +624,15 @@ The platform is fully responsive and optimized for performance, with clean, main
 
             {/* Reviews */}
             <div className="bg-white rounded-2xl p-8 shadow-xl animate-fade-in">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Customer Reviews
+              </h2>
               <div className="space-y-6">
                 {testimonials.map((review, index) => (
-                  <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
+                  <div
+                    key={index}
+                    className="border-b border-gray-200 pb-6 last:border-b-0"
+                  >
                     <div className="flex items-start space-x-4">
                       <img
                         src={review.avatar}
@@ -304,15 +641,17 @@ The platform is fully responsive and optimized for performance, with clean, main
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">{review.name}</h4>
+                          <h4 className="font-semibold text-gray-900">
+                            {review.name}
+                          </h4>
                           <div className="flex items-center">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
                                 className={`h-4 w-4 ${
                                   star <= review.rating
-                                    ? 'text-yellow-400 fill-current'
-                                    : 'text-gray-300'
+                                    ? "text-yellow-400 fill-current"
+                                    : "text-gray-300"
                                 }`}
                               />
                             ))}
@@ -331,7 +670,9 @@ The platform is fully responsive and optimized for performance, with clean, main
           <div>
             {/* Seller Info */}
             <div className="bg-white rounded-2xl p-6 shadow-xl mb-6 animate-fade-in">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">About the Seller</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                About the Seller
+              </h3>
               <div className="flex items-center space-x-4 mb-4">
                 <img
                   src={project.seller.avatar}
@@ -339,10 +680,14 @@ The platform is fully responsive and optimized for performance, with clean, main
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-900">{project.seller.name}</h4>
+                  <h4 className="font-semibold text-gray-900">
+                    {project.seller.name}
+                  </h4>
                   <div className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="ml-1 text-sm text-gray-600">{project.seller.rating}</span>
+                    <span className="ml-1 text-sm text-gray-600">
+                      {project.seller.rating}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -363,7 +708,9 @@ The platform is fully responsive and optimized for performance, with clean, main
 
             {/* Project Details */}
             <div className="bg-white rounded-2xl p-6 shadow-xl animate-fade-in">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Project Details</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Project Details
+              </h3>
               <div className="space-y-4">
                 <div className="flex items-center text-sm">
                   <Clock className="h-5 w-5 text-gray-400 mr-3" />
@@ -376,7 +723,9 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <Code className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <span className="text-gray-500">Technologies:</span>
-                    <p className="font-semibold">{project.technologies.join(', ')}</p>
+                    <p className="font-semibold">
+                      {project.technologies.join(", ")}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center text-sm">
