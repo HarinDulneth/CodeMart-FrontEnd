@@ -207,6 +207,16 @@ export const api = {
         }
       }
     },
+    addtoCart: async (userId: string | number, projectId: string | number) => {
+      return apiRequest<any>(`/user/addtocart?userId=${userId}&projectId=${projectId}`, {
+        method: 'PUT',
+      });
+    },
+    removeFromCart: async (userId: string | number, projectId: string | number) => {
+      return apiRequest<any>(`/user/removefromcart?userId=${userId}&projectId=${projectId}`, {
+        method: 'PUT',
+      });
+    },
     addtoWishList: async (userId: string | number, projectId: string | number) => {
       return apiRequest<any>(`/user/addtowishlist?userId=${userId}&projectId=${projectId}`, {
         method: 'PUT',
@@ -216,7 +226,12 @@ export const api = {
       return apiRequest<any>(`/user/removefromwishlist?userId=${userId}&projectId=${projectId}`, {
         method: 'PUT',
       });
-    }
+    },
+    buyProject: async (userId: string | number, projectId: string | number) => {
+      return apiRequest<any>(`/user/buy?userId=${userId}&projectId=${projectId}`, {
+        method: 'PUT',
+      });
+    },
   },
   
   // Project endpoints

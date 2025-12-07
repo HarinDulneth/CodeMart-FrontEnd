@@ -1,44 +1,54 @@
 import { useEffect, useState } from "react";
-import { DashboardSidebar, TabId } from "@/components/dashboard/DashboardSidebar";
+import {
+  DashboardSidebar,
+  TabId,
+} from "@/components/dashboard/DashboardSidebar";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { TransactionRow } from "@/components/dashboard/TransactionRow";
 import { ProfileSection } from "@/components/dashboard/ProfileSection";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { 
-  DollarSign, 
-  ShoppingBag, 
-  Package, 
-  Heart, 
+import {
+  DollarSign,
+  ShoppingBag,
+  Package,
+  Heart,
   ShoppingCart,
   TrendingUp,
   Plus,
   Bell,
   Mail,
-  Shield
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   currentUser,
   sellingProjects,
-  boughtProjects,
-  wishlistProjects,
   cartItems,
   transactions,
   dashboardStats,
 } from "@/data/dummyData";
 import api, { getCurrentUser } from "@/services/api";
 import Cart from "./Cart";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [wishlistProjects, setWishlistProjects] = useState<TabId>('overview');
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const [wishlistProjects, setWishlistProjects] = useState<TabId>("wishlist");
+  const [boughtProjects, setBoughtProjects] = useState<TabId>("bought");
+  const [sellingProjects, setSellingProjects] = useState<TabId>("selling");
   const [addedToWishList, setAddedtoWishList] = useState(false);
 
   const handleRemoveFromCart = (projectId: number) => {
@@ -57,71 +67,76 @@ export default function Dashboard() {
     toast.error("Project deleted");
   };
 
-
   const user = getCurrentUser();
   const userId = user.id;
 
   const handleRemoveFromWishlist = async (id: string | number) => {
-      try {
-        if (!id) {
-          toast.error("Project ID is missing");
-          return;
-        }
-        if (!userId) {
-          toast.error("Please log in to manage your wishlist");
-          return;
-        }
-  
-        if (addedToWishList) {
-          await api.users.removeFromWishList(userId, id);
-          setAddedtoWishList(false);
-          toast.success("Removed from wishlist!");
-        } else {
-          await api.users.addtoWishList(userId, id);
-          setAddedtoWishList(true);
-          toast.success("Added to wishlist!");
-        }
-      } catch (err: any) {
-        console.error("Wishlist operation failed:", err);
-  
-        let errorMessage = addedToWishList
-          ? "Failed to remove from wishlist. Please try again."
-          : "Failed to add to wishlist. Please try again.";
-        try {
-          if (err instanceof Error) {
-            const errorData = JSON.parse(err.message);
-            errorMessage = errorData.message || errorData.title || errorMessage;
-          }
-        } catch (parseError) {
-          if (err instanceof Error) {
-            errorMessage = err.message;
-          }
-        }
-  
-        toast.error(errorMessage);
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
       }
-    };
+      if (!userId) {
+        toast.error("Please log in to manage your wishlist");
+        return;
+      }
+
+      if (addedToWishList) {
+        await api.users.removeFromWishList(userId, id);
+        setAddedtoWishList(false);
+        toast.success("Removed from wishlist!");
+      } else {
+        await api.users.addtoWishList(userId, id);
+        setAddedtoWishList(true);
+        toast.success("Added to wishlist!");
+      }
+    } catch (err: any) {
+      console.error("Wishlist operation failed:", err);
+
+      let errorMessage = addedToWishList
+        ? "Failed to remove from wishlist. Please try again."
+        : "Failed to add to wishlist. Please try again.";
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
 
   useEffect(() => {
-    const fetchWishList = async () => {
+    const fetchProjectsList = async () => {
       try {
         if (!user.id) {
-          console.warn('No project id provided in route params');
+          console.warn("No project id provided in route params");
           return;
         }
         const wishlistProjects = await api.users.getWishlist(user.id);
         setWishlistProjects(wishlistProjects);
-      } catch (err) {
-        console.error("getting wishlist failed:", err);
-      }
-    }
 
-    fetchWishList();
-  }, [user.id])
+        const boughtProjects = await api.users.getBoughtProjects(user.id);
+        setBoughtProjects(boughtProjects);
+
+        const sellingProjects = await api.users.getSelling(user.id);
+        setSellingProjects(sellingProjects);
+      } catch (err) {
+        console.error("fetching failed:", err);
+      }
+    };
+
+    fetchProjectsList();
+  }, [user.id]);
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'overview':
+      case "overview":
         return (
           <div className="space-y-8 animate-fade-in">
             {/* Stats Grid */}
@@ -159,15 +174,24 @@ export default function Dashboard() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>Recent Transactions</CardTitle>
-                  <CardDescription>Your latest purchases and sales</CardDescription>
+                  <CardDescription>
+                    Your latest purchases and sales
+                  </CardDescription>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setActiveTab('transactions')}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setActiveTab("transactions")}
+                >
                   View All
                 </Button>
               </CardHeader>
               <CardContent>
                 {transactions.slice(0, 5).map((transaction) => (
-                  <TransactionRow key={transaction.id} transaction={transaction} />
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                  />
                 ))}
               </CardContent>
             </Card>
@@ -184,14 +208,21 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Items in cart</span>
+                      <span className="text-muted-foreground">
+                        Items in cart
+                      </span>
                       <span className="font-semibold">{cartItems.length}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Cart total</span>
-                      <span className="font-semibold text-primary">${dashboardStats.cartTotal}</span>
+                      <span className="font-semibold text-primary">
+                        ${dashboardStats.cartTotal}
+                      </span>
                     </div>
-                    <Button className="w-full" onClick={() => setActiveTab('cart')}>
+                    <Button
+                      className="w-full"
+                      onClick={() => setActiveTab("cart")}
+                    >
                       View Cart
                     </Button>
                   </div>
@@ -209,13 +240,21 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Best seller</span>
-                      <span className="font-semibold">E-Commerce Dashboard</span>
+                      <span className="font-semibold">
+                        E-Commerce Dashboard
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">This month</span>
-                      <Badge className="bg-success/10 text-success">+$5,200</Badge>
+                      <Badge className="bg-success/10 text-success">
+                        +$5,200
+                      </Badge>
                     </div>
-                    <Button variant="outline" className="w-full" onClick={() => setActiveTab('revenue')}>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setActiveTab("revenue")}
+                    >
                       View Analytics
                     </Button>
                   </div>
@@ -225,16 +264,18 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'profile':
+      case "profile":
         return <ProfileSection user={user} />;
 
-      case 'wishlist':
+      case "wishlist":
         return (
           <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Wishlist</h2>
-                <p className="text-muted-foreground">{wishlistProjects.length} items saved for later</p>
+                <p className="text-muted-foreground">
+                  {wishlistProjects.length} items saved for later
+                </p>
               </div>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -251,59 +292,70 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'cart':
-        return (
-          <Cart />
-        );
+      case "cart":
+        return <Cart />;
 
-      case 'transactions':
+      case "transactions":
         return (
           <div className="space-y-6 animate-fade-in">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Transaction History</h2>
-              <p className="text-muted-foreground">All your purchases and sales</p>
+              <h2 className="text-2xl font-bold text-foreground">
+                Transaction History
+              </h2>
+              <p className="text-muted-foreground">
+                All your purchases and sales
+              </p>
             </div>
             <Card>
               <CardContent className="pt-6">
                 {transactions.map((transaction) => (
-                  <TransactionRow key={transaction.id} transaction={transaction} />
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                  />
                 ))}
               </CardContent>
             </Card>
           </div>
         );
 
-      case 'bought':
+      case "bought":
         return (
           <div className="space-y-6 animate-fade-in">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Purchased Projects</h2>
-              <p className="text-muted-foreground">{boughtProjects.length} projects in your library</p>
+              <h2 className="text-2xl font-bold text-foreground">
+                Purchased Projects
+              </h2>
+              <p className="text-muted-foreground">
+                {boughtProjects.length} projects in your library
+              </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {boughtProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  type="bought"
-                />
+                <ProjectCard key={project.id} project={project} type="bought" />
               ))}
             </div>
           </div>
         );
 
-      case 'selling':
+      case "selling":
         return (
           <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">My Products</h2>
-                <p className="text-muted-foreground">{sellingProjects.length} products listed</p>
+                <h2 className="text-2xl font-bold text-foreground">
+                  My Products
+                </h2>
+                <p className="text-muted-foreground">
+                  {sellingProjects.length} products listed
+                </p>
               </div>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Product
-              </Button>
+              <Link to="/sell">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Product
+                </Button>
+              </Link>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {sellingProjects.map((project) => (
@@ -319,17 +371,19 @@ export default function Dashboard() {
           </div>
         );
 
-      case 'revenue':
+      case "revenue":
         return <RevenueChart />;
 
-      case 'settings':
+      case "settings":
         return (
           <div className="space-y-6 animate-fade-in">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Settings</h2>
-              <p className="text-muted-foreground">Manage your preferences and notifications</p>
+              <p className="text-muted-foreground">
+                Manage your preferences and notifications
+              </p>
             </div>
-            
+
             {/* Notifications */}
             <Card>
               <CardHeader>
@@ -337,27 +391,35 @@ export default function Dashboard() {
                   <Bell className="h-5 w-5" />
                   Notifications
                 </CardTitle>
-                <CardDescription>Configure how you receive notifications</CardDescription>
+                <CardDescription>
+                  Configure how you receive notifications
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Email Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Receive emails about your account activity</p>
+                    <p className="text-sm text-muted-foreground">
+                      Receive emails about your account activity
+                    </p>
                   </div>
                   <Switch defaultChecked />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Sale Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Get notified when someone buys your product</p>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified when someone buys your product
+                    </p>
                   </div>
                   <Switch defaultChecked />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Newsletter</Label>
-                    <p className="text-sm text-muted-foreground">Receive our weekly newsletter</p>
+                    <p className="text-sm text-muted-foreground">
+                      Receive our weekly newsletter
+                    </p>
                   </div>
                   <Switch />
                 </div>
@@ -376,7 +438,11 @@ export default function Dashboard() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="primary-email">Primary Email</Label>
-                  <Input id="primary-email" value={currentUser.email} disabled />
+                  <Input
+                    id="primary-email"
+                    value={currentUser.email}
+                    disabled
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="backup-email">Backup Email</Label>
@@ -393,27 +459,35 @@ export default function Dashboard() {
                   <Shield className="h-5 w-5" />
                   Privacy & Security
                 </CardTitle>
-                <CardDescription>Manage your privacy and security settings</CardDescription>
+                <CardDescription>
+                  Manage your privacy and security settings
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Profile Visibility</Label>
-                    <p className="text-sm text-muted-foreground">Make your profile visible to other users</p>
+                    <p className="text-sm text-muted-foreground">
+                      Make your profile visible to other users
+                    </p>
                   </div>
                   <Switch defaultChecked />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Show Email on Profile</Label>
-                    <p className="text-sm text-muted-foreground">Display your email address publicly</p>
+                    <p className="text-sm text-muted-foreground">
+                      Display your email address publicly
+                    </p>
                   </div>
                   <Switch />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Activity Status</Label>
-                    <p className="text-sm text-muted-foreground">Show when you're online</p>
+                    <p className="text-sm text-muted-foreground">
+                      Show when you're online
+                    </p>
                   </div>
                   <Switch defaultChecked />
                 </div>
@@ -431,9 +505,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-background">
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <main className="flex-1 p-8 overflow-auto">
-        <div className="max-w-6xl mx-auto">
-          {renderContent()}
-        </div>
+        <div className="max-w-6xl mx-auto">{renderContent()}</div>
       </main>
     </div>
   );

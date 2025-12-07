@@ -22,6 +22,8 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [showVideo, setShowVideo] = useState(!!projects.videoUrl);
   const [addedToWishList, setAddedtoWishList] = useState(false);
+  const [addedToCart, setAddedtoCart] = useState(false);
+  const [boughtProject, setBoughtProject] = useState(false);
 
   const categories = [
     "Web Development",
@@ -89,6 +91,81 @@ const ProjectDetail = () => {
     }
   };
 
+  const handleToggleCart = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        toast.error("Please log in to manage your wishlist");
+        return;
+      }
+
+      if (addedToCart) {
+        await api.users.removeFromCart(userId, id);
+        setAddedtoCart(false);
+        toast.success("Removed from cart!");
+      } else {
+        await api.users.addtoCart(userId, id);
+        setAddedtoCart(true);
+        toast.success("Added to cart!");
+      }
+    } catch (err: any) {
+      console.error("Cart operation failed:", err);
+
+      let errorMessage = addedToCart
+        ? "Failed to remove from cart. Please try again."
+        : "Failed to add to cart. Please try again.";
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleBuy = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        toast.error("Please log in to buy items");
+        return;
+      }
+
+      await api.users.buyProject(userId, id);
+      setBoughtProject(true);
+      toast.success("Project purchased Successfully!");
+    } catch (err: any) {
+      console.error("Purchasing operation failed:", err);
+
+      let errorMessage = "Failed to purchase. Please try again."
+
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -105,7 +182,7 @@ const ProjectDetail = () => {
       }
     };
 
-    const checkWishlistStatus = async () => {
+    const checkStatus = async () => {
       try {
         if (!userId || !id) return;
         const wishlist = await api.users.getWishlist(userId);
@@ -113,13 +190,25 @@ const ProjectDetail = () => {
           (project: any) => project.id === parseInt(id)
         );
         setAddedtoWishList(isInWishlist);
+
+        const cart = await api.users.getCartItems(userId);
+        const isInCart = cart.some(
+          (project: any) => project.id === parseInt(id)
+        );
+        setAddedtoCart(isInCart);
+
+        const bought = await api.users.getBoughtProjects(userId);
+        const isBought = bought.some(
+          (project: any) => project.id === parseInt(id)
+        );
+        setBoughtProject(isBought);
       } catch (err) {
         console.error("checking wishlist status failed:", err);
       }
     };
 
     fetchProject();
-    checkWishlistStatus();
+    checkStatus();
   }, [id, userId]);
 
   const category = mapCategoryToEnum(projects.category);
@@ -464,12 +553,27 @@ The platform is fully responsive and optimized for performance, with clean, main
                   </div>
                 </div>
 
-                <button className="w-full btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all duration-300">
-                  Add to Cart - ${project.price * quantity}
+                <button 
+                  className={`w-full ${
+                    addedToCart
+                      ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300" 
+                      : "btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  }`}
+                  onClick={handleToggleCart}
+                >
+                  {addedToCart 
+                    ? "Remove from Cart" 
+                    : `Add to Cart - $${project.price * quantity}`}
                 </button>
 
-                <button className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 transition-colors">
-                  Buy Now
+
+                <button 
+                  className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-all duration-300"
+                  onClick={handleBuy}
+                >
+                  {boughtProject 
+                    ? "Buy Again" 
+                    : "Buy Now"}
                 </button>
               </div>
 

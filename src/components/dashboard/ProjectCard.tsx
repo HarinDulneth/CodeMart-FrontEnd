@@ -41,6 +41,33 @@ export function ProjectCard({
     paused: "bg-muted text-muted-foreground border-border",
   };
 
+  const categories = [
+    "Web Development",
+    "Mobile Development",
+    "AI/ML",
+    "Desktop Apps",
+    "APIs",
+    "Games",
+    "Data Science",
+    "DevOps",
+  ];
+
+  const mapCategoryToEnum = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      WebDevelopment: "Web Development",
+      MobileDevelopment: "Mobile Development",
+      ArtificialIntelligence: "Artificial Intelligence",
+      "Desktop Apps": "Deskto Apps",
+      APIs: "APIs",
+      Games: "Game Development",
+      DataScience: "Data Science",
+      DevOps: "DevOps",
+    };
+    return categoryMap[category] || category;
+  };
+
+  const category = mapCategoryToEnum(project.category);
+
   return (
     <div className="group bg-card rounded-xl shadow-xl overflow-hidden transition-all duration-200 hover:shadow-2xl animate-slide-up">
       <div className="relative aspect-video overflow-hidden bg-muted">
@@ -58,7 +85,7 @@ export function ProjectCard({
           </Badge>
         )}
         <Badge className="absolute top-3 right-3 bg-background/90 text-foreground backdrop-blur-sm">
-          {project.category}
+          {category}
         </Badge>
       </div>
       
@@ -135,10 +162,25 @@ export function ProjectCard({
           )}
           
           {type === 'bought' && (
-            <Button variant="outline" size="sm" className="gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => {
+                if (!project.projectUrl) return;
+
+                const link = document.createElement("a");
+                link.href = project.projectUrl;
+                link.download = project.name || "download";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+            >
               <Download className="h-3.5 w-3.5" />
               Download
             </Button>
+
           )}
           
           {type === 'wishlist' && (
