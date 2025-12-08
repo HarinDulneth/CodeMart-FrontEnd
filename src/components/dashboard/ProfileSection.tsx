@@ -14,7 +14,7 @@ import {
 import { Camera, Eye, EyeOff, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/services/api";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/services/supabase";
 
 interface ProfileSectionProps {
   user: User;
@@ -56,11 +56,6 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
     password: "",
     confirmPassword: "",
   });
-
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-  );
 
   const handleSave = async () => {
     setLoading(true);

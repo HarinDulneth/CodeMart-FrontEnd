@@ -261,6 +261,12 @@ export const api = {
     getById: async (id: string | number) => {
       return apiRequest<any>(`/project/${id}`);
     },
+    update: async (id: string | number, projectData: any) => {
+      return apiRequest<any>(`/project/update/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(projectData),
+      });
+    },
     create: async (projectData: any) => {
       return apiRequest<any>('/project/createproject', {
         method: 'POST',
@@ -280,7 +286,7 @@ export const api = {
       return apiRequest<any[]>(`/project/filter/price?${params.toString()}`);
     },
     search: async (searchTerm: string) => {
-      return apiRequest<any[]>(`/project/searchprojects?searchTerm=${encodeURIComponent(searchTerm)}`);
+      return apiRequest<any[]>(`/project/searchprojects?name=${encodeURIComponent(searchTerm)}`);
     },
     getOwned: async () => {
       return apiRequest<any[]>('/project/owned');

@@ -43,7 +43,8 @@ import {
 } from "@/data/dummyData";
 import api, { getCurrentUser } from "@/services/api";
 import Cart from "./Cart";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import EditProject from "./EditProject";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -51,6 +52,8 @@ export default function Dashboard() {
   const [boughtProjects, setBoughtProjects] = useState<TabId>("bought");
   const [sellingProjects, setSellingProjects] = useState<TabId>("selling");
   const [addedToWishList, setAddedtoWishList] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleRemoveFromCart = (projectId: Project) => {
     toast.success("Removed from cart");
@@ -61,7 +64,7 @@ export default function Dashboard() {
   };
 
   const handleEditProject = (projectId: number) => {
-    toast.info("Opening project editor...");
+    navigate(`/project/${projectId}/edit`);
   };
 
   const handleDeleteProject = (projectId: number) => {
@@ -364,7 +367,7 @@ export default function Dashboard() {
                   key={project.id}
                   project={project}
                   type="selling"
-                  onEdit={() => handleEditProject(project)}
+                  onEdit={() => handleEditProject(project.id)}
                   onDelete={() => handleDeleteProject(project.id)}
                 />
               ))}
