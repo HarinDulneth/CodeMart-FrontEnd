@@ -506,10 +506,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex bg-background ml-40">
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 p-8 overflow-auto">
-        <div className="max-w-6xl mx-auto">{renderContent()}</div>
+
+      <main className="flex-1 h-screen overflow-y-auto py-8 pr-8">
+        <div className="max-w-6xl mx-20">
+          {renderContent()}
+        </div>
       </main>
     </div>
   );

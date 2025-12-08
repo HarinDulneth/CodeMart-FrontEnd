@@ -13,8 +13,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { currentUser } from "@/data/dummyData";
-import api from "@/services/api";
+import api, { getCurrentUser } from "@/services/api";
 import { useNavigate } from "react-router-dom";
 
 type TabId =
@@ -56,8 +55,10 @@ export function DashboardSidebar({
     api.auth.logout();
     navigate("/signin");
   };
+
+  const currentUser = getCurrentUser();
   return (
-    <aside className="w-64 bg-card border-r border-border min-h-screen p-4 flex flex-col">
+    <aside className="h-screen sticky top-0 rounded-2xl bg-card shadow-sm p-4 flex flex-col overflow-hidden px-5">
       {/* User Info */}
       <div className="flex items-center gap-3 p-4 mb-6 bg-secondary/50 rounded-xl">
         <Avatar className="h-10 w-10">
@@ -86,7 +87,7 @@ export function DashboardSidebar({
             className={cn(
               "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               activeTab === item.id
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-indigo-600 text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
