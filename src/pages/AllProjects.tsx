@@ -19,9 +19,55 @@ const AllProjects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
+      console.log(selectedCategory)
       try {
-        const response = await api.projects.getAll();
-        console.log("All Projects fetched", response);
+        let response;
+        if(selectedCategory !== "All"){
+          response = await api.projects.filterByCategory(selectedCategory);
+          console.log(`All Projects fetched for category ${selectedCategory}`, response);
+        }
+        else{
+          response = await api.projects.getAll();
+           console.log("All Projects fetched", response);
+      
+        }
+
+        if (priceRange !== "All") {
+            let minPrice = 0;
+            let maxPrice = 999999999;
+
+            if(priceRange === "Under $100"){
+              minPrice = 0; maxPrice = 100;
+            } 
+            else if(priceRange === "$100-$300"){
+              minPrice = 100; maxPrice = 300;
+            } 
+            else if(priceRange === "$300-$500"){
+              minPrice = 300; maxPrice = 500;
+            } 
+            else if(priceRange === "$500-$1000"){
+              minPrice = 500; maxPrice = 1000;
+            }else if(priceRange === "Over $1000"){
+  minPrice = 1000; maxPrice = 999999999;
+}
+
+
+            console.log("START")
+            
+            const hh = response.map((p)=>{
+              console.log(p.price)
+            })
+            
+            console.log("END")
+            response = response.filter(
+              (p) => p.price >= minPrice && p.price <= maxPrice
+            ); 
+
+            console.log("Filtered FINAL response:", response);
+          }
+
+
+      
         const normalized = response.map((p) => ({
           id: p.id,
           Name: p.name,
@@ -35,8 +81,9 @@ const AllProjects = () => {
           Review: p.review ?? [],
         }));
 
+        
         setAllProjects(normalized);
-      } catch (err) {
+      } catch (err:any) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -44,8 +91,9 @@ const AllProjects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [selectedCategory,priceRange]);
 
+  
   const calculateRating = (project: any) => {
     if (!project?.Review || project.Review.length === 0) return 0;
 
@@ -58,20 +106,24 @@ const AllProjects = () => {
   };
 
   const categories = [
-    "All",
-    "Web Development",
-    "Mobile Development",
-    "AI/ML",
+     "All",
+    "WebDevelopment",
+    "DesktopApps",
+    "ArtificialIntelligence",
+    "MachingLearning",
+    "MobileDevelopment",
+    "GameDevelopment",
     "Desktop Apps",
     "APIs",
-    "Games",
+    "DevOps",
   ];
   const priceRanges = [
     "All",
     "Under $100",
     "$100-$300",
     "$300-$500",
-    "Over $500",
+    "$500-$1000",
+    "Over $1000",
   ];
   const ratingRanges = ["All", "Above 4", "4-3", "Below 3"];
   const sortOptions = [
@@ -190,7 +242,7 @@ const AllProjects = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className="lg:w-64">
-            <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
+            <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6 lg:hidden">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button
@@ -275,7 +327,7 @@ const AllProjects = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Review Range
                   </label>
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     {ratingRanges.map((range) => (
                       <label key={range} className="flex items-center">
                         <input
@@ -291,7 +343,7 @@ const AllProjects = () => {
                         </span>
                       </label>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -301,7 +353,7 @@ const AllProjects = () => {
             {/* Sort and Results */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
               <p className="text-gray-600 mb-4 sm:mb-0">
-                Showing {projects.length} results
+                Showing {allProjects.length} results
               </p>
               <div className="flex items-center space-x-4">
                 <div className="relative">
@@ -375,7 +427,8 @@ const AllProjects = () => {
                           ${project.Price}
                         </span>
                         <p className="text-xs text-gray-500">
-                          by {project.Owner.fullName}
+                          by ownwer
+                           {/* {project.Owner.fullName} */}
                         </p>
                       </div>
                       <Link
