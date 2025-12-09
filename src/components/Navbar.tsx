@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Search, ShoppingCart, User, Menu, X, Code } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, Code, Star } from "lucide-react";
 import api, { getCurrentUser, getAuthToken } from "@/services/api";
 
 const Navbar = () => {
@@ -169,6 +169,117 @@ const Navbar = () => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  
+                  {/* Search Results Floating Panel */}
+                  {searchQuery && results.length > 0 && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-[#9AA0A6] z-[100] max-h-[600px] overflow-y-auto w-[30vw]">
+                      <div className="flex flex-col ">
+                        {results.slice(0, 12).map((project: any) => (
+                          <Link
+                            key={project.id}
+                            to={`/project/${project.id}`}
+                            onClick={() => setSearchQuery("")}
+                            className="bg-[#e3e8e4] border-b border-[#D1D5DB] last:border-b-0 hover:bg-[#7FB4DE] transition-colors group p-4 flex gap-4"
+                          >
+                            {/* Image */}
+                            <div className="w-32 h-32 flex-shrink-0 overflow-hidden rounded-xl">
+                              <img
+                                src={project.imageUrls?.[0] || "https://via.placeholder.com/128"}
+                                alt={project.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                              />
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 flex flex-col justify-between">
+                              <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className="font-semibold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
+                                    {project.name}
+                                  </h4>
+                                  <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
+                                    {project.category}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-3">
+                                  by {project.Owner?.fullName || "Unknown"}
+                                </p>
+                                
+                                {/* Primary Tags */}
+                                <div className="flex flex-wrap gap-2">
+                                  {project.primaryLanguages?.slice(0, 4).map((tag: string) => (
+                                    <span
+                                      key={tag}
+                                      className="text-xs text-white bg-indigo-600 px-3 py-1 rounded-lg font-medium"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#C5CBD3]">
+                                <div className="flex items-center gap-4">
+                                  <span className="font-bold text-gray-900 text-lg">
+                                    ${project.price}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                    <span className="text-sm text-gray-600">
+                                      {project.review?.length > 0
+                                        ? (
+                                            project.review.reduce((sum: number, r: any) => sum + r.Rating, 0) /
+                                            project.review.length
+                                          ).toFixed(1)
+                                        : "0"}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      ({project.review?.length || 0})
+                                    </span>
+                                  </div>
+                                </div>
+                                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm">
+                                  View Details
+                                </button>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                      
+                      {/* View All Results Link */}
+                      {results.length > 12 && (
+                        <div className="border-t border-gray-200 p-4 text-center bg-gray-50">
+                          <Link
+                            to={`/projects?search=${encodeURIComponent(searchQuery)}`}
+                            onClick={() => setSearchQuery("")}
+                            className="text-indigo-600 hover:text-indigo-700 font-semibold text-base"
+                          >
+                            View all {results.length} results →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* No Results Message */}
+                  {searchQuery && results.length === 0 && !isSearching && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
+                      <p className="text-gray-600 text-base">No projects found for "<strong>{searchQuery}</strong>"</p>
+                    </div>
+                  )}
+                  
+                  {/* Loading State */}
+                  {searchQuery && isSearching && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                      </div>
+                      <p className="text-gray-600 text-base mt-3">Searching for projects...</p>
+                    </div>
+                  )}
                 </div>
               </form>
 
