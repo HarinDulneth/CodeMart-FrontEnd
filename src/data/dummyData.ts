@@ -31,12 +31,12 @@ export interface Project {
 export interface Transaction {
   id: number;
   projectId: number;
-  projectName: string;
-  type: 'purchase' | 'sale';
+  project: Project;
+  type: 'purchase';
   amount: number;
-  date: string;
-  status: 'completed' | 'pending' | 'refunded';
-  buyerName?: string;
+  orderDate: string;
+  status: 'completed';
+  buyer: User;
 }
 
 export interface CartItem {

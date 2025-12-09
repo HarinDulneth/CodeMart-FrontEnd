@@ -7,7 +7,7 @@ interface StatsCardProps {
   subtitle?: string;
   icon: LucideIcon;
   trend?: {
-    value: number;
+    value: number | string;
     isPositive: boolean;
   };
   variant?: 'default' | 'primary' | 'success';
