@@ -45,7 +45,7 @@ export function ProfileSection({ user, onUserUpdate }: ProfileSectionProps) {
       password: "",
       confirmPassword: "",
     });
-  }, [user]);
+  }, [user.id]);
 
   const [formData, setFormData] = useState({
     firstName: user.firstName,

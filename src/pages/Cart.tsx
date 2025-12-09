@@ -46,7 +46,7 @@ const Cart = () => {
   };
 
   fetchCart();
-}, []);
+}, [user.id]);
 
   const removeItem = async (id) => {
     try {

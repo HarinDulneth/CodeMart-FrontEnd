@@ -19,24 +19,16 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
       <div className="flex items-center gap-4">
         <div className={cn(
           "p-2 rounded-lg",
-          transaction.type === 'sale' 
-            ? "bg-success/10 text-success" 
-            : "bg-primary/10 text-primary"
+          "bg-success/10 text-success"
         )}>
-          {transaction.type === 'sale' ? (
-            <ArrowUpRight className="h-5 w-5" />
-          ) : (
-            <ArrowDownLeft className="h-5 w-5" />
-          )}
+          <ArrowUpRight className="h-5 w-5" />
         </div>
         <div>
-          <p className="font-medium text-foreground">{transaction.projectName}</p>
+          <p className="font-medium text-foreground">{transaction.project.name}</p>
           <p className="text-sm text-muted-foreground">
-            {transaction.type === 'sale' 
-              ? `Sold to ${transaction.buyerName}` 
-              : 'Purchased'}
+            Sold to {transaction.buyer.firstName} {transaction.buyer.lastName}
             {' · '}
-            {new Date(transaction.date).toLocaleDateString('en-US', { 
+            {new Date(transaction.orderDate).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric',
               year: 'numeric'
@@ -50,9 +42,9 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
         </Badge>
         <span className={cn(
           "font-semibold tabular-nums",
-          transaction.type === 'sale' ? "text-success" : "text-foreground"
+          "text-success"
         )}>
-          {transaction.type === 'sale' ? '+' : '-'}${transaction.amount}
+          {'+'}${transaction.amount}
         </span>
       </div>
     </div>

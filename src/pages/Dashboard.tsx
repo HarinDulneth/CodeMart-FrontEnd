@@ -31,6 +31,7 @@ import {
   Bell,
   Mail,
   Shield,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -44,14 +45,21 @@ import {
 import api, { getCurrentUser } from "@/services/api";
 import Cart from "./Cart";
 import { Link, useNavigate } from "react-router-dom";
-import EditProject from "./EditProject";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
-  const [wishlistProjects, setWishlistProjects] = useState<TabId>("wishlist");
-  const [boughtProjects, setBoughtProjects] = useState<TabId>("bought");
-  const [sellingProjects, setSellingProjects] = useState<TabId>("selling");
+  const [wishlistProjects, setWishlistProjects] = useState<any[]>([]);
+  const [boughtProjects, setBoughtProjects] = useState<any[]>([]);
+  const [ordersforUser, setOrdersforUser] = useState<any[]>([]);
+  const [sellingProjects, setSellingProjects] = useState<any[]>([]);
   const [addedToWishList, setAddedtoWishList] = useState(false);
+  const [userRevenue, setUserRevenue] = useState('');
+  const [userSales, setUserSales] = useState<any[]>([]);
+  const [bestProject, setBestProject] = useState<any>();
+  const [bestProjectrevenue, setBestProjectrevenue] = useState('');
+  const [userRevenueLastMonth, setUserRevenueLastMonth] = useState('');
+  const [userSalesLastMonth, setUserSalesLastMonth] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const navigate = useNavigate();
 
@@ -73,6 +81,7 @@ export default function Dashboard() {
 
   const user = getCurrentUser();
   const userId = user.id;
+  const currentMonth = new Date().getMonth() + 1;
 
   const handleRemoveFromWishlist = async (id: string | number) => {
     try {
@@ -115,8 +124,32 @@ export default function Dashboard() {
     }
   };
 
+  const handleRevenueTrend = (revenue: string, revenueLastMonth: string) => {
+    const revenueNumber = parseFloat(revenue);
+    const revenueLastMonthNumber = parseFloat(revenueLastMonth);
+
+    if (revenueLastMonthNumber === 0) {
+      return 100;
+    }
+    const difference = revenueNumber - revenueLastMonthNumber;
+    const percentage = (difference / revenueLastMonthNumber) * 100;
+    return percentage;
+  }
+
+  const handleSalesTrend = (sales: any[], salesLastMonth: any[]) => {
+    if (salesLastMonth.length === 0) {
+      return 100
+    }
+    const salesNumber = sales.length;
+    const salesLastMonthNumber = salesLastMonth.length;
+    const difference = salesNumber - salesLastMonthNumber;
+    const percentage = (difference / salesLastMonthNumber) * 100;
+    return percentage;
+  }
+
   useEffect(() => {
     const fetchProjectsList = async () => {
+      setLoading(true);
       try {
         if (!user.id) {
           console.warn("No project id provided in route params");
@@ -130,8 +163,39 @@ export default function Dashboard() {
 
         const sellingProjects = await api.users.getSelling(user.id);
         setSellingProjects(sellingProjects);
+
+        const ordersForUser = await api.orders.getOrdersforUser(user.id);
+        setOrdersforUser(ordersForUser);
+
+        const userRevenue = await api.users.getRevenueByMonth(user.id, currentMonth);
+        setUserRevenue(userRevenue);
+        const userRevenueLastMonth = await api.users.getRevenueByMonth(user.id, currentMonth - 1);
+        console.log("userRevenueLastMonth", userRevenueLastMonth);
+        setUserRevenueLastMonth(userRevenueLastMonth);
+
+        const userSales = await api.users.getSalesByMonth(user.id, currentMonth);
+        setUserSales(userSales);
+        const userSalesLastMonth = await api.users.getSalesByMonth(user.id, currentMonth - 1);
+        setUserSalesLastMonth(userSalesLastMonth);
+        console.log("userrrr", userSales);
+
+        if (!(userSales.length === 0)) {
+          let bestSale = userSales[0];
+          userSales.forEach(sale => {
+            if (sale.amount > bestSale.amount) {
+              bestSale = sale;
+            }
+          });
+          setBestProject(bestSale.project);
+          
+          const bestProjectrevenue = await api.projects.revenueByMonth(bestSale.project.id, currentMonth);
+          setBestProjectrevenue(bestProjectrevenue);
+        }
+        
       } catch (err) {
         console.error("fetching failed:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -141,130 +205,222 @@ export default function Dashboard() {
   const renderContent = () => {
     switch (activeTab) {
       case "overview":
+        const hasSelling = Array.isArray(sellingProjects) && sellingProjects.length > 0;
+        
+        const revenueChange = handleRevenueTrend(userRevenue, userRevenueLastMonth);
+        const salesChange = handleSalesTrend(userSales, userSalesLastMonth);
+        
         return (
           <div className="space-y-8 animate-fade-in">
-            {/* Stats Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <StatsCard
-                title="Total Revenue"
-                value={`$${dashboardStats.totalRevenue.toLocaleString()}`}
-                subtitle="From all products"
-                icon={DollarSign}
-                variant="primary"
-                trend={{ value: 12.5, isPositive: true }}
-              />
-              <StatsCard
-                title="Total Sales"
-                value={dashboardStats.totalSales}
-                subtitle="Products sold"
-                icon={ShoppingBag}
-                trend={{ value: 8.2, isPositive: true }}
-              />
-              <StatsCard
-                title="Active Products"
-                value={dashboardStats.activeProjects}
-                subtitle={`of ${sellingProjects.length} total`}
-                icon={Package}
-              />
-              <StatsCard
-                title="Wishlist Items"
-                value={dashboardStats.wishlistCount}
-                icon={Heart}
-              />
-            </div>
-
-            {/* Recent Transactions */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Recent Transactions</CardTitle>
-                  <CardDescription>
-                    Your latest purchases and sales
-                  </CardDescription>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setActiveTab("transactions")}
-                >
-                  View All
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {transactions.slice(0, 5).map((transaction) => (
-                  <TransactionRow
-                    key={transaction.id}
-                    transaction={transaction}
+            {hasSelling ? (
+              <>
+                {/* Stats Grid - Seller View */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  <StatsCard
+                    title="Total Revenue"
+                    value={`$${userRevenue.toLocaleString()}`}
+                    subtitle="From all products"
+                    icon={DollarSign}
+                    variant="primary"
+                    trend={{ value: revenueChange, isPositive: revenueChange >= 0 }}
                   />
-                ))}
-              </CardContent>
-            </Card>
+                  <StatsCard
+                    title="Total Sales"
+                    value={userSales.length}
+                    subtitle="Products sold"
+                    icon={ShoppingBag}
+                    trend={{ value: salesChange, isPositive: salesChange >= 0 }}
+                  />
+                  <StatsCard
+                    title="Active Products"
+                    value={sellingProjects.length}
+                    subtitle={`of ${sellingProjects.length} total`}
+                    icon={Package}
+                  />
+                  <StatsCard
+                    title="Wishlist Items"
+                    value={wishlistProjects.length}
+                    icon={Heart}
+                  />
+                </div>
 
-            {/* Quick Stats Row */}
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-primary" />
-                    Cart Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">
-                        Items in cart
-                      </span>
-                      <span className="font-semibold">{cartItems.length}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Cart total</span>
-                      <span className="font-semibold text-primary">
-                        ${dashboardStats.cartTotal}
-                      </span>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => setActiveTab("cart")}
-                    >
-                      View Cart
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-success" />
-                    Performance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Best seller</span>
-                      <span className="font-semibold">
-                        E-Commerce Dashboard
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">This month</span>
-                      <Badge className="bg-success/10 text-success">
-                        +$5,200
-                      </Badge>
+                {/* Recent Transactions */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle>Recent Transactions</CardTitle>
+                      <CardDescription>
+                        Your latest purchases and sales
+                      </CardDescription>
                     </div>
                     <Button
                       variant="outline"
-                      className="w-full"
-                      onClick={() => setActiveTab("revenue")}
+                      size="sm"
+                      onClick={() => setActiveTab("transactions")}
                     >
-                      View Analytics
+                      View All
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  </CardHeader>
+                  <CardContent>
+                    {userSales.slice(0, 5).map((sale) => (
+                      <TransactionRow
+                        key={sale.id}
+                        transaction={sale}
+                      />
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Quick Stats Row */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShoppingCart className="h-5 w-5 text-primary" />
+                        Cart Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            Items in cart
+                          </span>
+                          <span className="font-semibold">{cartItems.length}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Cart total</span>
+                          <span className="font-semibold text-primary">
+                            ${dashboardStats.cartTotal}
+                          </span>
+                        </div>
+                        <Button
+                          className="w-full"
+                          onClick={() => setActiveTab("cart")}
+                        >
+                          View Cart
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-success" />
+                        Performance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {bestProject ? (
+                          <>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Best seller</span>
+                              <span className="font-semibold">
+                                {bestProject.name}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">This month</span>
+                              <Badge className="bg-success/10 text-success">
+                                +${bestProjectrevenue}
+                              </Badge>
+                            </div>
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => setActiveTab("revenue")}
+                            >
+                              View Analytics
+                            </Button>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No sales data yet</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Stats Grid - Buyer View */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  <StatsCard
+                    title="Wishlist Items"
+                    value={wishlistProjects.length}
+                    subtitle="Saved for later"
+                    icon={Heart}
+                  />
+                  <StatsCard
+                    title="Cart Items"
+                    value={cartItems.length}
+                    subtitle="Ready to checkout"
+                    icon={ShoppingCart}
+                  />
+                </div>
+
+                {/* Buyer Quick Actions */}
+                <div className="grid gap-6 md:grid-cols-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-primary" />
+                        Wishlist Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            Saved projects
+                          </span>
+                          <span className="font-semibold">{wishlistProjects.length}</span>
+                        </div>
+                        <Button
+                          className="w-full"
+                          onClick={() => setActiveTab("wishlist")}
+                        >
+                          View Wishlist
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShoppingCart className="h-5 w-5 text-primary" />
+                        Cart Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            Items in cart
+                          </span>
+                          <span className="font-semibold">{cartItems.length}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Cart total</span>
+                          <span className="font-semibold text-primary">
+                            ${dashboardStats.cartTotal}
+                          </span>
+                        </div>
+                        <Button
+                          className="w-full"
+                          onClick={() => setActiveTab("cart")}
+                        >
+                          View Cart
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            )}
           </div>
         );
 
@@ -376,7 +532,15 @@ export default function Dashboard() {
         );
 
       case "revenue":
-        return <RevenueChart />;
+        return (
+          <RevenueChart 
+            userRevenue={userRevenue}
+            userRevenueLastMonth={userRevenueLastMonth}
+            userSales={userSales}
+            userSalesLastMonth={userSalesLastMonth}
+            sellingProjects={sellingProjects}
+          />
+        );
 
       case "settings":
         return (
@@ -506,10 +670,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex bg-background ml-40">
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 p-8 overflow-auto">
-        <div className="max-w-6xl mx-auto">{renderContent()}</div>
+
+      <main className="flex-1 h-screen overflow-y-auto py-8 pr-8">
+        <div className="max-w-6xl mx-20">
+          {loading ? (
+            <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+              <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
+            </div>
+          ) : (
+            renderContent()
+          )}
+        </div>
       </main>
     </div>
   );

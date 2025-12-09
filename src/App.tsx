@@ -22,7 +22,7 @@ function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <Router>
-         <ScrollToTop />  
+        <ScrollToTop />
         <div className="min-h-screen bg-gray-50 flex flex-col">
           <main className="flex-1">
             <Routes>

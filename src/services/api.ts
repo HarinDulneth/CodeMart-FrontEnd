@@ -251,6 +251,18 @@ export const api = {
         method: 'PUT',
       });
     },
+    getRevenue: async (id: string | number) => {
+      return apiRequest<any>(`/user/revenue/${id}`)
+    },
+    getRevenueByMonth: async (id: string | number, month: number) => {
+      return apiRequest<any>(`/user/revenue/${id}/${month}`)
+    },
+    getSales: async (id: string | number) => {
+      return apiRequest<any[]>(`/user/sales/${id}`)
+    },
+    getSalesByMonth: async (id: string | number, month: number) => {
+      return apiRequest<any[]>(`/user/sales/${id}/${month}`)
+    },
   },
   
   // Project endpoints
@@ -300,6 +312,12 @@ export const api = {
     reject: async (id: string | number) => {
       return apiRequest<any>(`/project/reject/${id}`);
     },
+    revenue: async (id: string | number) => {
+      return apiRequest<any>(`/project/revenue/${id}`);
+    },
+    revenueByMonth: async (id: string | number, month: number) => {
+      return apiRequest<any>(`/project/revenue/${id}/${month}`);
+    },
   },
 
   // Order endpoints
@@ -316,8 +334,11 @@ export const api = {
         body: JSON.stringify(orderData),
       });
     },
-    getProjectCount: async () => {
-      return apiRequest<any>('/order/projectcount');
+    getProjectCount: async (id: string| number) => {
+      return apiRequest<any>(`/order/projectcount?projectId=${id}`);
+    },
+    getOrdersforUser: async (id: string | number) => {
+      return apiRequest<any[]>(`/order?userId=${id}`);
     },
   },
 

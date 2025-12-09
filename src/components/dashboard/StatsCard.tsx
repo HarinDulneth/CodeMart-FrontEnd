@@ -7,7 +7,7 @@ interface StatsCardProps {
   subtitle?: string;
   icon: LucideIcon;
   trend?: {
-    value: number;
+    value: number | string;
     isPositive: boolean;
   };
   variant?: 'default' | 'primary' | 'success';
@@ -25,7 +25,7 @@ export function StatsCard({
     <div className={cn(
       "rounded-xl p-6 shadow-xl transition-all duration-200 hover:shadow-2xl animate-fade-in",
       variant === 'default' && "bg-card",
-      variant === 'primary' && "gradient-primary text-primary-foreground",
+      variant === 'primary' && "bg-indigo-600 text-primary-foreground",
       variant === 'success' && "gradient-success text-success-foreground"
     )}>
       <div className="flex items-start justify-between">
@@ -51,7 +51,7 @@ export function StatsCard({
               trend.isPositive ? "text-success" : "text-destructive"
             )}>
               {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
-              <span className="text-muted-foreground font-normal">vs last month</span>
+              <span className="text-black font-normal">vs last month</span>
             </p>
           )}
         </div>
