@@ -4,6 +4,7 @@ import api from "../services/api";
 import {
   Upload,
   X,
+  Plus,
   DollarSign,
   Tag,
   FileText,
@@ -112,7 +113,7 @@ const EditProject = () => {
           Description: response.description || "",
           PrimaryLanguages: response.primaryLanguages || [],
           SecondaryLanguages: response.secondaryLanguages || [],
-          features: [],
+          features: response.features || [],
         });
 
         setExistingImages(response.imageUrls || []);
@@ -354,6 +355,28 @@ const EditProject = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!id) return;
+    
+    if (formData.PrimaryLanguages.length === 0) {
+      toast.error("Please add at least one primary language/technology");
+      return;
+    }
+    
+    if (formData.features.length === 0 || formData.features.some(f => f.trim() === "")) {
+      toast.error("Please add at least one feature and ensure all features are filled");
+      return;
+    }
+    
+    const totalProjectFiles = zipFiles.length + (existingProjectUrl ? 1 : 0);
+    if (totalProjectFiles === 0) {
+      toast.error("Please upload a project ZIP file");
+      return;
+    }
+    
+    const totalImages = existingImages.length + imageFiles.length;
+    if (totalImages === 0) {
+      toast.error("Please upload at least one project image");
+      return;
+    }
 
     setLoading(true);
 
@@ -410,6 +433,7 @@ const EditProject = () => {
         PrimaryLanguages: formData.PrimaryLanguages || [],
         SecondaryLanguages: formData.SecondaryLanguages || [],
         VideoUrl: videoUrl || "",
+        Features: formData.features || [],
       };
 
       toast.info("Updating project...");
@@ -586,6 +610,9 @@ const EditProject = () => {
 
             {/* Primary Languages */}
             <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Primary Languages *
+              </label>
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -627,6 +654,9 @@ const EditProject = () => {
 
             {/* Secondary Languages */}
             <div className="mb-3 mt-5">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Secondary Languages (Optional)
+              </label>
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -664,6 +694,46 @@ const EditProject = () => {
                 </span>
               ))}
             </div>
+          </div>
+
+          {/* Features */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Project Features *
+            </h2>
+
+            <div className="space-y-3">
+              {formData.features.map((feature, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={feature}
+                    onChange={(e) => handleFeatureChange(index, e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Enter a feature"
+                    required
+                  />
+                  {formData.features.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(index)}
+                      className="text-red-600 hover:text-red-800 p-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={addFeature}
+              className="mt-4 text-indigo-600 hover:text-indigo-800 flex items-center"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Feature
+            </button>
           </div>
 
           {/* Project Files */}

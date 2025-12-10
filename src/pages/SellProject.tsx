@@ -279,10 +279,30 @@ const SellProject = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (formData.PrimaryLanguages.length === 0) {
+      toast.error("Please add at least one primary language/technology");
+      return;
+    }
+    
+    if (formData.features.length === 0 || formData.features.some(f => f.trim() === "")) {
+      toast.error("Please add at least one feature and ensure all features are filled");
+      return;
+    }
+    
+    if (zipFiles.length === 0) {
+      toast.error("Please upload a project ZIP file");
+      return;
+    }
+    
+    if (imageFiles.length === 0) {
+      toast.error("Please upload at least one project image");
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      // Upload files to Supabase
       let zipUrl = null;
       if (zipFiles.length > 0) {
         toast.info("Uploading project files...");
@@ -326,6 +346,7 @@ const SellProject = () => {
         PrimaryLanguages: formData.PrimaryLanguages,
         SecondaryLanguages: formData.SecondaryLanguages,
         VideoUrl: videoUrl || "",
+        Features: formData.features,
       };
 
       toast.info("Publishing project...");
@@ -487,6 +508,9 @@ const SellProject = () => {
 
             {/* Primary Languages */}
             <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Primary Languages *
+              </label>
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -528,6 +552,9 @@ const SellProject = () => {
 
             {/* Secondary Languages */}
             <div className="mb-3 mt-5">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Secondary Languages (Optional)
+              </label>
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -570,7 +597,7 @@ const SellProject = () => {
           {/* Features */}
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Project Features
+              Project Features *
             </h2>
 
             <div className="space-y-3">
@@ -582,6 +609,7 @@ const SellProject = () => {
                     onChange={(e) => handleFeatureChange(index, e.target.value)}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="Enter a feature"
+                    required
                   />
                   {formData.features.length > 1 && (
                     <button
@@ -610,7 +638,7 @@ const SellProject = () => {
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <FileArchive className="h-6 w-6 mr-2 text-blue-600" />
-              Project Zip File
+              Project Zip File *
             </h2>
 
             <div
@@ -683,7 +711,7 @@ const SellProject = () => {
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <Image className="h-6 w-6 mr-2 text-blue-600" />
-              Project Images
+              Project Images *
             </h2>
 
             <div
