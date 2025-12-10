@@ -215,6 +215,18 @@ const ProjectDetail = () => {
     checkStatus();
   }, [id, userId]);
 
+  const calculateRating = (project: any) =>{
+     if (!project?.Review || project.Review.length === 0) return 0;
+
+    const total = project.Review.reduce(
+      (sum: number, r: any) => sum + r.Rating,
+      0
+    );
+
+    return   Number((total / project.Review.length).toFixed(1));
+
+  }
+
   const category = mapEnumToCategory(projects.category);
 
   const project = {
@@ -453,18 +465,18 @@ The platform is fully responsive and optimized for performance, with clean, main
                     <Star
                       key={star}
                       className={`h-5 w-5 ${
-                        star <= Math.floor(project.rating)
+                        star <= Math.round(calculateRating(projects))
                           ? "text-yellow-400 fill-current"
                           : "text-gray-300"
                       }`}
                     />
                   ))}
                   <span className="ml-2 text-lg font-semibold text-gray-900">
-                    {project.rating}
+                    {calculateRating(projects)}
                   </span>
                 </div>
                 <span className="text-gray-600">
-                  ({project.reviews} reviews)
+                  ({projects.review?.length} reviews)
                 </span>
               </div>
 
@@ -479,7 +491,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                 {/* Primary Tags */}
                 {projects.primaryLanguages && projects.primaryLanguages.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Primary Languages</p>
+                    <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">Primary Languages</p>
                     <div className="flex flex-wrap gap-2">
                       {projects.primaryLanguages.map((tag) => (
                         <span
@@ -496,7 +508,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                 {/* Secondary Tags */}
                 {projects.secondaryLanguages && projects.secondaryLanguages.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Secondary Languages</p>
+                    <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">Secondary Languages</p>
                     <div className="flex flex-wrap gap-2">
                       {projects.secondaryLanguages.map((tag) => (
                         <span
@@ -617,7 +629,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                 Features Included
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {project.features.map((feature, index) => (
+                {projects.features?.map((feature, index) => (
                   <div key={index} className="flex items-center">
                     <div className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></div>
                     <span className="text-gray-700">{feature}</span>
@@ -720,7 +732,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <Clock className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <span className="text-gray-500">Delivery:</span>
-                    <p className="font-semibold">{project.deliveryTime}</p>
+                    <p className="font-semibold">Instant</p>
                   </div>
                 </div>
                 <div className="flex items-center text-sm">
@@ -728,15 +740,21 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <div>
                     <span className="text-gray-500">Technologies:</span>
                     <p className="font-semibold">
-                      {project.technologies.join(", ")}
+                  {[...(projects.primaryLanguages || []), ...(projects.secondaryLanguages || [])].join(", ")}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center text-sm">
                   <User className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
-                    <span className="text-gray-500">Last Updated:</span>
-                    <p className="font-semibold">{project.lastUpdated}</p>
+                    <span className="text-gray-500">Published On:</span>
+                <p className="font-semibold">
+                  {new Date(projects.uploadDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
                   </div>
                 </div>
 
@@ -754,19 +772,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   </div>
                 </div>
 
-                {/* New: Requirements */}
-                <div className="flex items-start text-sm">
-                  <Shield className="h-5 w-5 text-gray-400 mr-3" />
-                  <div>
-                    <span className="text-gray-500">Requirements:</span>
-                    <ul className="mt-1 list-disc list-inside text-gray-900 font-semibold">
-                      <li>Node 18+</li>
-                      <li>MongoDB 6+</li>
-                      <li>npm / yarn</li>
-                      <li>Stripe account</li>
-                    </ul>
-                  </div>
-                </div>
+             
               </div>
             </div>
           </div>
