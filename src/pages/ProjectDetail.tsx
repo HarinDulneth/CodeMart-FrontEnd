@@ -36,16 +36,17 @@ const ProjectDetail = () => {
     "DevOps",
   ];
 
-  const mapCategoryToEnum = (category: string): string => {
+  const mapEnumToCategory = (category: string): string => {
     const categoryMap: Record<string, string> = {
-      WebDevelopment: "Web Development",
-      MobileDevelopment: "Mobile Development",
-      ArtificialIntelligence: "Artificial Intelligence",
-      "Desktop Apps": "Deskto Apps",
-      APIs: "APIs",
-      Games: "Game Development",
-      DataScience: "Data Science",
-      DevOps: "DevOps",
+      "WebDevelopment": "Web Development",
+      "MobileDevelopment": "Mobile Development",
+      "AI/ML": "Artificial Intelligence",
+      "DesktopApps": "Desktop Apps",
+      "APIs": "APIs",
+      "Games": "Game Development",
+      "DataScience": "Data Science",
+      "DevOps": "DevOps",
+      "ArtificialIntelligence": "Artificial Intelligence",
     };
     return categoryMap[category] || category;
   };
@@ -214,7 +215,7 @@ const ProjectDetail = () => {
     checkStatus();
   }, [id, userId]);
 
-  const category = mapCategoryToEnum(projects.category);
+  const category = mapEnumToCategory(projects.category);
 
   const project = {
     id: 1,

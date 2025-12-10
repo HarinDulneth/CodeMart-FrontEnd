@@ -80,7 +80,9 @@ const Navbar = () => {
       setIsLogged(true);
     }
 
-    fetchCart();
+    if (isLogged && user?.id) {
+      fetchCart();
+    }
 
     const handleCartUpdate = () => {
       fetchCart();
@@ -106,8 +108,6 @@ const Navbar = () => {
     }, 400);
 
     return () => {
-      window.removeEventListener("cartUpdated", handleCartUpdate);
-      window.removeEventListener("focus", fetchCart);
       clearTimeout(delay);
     };
   }, [user?.id, searchQuery]);
@@ -118,8 +118,27 @@ const Navbar = () => {
     }
   }, [location.pathname, isLogged, user?.id]);
 
+  useEffect(() => {
+    setSearchQuery("");
+  }, [location.pathname]);
+
   const getProfilePic = () => {
     return user?.profilePicture ?? null;
+  };
+
+  const mapEnumToCategory = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      "WebDevelopment": "Web Development",
+      "MobileDevelopment": "Mobile Development",
+      "AI/ML": "Artificial Intelligence",
+      "DesktopApps": "Desktop Apps",
+      "APIs": "APIs",
+      "Games": "Game Development",
+      "DataScience": "Data Science",
+      "DevOps": "DevOps",
+      "ArtificialIntelligence": "Artificial Intelligence",
+    };
+    return categoryMap[category] || category;
   };
 
   return (
@@ -133,14 +152,14 @@ const Navbar = () => {
                 to="/"
                 className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6"
               >
-                <Code className="h-8 w-8 text-[rgb(95,0,205)]" />
-                <span className="bg-gradient-to-r from-[rgb(120,8,180)] to-[rgb(125,8,255)] bg-clip-text text-transparent pb-1">
+                <Code className="h-8 w-8 text-[#4B00BD]" />
+                <span className="bg-gradient-to-r from-[#330080] to-[#4700B3] bg-clip-text text-transparent pb-1">
                   CodeMart
                 </span>
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
+              <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/projects"
                   className="text-gray-700 hover:text-indigo-600 transition-colors"
@@ -157,7 +176,6 @@ const Navbar = () => {
 
               {/* Search Bar */}
               <form
-                // onSubmit={handleSearch}
                 className="hidden md:flex items-center flex-1 max-w-lg mx-8"
               >
                 <div className="relative w-full">
@@ -172,21 +190,21 @@ const Navbar = () => {
                   
                   {/* Search Results Floating Panel */}
                   {searchQuery && results.length > 0 && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-[#9AA0A6] z-[100] max-h-[600px] overflow-y-auto w-[30vw]">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-10 pt-10  bg-white rounded-3xl shadow-sm border border-gray-200 z-[100] max-h-[600px] overflow-y-auto w-[50vw]">
                       <div className="flex flex-col ">
                         {results.slice(0, 12).map((project: any) => (
                           <Link
                             key={project.id}
                             to={`/project/${project.id}`}
                             onClick={() => setSearchQuery("")}
-                            className="bg-[#e3e8e4] border-b border-[#D1D5DB] last:border-b-0 hover:bg-[#7FB4DE] transition-colors group p-4 flex gap-4"
+                            className="bg-[#F3F3F7] mb-5 hover:scale-105 hover:shadow-sm transition-all group p-4 flex gap-4 rounded-2xl transition-transform duration-300"
                           >
                             {/* Image */}
-                            <div className="w-32 h-32 flex-shrink-0 overflow-hidden rounded-xl">
+                            <div className="w-45 h-32 flex-shrink-0 overflow-hidden rounded-xl">
                               <img
                                 src={project.imageUrls?.[0] || "https://via.placeholder.com/128"}
                                 alt={project.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                               />
                             </div>
                             
@@ -197,12 +215,12 @@ const Navbar = () => {
                                   <h4 className="font-semibold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
                                     {project.name}
                                   </h4>
-                                  <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
-                                    {project.category}
+                                  <span className="text-xs text-black font-semibold bg-white px-3 py-1 rounded-full">
+                                    {mapEnumToCategory(project.category)}
                                   </span>
                                 </div>
                                 <p className="text-sm text-gray-600 mb-3">
-                                  by {project.Owner?.fullName || "Unknown"}
+                                  by {project.owner.fullName || "Unknown"}
                                 </p>
                                 
                                 {/* Primary Tags */}
@@ -210,7 +228,7 @@ const Navbar = () => {
                                   {project.primaryLanguages?.slice(0, 4).map((tag: string) => (
                                     <span
                                       key={tag}
-                                      className="text-xs text-white bg-indigo-600 px-3 py-1 rounded-lg font-medium"
+                                      className="text-xs text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg font-medium"
                                     >
                                       {tag}
                                     </span>
@@ -218,7 +236,7 @@ const Navbar = () => {
                                 </div>
                               </div>
                               
-                              <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#C5CBD3]">
+                              <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#5C616B]/15">
                                 <div className="flex items-center gap-4">
                                   <span className="font-bold text-gray-900 text-lg">
                                     ${project.price}
@@ -238,7 +256,7 @@ const Navbar = () => {
                                     </span>
                                   </div>
                                 </div>
-                                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm">
+                                <button className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-800 hover:text-white transition-colors font-semibold text-sm">
                                   View Details
                                 </button>
                               </div>
@@ -282,6 +300,14 @@ const Navbar = () => {
                   )}
                 </div>
               </form>
+
+              {/* Backdrop blur overlay when searching */}
+              {searchQuery && results.length >= 0 && (
+                <div
+                  className="fixed top-16 left-0 right-0 bottom-0 bg-black/25 backdrop-blur-sm z-[39]"
+                  onClick={() => setSearchQuery("")}
+                />
+              )}
 
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-6">
@@ -335,7 +361,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to="/signup"
-                      className="bg-[rgb(75,0,185)] text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors"
+                      className="bg-[#1F004D] text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors"
                     >
                       Sign Up
                     </Link>

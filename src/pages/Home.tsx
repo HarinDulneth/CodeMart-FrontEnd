@@ -10,6 +10,7 @@ import vs from "../assets/vs1.png";
 import TeamCarousel from "../components/TeamCarousel";
 import HowItWorksScroll from "../components/ui/How/HowItWorks";
 import DemoOne from "../components/DemoOne";
+import { ThreeDMarquee } from "../components/ui/3d-marquee";
 
 const Home = () => {
   
@@ -249,14 +250,12 @@ const Home = () => {
         </section>
 
         {/* Project Spotlight Section */}
-        <section className="py-10 bg-white">
+        <section className="pt-10 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               {/* Left Content */}
-
-              <div className="relative animate-fade-in">
-                <img src={lap} className="w- p-0 m-0" />
-              </div>
+                
+              
               <div className="animate-fade-in">
                 <div className="text-sm text-indigo-600 font-semibold mb-4"></div>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -268,6 +267,7 @@ const Home = () => {
                   turn projects into
                   <span className="text-indigo-600"> profitable ventures.</span>
                 </h2>
+                
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                   Our task was to craft a bold, conversion-focused website that
                   reflects their innovative approach and expertise, while making
@@ -276,6 +276,9 @@ const Home = () => {
               </div>
 
               {/* Right Content - Project Showcase */}
+              <div className="relative animate-fade-in">
+                <img src={lap} className="w- p-0 m-0" />
+              </div>
             </div>
           </div>
         </section>
@@ -304,10 +307,10 @@ const Home = () => {
           <div className="max-w-7xl mx-auto pt-5">
             
             {/* Outer rounded card */}
-            <div className="bg-white pb-10 pt-5 md:p-5">
+            <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
 
               {/* Heading */}
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl md:text-4xl pt-5 font-bold text-gray-900">
                 We only deliver results.
               </h2>
 
@@ -319,14 +322,14 @@ const Home = () => {
               <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
                 {stats.map((stat, index) => (
-                  <div key={index} className="space-y-2">
-                    <h3 className="text-4xl font-bold text-gray-500">
+                  <div key={index} className="space-y-2 p-8 bg-[#F3F3F7] rounded-2xl min-h-[200px] flex flex-col justify-center">
+                    <h3 className="text-4xl font-bold text-[#404054]">
                       {stat.value}
                     </h3>
 
-                    <p className="text-gray-700 font-semibold">{stat.label}</p>
+                    <p className="text-[#404054] font-semibold">{stat.label}</p>
 
-                    <p className="text-gray-500 text-sm leading-relaxed">
+                    <p className="text-[#2B2D33] text-sm leading-relaxed">
                       {stat.description}
                     </p>
                   </div>
