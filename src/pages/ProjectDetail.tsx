@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Star,
   Shield,
@@ -11,10 +11,21 @@ import {
   Code,
   Globe,
 } from "lucide-react";
-import api, { getCurrentUser } from "../services/api";
+import api, { getAuthToken, getCurrentUser } from "../services/api";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const ProjectDetail = () => {
+  const [formData, setFormData] = useState<{
+    comment: string;
+    rating: number;
+  }>({
+    comment: "",
+    rating: 0,
+  });
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   const userId = getCurrentUser().id;
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -24,6 +35,7 @@ const ProjectDetail = () => {
   const [addedToWishList, setAddedtoWishList] = useState(false);
   const [addedToCart, setAddedtoCart] = useState(false);
   const [boughtProject, setBoughtProject] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const categories = [
     "Web Development",
@@ -35,6 +47,8 @@ const ProjectDetail = () => {
     "Data Science",
     "DevOps",
   ];
+
+  const navigate = useNavigate();
 
   const mapEnumToCategory = (category: string): string => {
     const categoryMap: Record<string, string> = {
@@ -58,7 +72,7 @@ const ProjectDetail = () => {
         return;
       }
       if (!userId) {
-        toast.error("Please log in to manage your wishlist");
+        navigate("/signup");
         return;
       }
 
@@ -99,7 +113,7 @@ const ProjectDetail = () => {
         return;
       }
       if (!userId) {
-        toast.error("Please log in to manage your wishlist");
+        navigate("/signup");
         return;
       }
 
@@ -143,7 +157,7 @@ const ProjectDetail = () => {
         return;
       }
       if (!userId) {
-        toast.error("Please log in to buy items");
+        navigate("/signup");
         return;
       }
 
@@ -167,6 +181,72 @@ const ProjectDetail = () => {
       }
 
       toast.error(errorMessage);
+    }
+  };
+
+  const handleOpenReviewModal = () => {
+    if (!userId) {
+      navigate("/signup");
+      return;
+    }
+    if (showReviewModal) {
+      setShowReviewModal(false);
+      setFormData({ comment: "", rating: 0 });
+    } else {
+      setShowReviewModal(true);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    try {
+      if (!id) {
+        toast.error("Project ID is missing");
+        return;
+      }
+      if (!userId) {
+        navigate("/signup");
+        return;
+      }
+
+      if (!formData.comment.trim()) {
+        toast.error("Please enter a comment");
+        return;
+      }
+
+      setIsSubmittingReview(true);
+
+      const reviewData = {
+        Comment: formData.comment,
+        DateAdded: new Date().toISOString(),
+        Rating: formData.rating,
+      };
+
+      await api.reviews.create(id, reviewData);
+      toast.success("Review added successfully!");
+      
+      setFormData({ comment: "", rating: 0 });
+      setShowReviewModal(false);
+      setSuccess(true);
+    } catch (err: any) {
+      console.error("Adding review failed:", err);
+
+      let errorMessage = "Failed to add review. Please try again.";
+
+      try {
+        if (err instanceof Error) {
+          const errorData = JSON.parse(err.message);
+          errorMessage = errorData.message || errorData.title || errorMessage;
+        }
+      } catch (parseError) {
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+      }
+
+
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -213,7 +293,7 @@ const ProjectDetail = () => {
 
     fetchProject();
     checkStatus();
-  }, [id, userId]);
+  }, [id, userId, success]);
 
   const category = mapEnumToCategory(projects.category);
 
@@ -628,9 +708,86 @@ The platform is fully responsive and optimized for performance, with clean, main
 
             {/* Reviews */}
             <div className="bg-white rounded-2xl p-8 shadow-xl animate-fade-in">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Customer Reviews
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Customer Reviews
+                </h2>
+                <button
+                  className="bg-[#08244B] text-white px-4 py-2 rounded-2xl hover:bg-[#08244B]/80 transition-colors text-sm font-medium"
+                  onClick={handleOpenReviewModal}
+                >
+                  {showReviewModal ? "Cancel" : "Add Review"}
+                </button>
+              </div>
+
+              {showReviewModal && (
+                <div className="mb-6 p-6 bg-gray-50 rounded-xl border-2 border-indigo-200 animate-fade-in">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Write Your Review</h3>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Rating
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, rating: star })}
+                          className="transition-transform hover:scale-110"
+                        >
+                          <Star
+                            className={`h-7 w-7 cursor-pointer ${
+                              star <= formData.rating
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-300 hover:text-yellow-200"
+                            }`}
+                          />
+                        </button>
+                      ))}
+                      {formData.rating > 0 && (
+                        <span className="ml-2 text-sm text-gray-600">({formData.rating}/5)</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Review
+                    </label>
+                    <textarea
+                      value={formData.comment}
+                      onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                      placeholder="Share your thoughts about this project..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                      rows={4}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={isSubmittingReview}
+                    className={`w-full px-4 py-3 bg-[#08244B] text-white rounded-xl font-medium shadow-lg flex items-center justify-center gap-2 ${
+                      isSubmittingReview 
+                        ? 'opacity-70 cursor-not-allowed' 
+                        : 'hover:bg-[#08244B]/90 transition-all duration-300 hover:scale-105'
+                    }`}
+                  >
+                    {isSubmittingReview ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Review'
+                    )}
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-6">
                 {testimonials.map((review, index) => (
                   <div
@@ -771,6 +928,8 @@ The platform is fully responsive and optimized for performance, with clean, main
             </div>
           </div>
         </div>
+
+
       </div>
     </div>
   );

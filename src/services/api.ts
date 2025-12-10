@@ -378,8 +378,8 @@ export const api = {
     getByProject: async (projectId: string | number) => {
       return apiRequest<any[]>(`/review/reviews?projectId=${projectId}`);
     },
-    create: async (reviewData: any) => {
-      return apiRequest<any>('/review/add', {
+    create: async (projectId: string | number, reviewData: any) => {
+      return apiRequest<any>(`/review/add?projectId=${projectId}`, {
         method: 'POST',
         body: JSON.stringify(reviewData),
       });
