@@ -10,18 +10,25 @@ const AllProjects = () => {
   );
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState("All");
+  const [ratingRange, setRatingRange] = useState("All");
   const [sortBy, setSortBy] = useState("Popular");
   const [showFilters, setShowFilters] = useState(false);
   const [allProjects, setAllProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState(searchQuery);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
+      null
+    );
 
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
+      console.log(searchQuery);
       console.log(selectedCategory)
       try {
         let response;
+       
         if(selectedCategory !== "All"){
           response = await api.projects.filterByCategory(mapCategoryToEnum(selectedCategory));
           console.log(`All Projects fetched for category ${selectedCategory}`, response);
@@ -32,6 +39,13 @@ const AllProjects = () => {
       
         }
 
+        if (searchQuery.trim() !== "") {
+         console.log(searchQuery);
+          response = response.filter((p)=>
+               p.name.toLowerCase().includes(searchQuery.toLowerCase()) 
+      
+          ); 
+        }
         if (priceRange !== "All") {
           let minPrice = 0;
           let maxPrice = 999999999;
@@ -50,19 +64,39 @@ const AllProjects = () => {
           }else if(priceRange === "Over $1000"){
             minPrice = 1000; maxPrice = 999999999;
           }
-          console.log("START")
+
           
-          const hh = response.map((p)=>{
-            console.log(p.price)
-          })
-          
-          console.log("END")
           response = response.filter(
             (p) => p.price >= minPrice && p.price <= maxPrice
           ); 
 
+
           console.log("Filtered FINAL response:", response);
         }
+
+        if(ratingRange!=="All"){
+          var minRate =0;
+          var maxRate=5;
+          if(ratingRange=="Above 4"){
+            minRate=4;
+            maxRate=5;
+          }else if(ratingRange=="4-3"){
+            minRate=3;
+            maxRate=4;
+          }else{
+            minRate=0;
+            maxRate=3;
+          }
+
+          response = response.filter(
+            (p)=>{
+             const rating = calculateRating(p);
+             return rating >= minRate && rating <= maxRate;
+            }
+          )
+        }
+
+        
 
         if (response.length > 1) {
           if (sortBy !== "Popular") {
@@ -75,6 +109,8 @@ const AllProjects = () => {
             } else if (sortBy === "Rating") {
               response = response.sort((a, b) => b.rating - a.rating);
             }
+          }else{
+            response= response.sort((a,b)=>a.buyers.length- b.buyers.length)
           }
         }
 
@@ -101,9 +137,20 @@ const AllProjects = () => {
     };
 
     fetchProjects();
-  }, [selectedCategory, priceRange, sortBy]);
+  }, [selectedCategory, priceRange, sortBy,searchQuery,ratingRange]);
 
-  
+  const handelSearch = (value:string)=>{
+   setSearchInput(value);
+     if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+      const timeout = setTimeout(async()=>{
+         setSearchQuery(value);
+      },1000);
+
+    setTypingTimeout(timeout);
+  }
   const calculateRating = (project: any) => {
     if (!project?.Review || project.Review.length === 0) return 0;
 
@@ -112,18 +159,18 @@ const AllProjects = () => {
       0
     );
 
-    return (total / project.Review.length).toFixed(1);
+    return  Math.round(total / project.Review.length);
   };
 
     const categories = [
     "All",
     "Web Development",
-    "Mobile Development",
-    "AI/ML",
     "Desktop Apps",
+    "Mobile Development",
+    "Artificial Intelligence",
+    "Maching Learning",
     "APIs",
     "Games",
-    "Data Science",
     "DevOps",
   ];
 
@@ -148,13 +195,13 @@ const AllProjects = () => {
     const categoryMap: Record<string, string> = {
       "Web Development": "WebDevelopment",
       "Mobile Development": "MobileDevelopment",
-      "AI/ML": "ArtificialIntelligence",
+      "Artificial Intelligence": "ArtificialIntelligence",
       "Desktop Apps": "DesktopApps",
       "APIs": "APIs",
       "Games": "GameDevelopment",
-      "Data Science": "DataScience",
       "DevOps": "DevOps",
-      "Artificial Intelligence": "ArtificialIntelligence"
+      "Maching Learning": "MachingLearning",
+      
     };
     return categoryMap[category] || category;
   };
@@ -163,13 +210,13 @@ const AllProjects = () => {
     const categoryMap: Record<string, string> = {
       "WebDevelopment": "Web Development",
       "MobileDevelopment": "Mobile Development",
-      "AI/ML": "Artificial Intelligence",
+      "ArtificialIntelligence": "Artificial Intelligence",
       "DesktopApps": "Desktop Apps",
       "APIs": "APIs",
       "Games": "Game Development",
-      "DataScience": "Data Science",
       "DevOps": "DevOps",
-      "ArtificialIntelligence": "Artificial Intelligence",
+      "MachingLearning": "Maching Learning",
+     
     };
     return categoryMap[category] || category;
   };
@@ -217,8 +264,8 @@ const AllProjects = () => {
                   <div className="relative">
                     <input
                       type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={searchInput}
+                      onChange={(e) => handelSearch(e.target.value)}
                       placeholder="Search projects..."
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
@@ -277,15 +324,15 @@ const AllProjects = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Review Range
                   </label>
-                  {/* <div className="space-y-2">
+                  <div className="space-y-2">
                     {ratingRanges.map((range) => (
                       <label key={range} className="flex items-center">
                         <input
                           type="radio"
                           name="review"
                           value={range}
-                          checked={priceRange === range}
-                          onChange={(e) => setPriceRange(e.target.value)}
+                          checked={ratingRange === range}
+                          onChange={(e) => setRatingRange(e.target.value)}
                           className="text-indigo-600 focus:ring-indigo-500"
                         />
                         <span className="ml-2 text-sm text-gray-600">
@@ -293,7 +340,7 @@ const AllProjects = () => {
                         </span>
                       </label>
                     ))}
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>
@@ -352,10 +399,20 @@ const AllProjects = () => {
                           {mapEnumToCategory(project.Category)}
                         </span>
                         <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="ml-1 text-sm text-gray-600">
-                            {calculateRating(project)}
-                          </span>
+                          
+                          
+                           {Array.from({ length: 5 }).map((_, index) => {
+                                  return (
+                                    <Star
+                                      key={index}
+                                      className={`h-4 w-4 ${
+                                        index < calculateRating(project)
+                                          ? "text-yellow-400 fill-current" // full star
+                                          : "text-gray-300"              // empty star
+                                      }`}
+                                    />
+                                  );
+                                })}
                           <span className="text-xs text-gray-500 ml-1">
                             ({project.Review.length})
                           </span>
