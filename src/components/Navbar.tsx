@@ -152,8 +152,8 @@ const Navbar = () => {
                 to="/"
                 className="flex items-center space-x-2 text-2xl font-bold text-gray-800 mr-6"
               >
-                <Code className="h-8 w-8 text-[#4B00BD]" />
-                <span className="bg-gradient-to-r from-[#330080] to-[#4700B3] bg-clip-text text-transparent pb-1">
+                <Code className="h-8 w-8 text-[#4609A2]" />
+                <span className="bg-gradient-to-r from-[#4500A5] to-[#6A00A5] bg-clip-text text-transparent pb-1">
                   CodeMart
                 </span>
               </Link>
@@ -197,14 +197,14 @@ const Navbar = () => {
                             key={project.id}
                             to={`/project/${project.id}`}
                             onClick={() => setSearchQuery("")}
-                            className="bg-[#F3F3F7] mb-5 hover:scale-105 hover:shadow-sm transition-all group p-4 flex gap-4 rounded-2xl transition-transform duration-300"
+                            className="bg-[#F3F3F7] mb-5 hover:bg-[#D0CEF8] hover:shadow-sm transition-all group p-4 flex gap-4 rounded-2xl transition-colors duration-300"
                           >
                             {/* Image */}
                             <div className="w-45 h-32 flex-shrink-0 overflow-hidden rounded-xl">
                               <img
                                 src={project.imageUrls?.[0] || "https://via.placeholder.com/128"}
                                 alt={project.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
                             </div>
                             

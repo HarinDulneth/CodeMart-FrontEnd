@@ -304,7 +304,7 @@ const Home = () => {
               ))}
             </div>
           </div> */}
-          <div className="max-w-7xl mx-auto pt-5">
+          <div className="max-w-7xl mx-auto">
             
             {/* Outer rounded card */}
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">

@@ -153,7 +153,7 @@ export function ProjectCard({
         </div>
 
         <div className="flex items-center justify-between pt-2 border-t border-border">
-          <span className="text-lg font-bold text-primary">${project.price}</span>
+          <span className="text-lg font-bold text-[#114B9C]">${project.price}</span>
           
           {type === 'selling' && project.sales !== undefined && (
             <span className="text-sm text-muted-foreground">
