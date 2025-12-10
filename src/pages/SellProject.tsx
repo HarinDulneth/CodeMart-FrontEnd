@@ -67,8 +67,9 @@ const SellProject = () => {
       "Desktop Apps": "DesktopApps",
       "APIs": "APIs",
       "Games": "GameDevelopment",
-      "Data Science": "ArtificialIntelligence",
+      "Data Science": "DataScience",
       "DevOps": "DevOps",
+      "Artificial Intelligence": "ArtificialIntelligence"
     };
     return categoryMap[category] || category;
   };

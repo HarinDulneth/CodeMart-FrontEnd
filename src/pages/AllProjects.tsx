@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Star, Filter, Search, ChevronDown } from "lucide-react";
+import { Star, Filter, Search, ChevronDown, Package } from "lucide-react";
 import api from "../services/api";
 
 const AllProjects = () => {
@@ -23,7 +23,7 @@ const AllProjects = () => {
       try {
         let response;
         if(selectedCategory !== "All"){
-          response = await api.projects.filterByCategory(selectedCategory);
+          response = await api.projects.filterByCategory(mapCategoryToEnum(selectedCategory));
           console.log(`All Projects fetched for category ${selectedCategory}`, response);
         }
         else{
@@ -33,41 +33,51 @@ const AllProjects = () => {
         }
 
         if (priceRange !== "All") {
-            let minPrice = 0;
-            let maxPrice = 999999999;
+          let minPrice = 0;
+          let maxPrice = 999999999;
 
-            if(priceRange === "Under $100"){
-              minPrice = 0; maxPrice = 100;
-            } 
-            else if(priceRange === "$100-$300"){
-              minPrice = 100; maxPrice = 300;
-            } 
-            else if(priceRange === "$300-$500"){
-              minPrice = 300; maxPrice = 500;
-            } 
-            else if(priceRange === "$500-$1000"){
-              minPrice = 500; maxPrice = 1000;
-            }else if(priceRange === "Over $1000"){
-  minPrice = 1000; maxPrice = 999999999;
-}
-
-
-            console.log("START")
-            
-            const hh = response.map((p)=>{
-              console.log(p.price)
-            })
-            
-            console.log("END")
-            response = response.filter(
-              (p) => p.price >= minPrice && p.price <= maxPrice
-            ); 
-
-            console.log("Filtered FINAL response:", response);
+          if(priceRange === "Under $100"){
+            minPrice = 0; maxPrice = 100;
+          } 
+          else if(priceRange === "$100-$300"){
+            minPrice = 100; maxPrice = 300;
+          } 
+          else if(priceRange === "$300-$500"){
+            minPrice = 300; maxPrice = 500;
+          } 
+          else if(priceRange === "$500-$1000"){
+            minPrice = 500; maxPrice = 1000;
+          }else if(priceRange === "Over $1000"){
+            minPrice = 1000; maxPrice = 999999999;
           }
+          console.log("START")
+          
+          const hh = response.map((p)=>{
+            console.log(p.price)
+          })
+          
+          console.log("END")
+          response = response.filter(
+            (p) => p.price >= minPrice && p.price <= maxPrice
+          ); 
 
+          console.log("Filtered FINAL response:", response);
+        }
 
-      
+        if (response.length > 1) {
+          if (sortBy !== "Popular") {
+            if (sortBy === "Newest") {
+              response = response.sort((a, b) => b.createdAt - a.createdAt);
+            } else if (sortBy === "Price: Low to High") {
+              response = response.sort((a, b) => a.price - b.price);
+            } else if (sortBy === "Price: High to Low") {
+              response = response.sort((a, b) => b.price - a.price);
+            } else if (sortBy === "Rating") {
+              response = response.sort((a, b) => b.rating - a.rating);
+            }
+          }
+        }
+
         const normalized = response.map((p) => ({
           id: p.id,
           Name: p.name,
@@ -91,7 +101,7 @@ const AllProjects = () => {
     };
 
     fetchProjects();
-  }, [selectedCategory,priceRange]);
+  }, [selectedCategory, priceRange, sortBy]);
 
   
   const calculateRating = (project: any) => {
@@ -105,18 +115,18 @@ const AllProjects = () => {
     return (total / project.Review.length).toFixed(1);
   };
 
-  const categories = [
-     "All",
-    "WebDevelopment",
-    "DesktopApps",
-    "ArtificialIntelligence",
-    "MachingLearning",
-    "MobileDevelopment",
-    "GameDevelopment",
+    const categories = [
+    "All",
+    "Web Development",
+    "Mobile Development",
+    "AI/ML",
     "Desktop Apps",
     "APIs",
+    "Games",
+    "Data Science",
     "DevOps",
   ];
+
   const priceRanges = [
     "All",
     "Under $100",
@@ -134,95 +144,35 @@ const AllProjects = () => {
     "Rating",
   ];
 
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      description:
-        "Complete React & Node.js e-commerce solution with payment integration",
-      price: 299,
-      rating: 4.8,
-      reviews: 127,
-      image:
-        "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Web Development",
-      seller: "TechCorp",
-      tags: ["React", "Node.js", "MongoDB"],
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Mobile Banking App",
-      description:
-        "Secure React Native banking application with biometric authentication",
-      price: 499,
-      rating: 4.9,
-      reviews: 89,
-      image:
-        "https://images.pexels.com/photos/4968371/pexels-photo-4968371.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Mobile Development",
-      seller: "FinTech Solutions",
-      tags: ["React Native", "Firebase", "Auth"],
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "AI Chat Assistant",
-      description:
-        "Python-based AI chatbot with natural language processing capabilities",
-      price: 399,
-      rating: 4.7,
-      reviews: 156,
-      image:
-        "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "AI/ML",
-      seller: "AI Innovations",
-      tags: ["Python", "TensorFlow", "NLP"],
-      featured: true,
-    },
-    {
-      id: 4,
-      title: "Task Management Dashboard",
-      description: "Modern Vue.js dashboard for project and task management",
-      price: 199,
-      rating: 4.6,
-      reviews: 203,
-      image:
-        "https://images.pexels.com/photos/3183165/pexels-photo-3183165.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Web Development",
-      seller: "ProductivityCo",
-      tags: ["Vue.js", "Express", "MySQL"],
-      featured: false,
-    },
-    {
-      id: 5,
-      title: "Cryptocurrency Portfolio",
-      description: "Real-time crypto tracking app with portfolio management",
-      price: 349,
-      rating: 4.8,
-      reviews: 91,
-      image:
-        "https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Mobile Development",
-      seller: "CryptoDevs",
-      tags: ["Flutter", "API", "Charts"],
-      featured: true,
-    },
-    {
-      id: 6,
-      title: "Social Media Analytics",
-      description: "Advanced analytics platform for social media insights",
-      price: 599,
-      rating: 4.9,
-      reviews: 67,
-      image:
-        "https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Web Development",
-      seller: "DataInsights",
-      tags: ["Angular", "D3.js", "PostgreSQL"],
-      featured: false,
-    },
-  ];
+  const mapCategoryToEnum = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      "Web Development": "WebDevelopment",
+      "Mobile Development": "MobileDevelopment",
+      "AI/ML": "ArtificialIntelligence",
+      "Desktop Apps": "DesktopApps",
+      "APIs": "APIs",
+      "Games": "GameDevelopment",
+      "Data Science": "DataScience",
+      "DevOps": "DevOps",
+      "Artificial Intelligence": "ArtificialIntelligence"
+    };
+    return categoryMap[category] || category;
+  };
+
+  const mapEnumToCategory = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      "WebDevelopment": "Web Development",
+      "MobileDevelopment": "Mobile Development",
+      "AI/ML": "Artificial Intelligence",
+      "DesktopApps": "Desktop Apps",
+      "APIs": "APIs",
+      "Games": "Game Development",
+      "DataScience": "Data Science",
+      "DevOps": "DevOps",
+      "ArtificialIntelligence": "Artificial Intelligence",
+    };
+    return categoryMap[category] || category;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -374,99 +324,112 @@ const AllProjects = () => {
             </div>
 
             {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {allProjects.map((project, index) => (
-                <div
-                  key={project.id}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden card-shadow animate-fade-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <img
-                    src={project.ImageUrls[0]}
-                    alt={project.Name}
-                    className="w-full h-48 object-cover"
-                  />
+            {allProjects.length === 0 ? (
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <Package className="h-16 w-16 text-gray-300 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">No Projects Found</h3>
+                <p className="text-gray-500">
+                  Try adjusting your filters or check back later for new projects.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {allProjects.map((project, index) => (
+                  <div
+                    key={project.id}
+                    className="bg-white rounded-2xl shadow-sm overflow-hidden card-shadow animate-fade-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <img
+                      src={project.ImageUrls[0]}
+                      alt={project.Name}
+                      className="w-full h-48 object-cover"
+                    />
 
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
-                        {project.Category}
-                      </span>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="ml-1 text-sm text-gray-600">
-                          {calculateRating(project)}
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
+                          {mapEnumToCategory(project.Category)}
                         </span>
-                        <span className="text-xs text-gray-500 ml-1">
-                          ({project.Review.length})
-                        </span>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                          <span className="ml-1 text-sm text-gray-600">
+                            {calculateRating(project)}
+                          </span>
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({project.Review.length})
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
-                      {project.Name}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {project.Description}
-                    </p>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+                        {project.Name}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {project.Description}
+                      </p>
 
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {project.PrimaryLanguages.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded"
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {project.PrimaryLanguages.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-2xl font-bold text-gray-900">
+                            ${project.Price}
+                          </span>
+                          <p className="text-xs text-gray-500">
+                            by {project.Owner.fullName}
+                          </p>
+                        </div>
+                        <Link
+                          to={`/project/${project.id}`}
+                          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
                         >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-2xl font-bold text-gray-900">
-                          ${project.Price}
-                        </span>
-                        <p className="text-xs text-gray-500">
-                          by ownwer
-                           {/* {project.Owner.fullName} */}
-                        </p>
+                          View Details
+                        </Link>
                       </div>
-                      <Link
-                        to={`/project/${project.id}`}
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-                      >
-                        View Details
-                      </Link>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="flex items-center justify-center mt-12">
-              <nav className="flex items-center space-x-2">
-                <button className="px-3 py-2 text-gray-500 hover:text-gray-700">
-                  Previous
-                </button>
-                <button className="px-3 py-2 bg-indigo-600 text-white rounded-lg">
-                  1
-                </button>
-                <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                  2
-                </button>
-                <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                  3
-                </button>
-                <span className="px-3 py-2 text-gray-500">...</span>
-                <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                  42
-                </button>
-                <button className="px-3 py-2 text-gray-500 hover:text-gray-700">
-                  Next
-                </button>
-              </nav>
-            </div>
+            {allProjects.length === 0 ? (
+              <></>
+            ):(
+              <div className="flex items-center justify-center mt-12">
+                <nav className="flex items-center space-x-2">
+                  <button className="px-3 py-2 text-gray-500 hover:text-gray-700">
+                    Previous
+                  </button>
+                  <button className="px-3 py-2 bg-indigo-600 text-white rounded-lg">
+                    1
+                  </button>
+                  <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    2
+                  </button>
+                  <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    3
+                  </button>
+                  <span className="px-3 py-2 text-gray-500">...</span>
+                  <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    42
+                  </button>
+                  <button className="px-3 py-2 text-gray-500 hover:text-gray-700">
+                    Next
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         </div>
       </div>
