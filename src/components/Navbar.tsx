@@ -46,6 +46,17 @@ const Navbar = () => {
   //   }
   // }
 
+    const calculateRating = (project: any) => {
+    if (!project?.Review || project.Review.length === 0) return 0;
+
+    const total = project.Review.reduce(
+      (sum: number, r: any) => sum + r.Rating,
+      0
+    );
+
+    return  Math.round(total / project.Review.length);
+  };
+
   const user = getCurrentUser();
 
   const fetchCart = async () => {
@@ -215,7 +226,7 @@ const Navbar = () => {
                                   <h4 className="font-semibold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
                                     {project.name}
                                   </h4>
-                                  <span className="text-xs text-black font-semibold bg-white px-3 py-1 rounded-full">
+                                  <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
                                     {mapEnumToCategory(project.category)}
                                   </span>
                                 </div>
@@ -235,26 +246,30 @@ const Navbar = () => {
                                   ))}
                                 </div>
                               </div>
+                               <div className="flex items-center gap-0 pt-2">
+                                    {Array.from({ length: 5 }).map((_, index) => {
+                                                                     return (
+                                                                       <Star
+                                                                         key={index}
+                                                                         className={`h-4 w-4 ${
+                                                                           index < calculateRating(project)
+                                                                             ? "text-yellow-400 fill-current" // full star
+                                                                             : "text-gray-300"              // empty star
+                                                                         }`}
+                                                                       />
+                                                                     );
+                                                                   })}
+                                    <span className="text-xs text-gray-500">
+                                      ({project.review?.length || 0})
+                                    </span>
+                                  </div>
                               
                               <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#5C616B]/15">
                                 <div className="flex items-center gap-4">
                                   <span className="font-bold text-gray-900 text-lg">
                                     ${project.price}
                                   </span>
-                                  <div className="flex items-center gap-2">
-                                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                    <span className="text-sm text-gray-600">
-                                      {project.review?.length > 0
-                                        ? (
-                                            project.review.reduce((sum: number, r: any) => sum + r.Rating, 0) /
-                                            project.review.length
-                                          ).toFixed(1)
-                                        : "0"}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                      ({project.review?.length || 0})
-                                    </span>
-                                  </div>
+                                 
                                 </div>
                                 <button className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-800 hover:text-white transition-colors font-semibold text-sm">
                                   View Details
