@@ -395,7 +395,7 @@ const AllProjects = () => {
 
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
+                        <span className="text-xs text-[#0B336A] font-semibold bg-[#DAE8FB] px-3 py-1 rounded-full">
                           {mapEnumToCategory(project.Category)}
                         </span>
                         <div className="flex items-center">
@@ -448,7 +448,7 @@ const AllProjects = () => {
                         </div>
                         <Link
                           to={`/project/${project.id}`}
-                          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                          className="bg-[#08244B] text-white px-4 py-2 rounded-lg hover:bg-[#08244B]/80 transition-colors text-sm font-medium"
                         >
                           View Details
                         </Link>
@@ -468,7 +468,7 @@ const AllProjects = () => {
                   <button className="px-3 py-2 text-gray-500 hover:text-gray-700">
                     Previous
                   </button>
-                  <button className="px-3 py-2 bg-indigo-600 text-white rounded-lg">
+                  <button className="px-3 py-2 bg-[#08244B] text-white rounded-lg">
                     1
                   </button>
                   <button className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
