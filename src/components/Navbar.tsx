@@ -208,7 +208,7 @@ const Navbar = () => {
                             key={project.id}
                             to={`/project/${project.id}`}
                             onClick={() => setSearchQuery("")}
-                            className="bg-[#F3F3F7] mb-5 hover:bg-[#D0CEF8] hover:shadow-sm transition-all group p-4 flex gap-4 rounded-2xl transition-colors duration-300"
+                            className="bg-[#F3F3F7] mb-5 hover:bg-[#CBCBDC] hover:shadow-sm transition-all group p-4 flex gap-4 rounded-2xl transition-colors duration-300"
                           >
                             {/* Image */}
                             <div className="w-45 h-32 flex-shrink-0 overflow-hidden rounded-xl">
@@ -223,10 +223,10 @@ const Navbar = () => {
                             <div className="flex-1 flex flex-col justify-between">
                               <div>
                                 <div className="flex items-center gap-3 mb-2">
-                                  <h4 className="font-semibold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
+                                  <h4 className="font-semibold text-[#0B336A] text-base group-hover:text-black transition-colors">
                                     {project.name}
                                   </h4>
-                                  <span className="text-xs text-indigo-600 font-semibold bg-indigo-100 px-3 py-1 rounded-full">
+                                  <span className="text-xs text-[#0B336A] font-semibold bg-[#E0E0EB] px-3 py-1 rounded-full">
                                     {mapEnumToCategory(project.category)}
                                   </span>
                                 </div>
@@ -239,7 +239,7 @@ const Navbar = () => {
                                   {project.primaryLanguages?.slice(0, 4).map((tag: string) => (
                                     <span
                                       key={tag}
-                                      className="text-xs text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg font-medium"
+                                      className="text-xs text-black bg-white px-3 py-1 rounded-lg font-medium"
                                     >
                                       {tag}
                                     </span>
@@ -254,12 +254,12 @@ const Navbar = () => {
                                                                          className={`h-4 w-4 ${
                                                                            index < calculateRating(project)
                                                                              ? "text-yellow-400 fill-current" // full star
-                                                                             : "text-gray-300"              // empty star
+                                                                             : "text-black/30"              // empty star
                                                                          }`}
                                                                        />
                                                                      );
                                                                    })}
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-gray-500 ml-1">
                                       ({project.review?.length || 0})
                                     </span>
                                   </div>
@@ -271,7 +271,7 @@ const Navbar = () => {
                                   </span>
                                  
                                 </div>
-                                <button className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-800 hover:text-white transition-colors font-semibold text-sm">
+                                <button className="px-4 py-2 bg-[#08244B] text-white rounded-xl hover:bg-[#08244B]/80 hover:text-white transition-colors font-semibold text-sm">
                                   View Details
                                 </button>
                               </div>
@@ -306,9 +306,9 @@ const Navbar = () => {
                   {searchQuery && isSearching && (
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
                       <div className="flex items-center justify-center gap-2">
-                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-                        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                        <div className="w-2 h-2 bg-[#08244B] rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-[#08244B] rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                        <div className="w-2 h-2 bg-[#08244B] rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
                       </div>
                       <p className="text-gray-600 text-base mt-3">Searching for projects...</p>
                     </div>
