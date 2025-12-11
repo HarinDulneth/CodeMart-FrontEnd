@@ -221,7 +221,8 @@ const ProjectDetail = () => {
         Rating: formData.rating,
       };
 
-      await api.reviews.create(id, reviewData);
+      const response = await api.reviews.create(id, reviewData);
+      console.log("review", response);
       toast.success("Review added successfully!");
       
       setFormData({ comment: "", rating: 0 });
@@ -295,15 +296,19 @@ const ProjectDetail = () => {
     checkStatus();
   }, [id, userId, success]);
 
-  const calculateRating = (project: any) =>{
-     if (!project?.Review || project.Review.length === 0) return 0;
+  const getProfilePic = (user: any) => {
+    return user?.profilePicture ?? null;
+  };
 
-    const total = project.Review.reduce(
-      (sum: number, r: any) => sum + r.Rating,
+  const calculateRating = (project: any) =>{
+     if (!project?.review || project.review.length === 0) return 0;
+
+    const total = project.review.reduce(
+      (sum: number, r: any) => sum + r.rating,
       0
     );
 
-    return   Number((total / project.Review.length).toFixed(1));
+    return Number((total / project.review.length).toFixed(1));
 
   }
 
@@ -357,32 +362,7 @@ The platform is fully responsive and optimized for performance, with clean, main
     lastUpdated: "2024-12-15",
   };
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      rating: 5,
-      comment:
-        "Excellent project! Clean code and great documentation. Saved me months of development time.",
-      avatar:
-        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400",
-    },
-    {
-      name: "Michael Chen",
-      rating: 5,
-      comment:
-        "Professional quality code with all the features I needed. Great value for money!",
-      avatar:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400",
-    },
-    {
-      name: "Emily Davis",
-      rating: 4,
-      comment:
-        "Well-structured project with good documentation. Minor customization needed but overall great.",
-      avatar:
-        "https://images.pexels.com/photos/1819483/pexels-photo-1819483.jpeg?auto=compress&cs=tinysrgb&w=400",
-    },
-  ];
+  const testimonials = projects.review;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -719,7 +699,7 @@ The platform is fully responsive and optimized for performance, with clean, main
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl animate-fade-in">
+            <div className="bg-white rounded-2xl p-8 shadow-xl animate-fade-in ">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
                   Customer Reviews
@@ -800,34 +780,38 @@ The platform is fully responsive and optimized for performance, with clean, main
                 </div>
               )}
 
-              <div className="space-y-6">
-                {testimonials.map((review, index) => (
+              <div className="space-y-6 max-h-96 overflow-y-auto pr-4">
+                {testimonials?.map((review, index) => (
                   <div
                     key={index}
                     className="border-b border-gray-200 pb-6 last:border-b-0"
                   >
                     <div className="flex items-start space-x-4">
-                      <img
-                        src={review.avatar}
-                        alt={review.name}
+                      
+                        <img
+                            src={
+                              getProfilePic(review.reviewer) ??
+                              "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                            }
+                        alt={review.reviewer.firstName +" "+ review.reviewer.lastName}
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-gray-900">
-                            {review.name}
+                            {review.reviewer.firstName +" "+ review.reviewer.lastName}
                           </h4>
                           <div className="flex items-center">
                             {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className={`h-4 w-4 ${
-                                  star <= review.rating
-                                    ? "text-yellow-400 fill-current"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            ))}
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 ${
+                        star <= review.rating
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
                           </div>
                         </div>
                         <p className="text-gray-600">{review.comment}</p>
@@ -857,6 +841,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                     {project.seller.name}
                   </h4>
                   <div className="flex items-center">
+                    
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
                     <span className="ml-1 text-sm text-gray-600">
                       {project.seller.rating}

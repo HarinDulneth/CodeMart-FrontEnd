@@ -151,16 +151,17 @@ const AllProjects = () => {
 
     setTypingTimeout(timeout);
   }
-  const calculateRating = (project: any) => {
-    if (!project?.Review || project.Review.length === 0) return 0;
+ const calculateRating = (project: any) =>{
+     if (!project?.review || project.review.length === 0) return 0;
 
-    const total = project.Review.reduce(
-      (sum: number, r: any) => sum + r.Rating,
+    const total = project.review.reduce(
+      (sum: number, r: any) => sum + r.rating,
       0
     );
 
-    return  Math.round(total / project.Review.length);
-  };
+    return Number((total / project.review.length).toFixed(1));
+
+  }
 
     const categories = [
     "All",
