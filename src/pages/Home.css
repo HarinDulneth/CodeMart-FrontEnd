@@ -379,3 +379,46 @@ h2 {
     font-size: 4.5rem;
   }
 }
+
+/* Gradient card effect */
+.gradient-card {
+  position: relative;
+  border-radius: 0.75rem;
+  /* matches rounded-2xl */
+  overflow: visible;
+}
+
+/* Ensure inner content stays above pseudo-element */
+.gradient-card>* {
+  position: relative;
+  z-index: 1;
+}
+
+.gradient-card::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  /* thickness of the shadow/border */
+  border-radius: inherit;
+  background: conic-gradient(from 0deg,
+  #064393,
+      #063093,
+      /* purple */
+      #450693,
+      /* orange */
+      #850693,
+      /* teal */
+      #450693,
+      /* back to purple */
+      #064393
+    );
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gradient-card:hover::before {
+  opacity: 0.5;
+}

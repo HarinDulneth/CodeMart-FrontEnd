@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
-import lap from "../assets/download.png";
+import lap from "../assets/61164f31a004c_visual_studio_code_python_ide.png";
 import "./Home.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -192,14 +192,14 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
                 <Link
                   to="/projects"
-                  className="btn text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center bg-gradient-to-r from-[rgb(65,0,165)] to-[rgb(110,0,165)] hover:bg-indigo-700"
+                  className="btn text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center bg-[#1F004D] justify-center hover:bg-indigo-700"  /* bg-gradient-to-r from-[rgb(65,0,165)] to-[rgb(110,0,165)] */
                 >
                   Browse Projects
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   to="/sell"
-                  className="bg-white text-indigo-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 border border-indigo-600"
+                  className="bg-white text-[#1F004D] px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 border border-[#1F004D]"
                 >
                   Start Selling
                 </Link>
@@ -268,7 +268,7 @@ const Home = () => {
                   <span className="text-indigo-600"> profitable ventures.</span>
                 </h2>
                 
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-extra">
                   Our task was to craft a bold, conversion-focused website that
                   reflects their innovative approach and expertise, while making
                   their platform accessible and makes their numbers shine.
@@ -276,8 +276,8 @@ const Home = () => {
               </div>
 
               {/* Right Content - Project Showcase */}
-              <div className="relative animate-fade-in">
-                <img src={lap} className="w- p-0 m-0" />
+              <div className="relative animate-fade-in rounded-2xl overflow-hidden">
+                <img src={lap} className="w-full p-0 m-0" />
               </div>
             </div>
           </div>
@@ -319,19 +319,24 @@ const Home = () => {
               </p>
 
               {/* Stats Grid */}
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 auto-rows-fr">
 
                 {stats.map((stat, index) => (
-                  <div key={index} className="space-y-2 p-8 bg-[#F3F3F7] rounded-2xl min-h-[200px] flex flex-col justify-center">
-                    <h3 className="text-4xl font-bold text-[#404054]">
-                      {stat.value}
-                    </h3>
+                  <div
+                    key={index}
+                    className="gradient-card p-[2px] flex flex-col h-full"
+                  >
+                    <div className="space-y-2 p-8 bg-[#F3F3F7] rounded-2xl min-h-[200px] flex flex-col justify-center h-full">
+                      <h3 className="text-4xl font-bold text-[#404054]">
+                        {stat.value}
+                      </h3>
 
-                    <p className="text-[#404054] font-semibold">{stat.label}</p>
+                      <p className="text-[#404054] font-semibold">{stat.label}</p>
 
-                    <p className="text-[#2B2D33] text-sm leading-relaxed">
-                      {stat.description}
-                    </p>
+                      <p className="text-[#2B2D33] text-sm leading-relaxed">
+                        {stat.description}
+                      </p>
+                    </div>
                   </div>
                 ))}
 

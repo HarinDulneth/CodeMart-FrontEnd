@@ -725,7 +725,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   Customer Reviews
                 </h2>
                 <button
-                  className="bg-[#08244B] text-white px-4 py-2 rounded-2xl hover:bg-[#08244B]/80 transition-colors text-sm font-medium"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-2xl hover:bg-indigo-600/80 transition-colors text-sm font-medium"
                   onClick={handleOpenReviewModal}
                 >
                   {showReviewModal ? "Cancel" : "Add Review"}
