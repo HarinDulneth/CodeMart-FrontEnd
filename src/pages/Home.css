@@ -23,6 +23,21 @@ h2 {
   }
 }
 
+/* Logo scroll animation */
+.logo-scroll-container {
+  animation: scrollLeft 20s linear infinite;
+}
+
+@keyframes scrollLeft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .techslider {
   display: flex;
   flex-direction: column;
@@ -401,7 +416,7 @@ h2 {
   /* thickness of the shadow/border */
   border-radius: inherit;
   background: conic-gradient(from 0deg,
-  #064393,
+      #064393,
       #063093,
       /* purple */
       #450693,
@@ -410,8 +425,7 @@ h2 {
       /* teal */
       #450693,
       /* back to purple */
-      #064393
-    );
+      #064393);
   filter: blur(10px);
   opacity: 0;
   transition: opacity 0.3s ease;

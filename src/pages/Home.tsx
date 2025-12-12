@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
-import lap from "../assets/61164f31a004c_visual_studio_code_python_ide.png";
 import "./Home.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -150,7 +149,7 @@ const Home = () => {
     value: "16M",
     label: "Total Users",
     description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
-  }
+  },
 ];
 
 
@@ -250,41 +249,139 @@ const Home = () => {
         </section>
 
         {/* Project Spotlight Section */}
-        <section className="pt-10 bg-white">
+        <section className="pt-32 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[50%_50%] gap-10 items-center">
               {/* Left Content */}
                 
               
               <div className="animate-fade-in">
                 <div className="text-sm text-indigo-600 font-semibold mb-4"></div>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                  CodeMart is a software marketplace
-                  <span className="text-indigo-600">
-                    {" "}
-                    helping developers
-                  </span>{" "}
-                  turn projects into
-                  <span className="text-indigo-600"> profitable ventures.</span>
+                <h2 className="text-2xl md:text-3xl font-bold font-poppins text-gray-900 mb-6">
+                  CodeMart is a software marketplace helping developers turn projects into profitable ventures.
+                  {/* <span className="text-indigo-600">
+                    {" "} */}
+                    
+                  {/* </span>{" "} */}
+                  
+                  {/* <span className="text-indigo-600"> </span> */}
                 </h2>
                 
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-extra">
-                  Our task was to craft a bold, conversion-focused website that
-                  reflects their innovative approach and expertise, while making
-                  their platform accessible and makes their numbers shine.
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-extra pr-7">
+                  Our task was to create a bold, conversion-focused website that embodies their innovative approach and domain expertise. We redesigned the platform to not only be visually compelling but also highly accessible and intuitive, ensuring users can explore their products effortlessly while highlighting the metrics and achievements that set them apart.
                 </p>
               </div>
 
-              {/* Right Content - Project Showcase */}
-              <div className="relative animate-fade-in rounded-2xl overflow-hidden">
-                <img src={lap} className="w-full p-0 m-0" />
+              {/* Right Content - Animated Logo Grid */}
+              <div className="relative animate-fade-in overflow-hidden h-[560px] w-[150%] grid-pause-on-hover">
+                {/* Hidden barrier mask */}
+                <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none">
+                
+                {/* First Row - Scrolling container */}
+                <div className="logo-scroll-container flex gap-6 absolute mb-6">
+                  {/* Grid 1 (Large left) */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    {/* LARGE LEFT */}
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    {/* Small top */}
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 1</span>
+                    </div>
+                    {/* Small bottom */}
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 2</span>
+                    </div>
+                  </div>
+
+                  {/* Duplicate Grid 1 for seamless scroll */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 1</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 2</span>
+                    </div>
+                  </div>
+
+                  {/* Second Duplicate Grid 1 for smoother scroll */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 1</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 2</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Second Row - Scrolling container (directly below) */}
+                <div className="logo-scroll-container flex gap-6 absolute top-[286px]">
+
+                  {/* Grid 2 (Large right) */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    {/* Small top */}
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 3</span>
+                    </div>
+                    {/* LARGE RIGHT */}
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    {/* Small bottom */}
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 4</span>
+                    </div>
+                  </div>
+
+                  {/* Duplicate Grid 2 for seamless scroll */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 3</span>
+                    </div>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 4</span>
+                    </div>
+                  </div>
+
+                  {/* Second Duplicate Grid 2 for smoother scroll */}
+                  <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 3</span>
+                    </div>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    </div>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
+                      <span className="text-gray-400 font-bold">Small 4</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
         </section>
 
         {/* Stats Section */}
         <section className="pb-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-left">
+              <button className="group flex items-left gap-2 bg-transparent text-black border border-[#1F004D] px-8 py-4 rounded-full font-semibold text-md hover:shadow-lg transition-all duration-300 hover:scale-105">
+                Sell Your Product
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
           {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -310,16 +407,16 @@ const Home = () => {
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
 
               {/* Heading */}
-              <h2 className="text-3xl md:text-4xl pt-5 font-bold text-gray-900">
+              {/* <h2 className="text-3xl md:text-4xl pt-5 font-bold text-gray-900">
                 We only deliver results.
               </h2>
 
               <p className="text-gray-500 mt-2 text-lg">
                 We don’t use excuses or something. Okay maybe sometimes.
-              </p>
+              </p> */}
 
               {/* Stats Grid */}
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 auto-rows-fr">
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 auto-rows-fr">
 
                 {stats.map((stat, index) => (
                   <div
@@ -327,11 +424,11 @@ const Home = () => {
                     className="gradient-card p-[2px] flex flex-col h-full"
                   >
                     <div className="space-y-2 p-8 bg-[#F3F3F7] rounded-2xl min-h-[200px] flex flex-col justify-center h-full">
-                      <h3 className="text-4xl font-bold text-[#404054]">
+                      <h3 className="text-2xl font-bold text-[#404054]">
                         {stat.value}
                       </h3>
 
-                      <p className="text-[#404054] font-semibold">{stat.label}</p>
+                      <p className="text-[#404054] text-xl font-semibold">{stat.label}</p>
 
                       <p className="text-[#2B2D33] text-sm leading-relaxed">
                         {stat.description}

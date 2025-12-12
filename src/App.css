@@ -31,6 +31,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -46,6 +47,7 @@
     opacity: 0;
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -61,6 +63,27 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a4b1c7; /* Tailwind gray-200 */
+  background: #a4b1c7;
+  /* Tailwind gray-200 */
   border-radius: 10px;
+}
+
+.logo-scroll-container {
+  display: flex;
+  white-space: nowrap;
+  animation: logoscroll 45s linear infinite;
+}
+
+.grid-pause-on-hover:hover .logo-scroll-container {
+  animation-play-state: paused;
+}
+
+@keyframes logoscroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-33.33%);
+  }
 }
