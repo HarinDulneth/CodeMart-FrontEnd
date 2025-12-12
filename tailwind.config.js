@@ -81,6 +81,11 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-in",
       },
+      fontWeight: {
+        extra: '500',
+        semixbold: '650',
+        ultrabold: '950',
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

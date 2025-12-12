@@ -135,7 +135,7 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const getProfilePic = () => {
-    return user?.profilePicture ?? null;
+    return user?.profilePicture;
   };
 
   const mapEnumToCategory = (category: string): string => {
@@ -224,7 +224,7 @@ const Navbar = () => {
                             <div className="flex-1 flex flex-col justify-between">
                               <div>
                                 <div className="flex items-center gap-3 mb-2">
-                                  <h4 className="font-semibold text-[#0B336A] text-base group-hover:text-black transition-colors">
+                                  <h4 className="font-semibold text-[#030D1C] text-base group-hover:text-black transition-colors">
                                     {project.name}
                                   </h4>
                                   <span className="text-xs text-[#0B336A] font-semibold bg-[#E0E0EB] px-3 py-1 rounded-full">
