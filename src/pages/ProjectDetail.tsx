@@ -296,10 +296,6 @@ const ProjectDetail = () => {
     checkStatus();
   }, [id, userId, success]);
 
-  const getProfilePic = (user: any) => {
-    return user?.profilePicture ?? null;
-  };
-
   const calculateRating = (project: any) =>{
      if (!project?.review || project.review.length === 0) return 0;
 
@@ -790,10 +786,10 @@ The platform is fully responsive and optimized for performance, with clean, main
                       
                         <img
                             src={
-                              getProfilePic(review.reviewer) ??
+                              review.reviewer?.profilePicture ||
                               "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
                             }
-                        alt={review.reviewer.firstName +" "+ review.reviewer.lastName}
+                        alt={review.reviewer?.firstName +" "+ review.reviewer?.lastName}
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div className="flex-1">
