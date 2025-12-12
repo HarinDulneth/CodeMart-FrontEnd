@@ -151,17 +151,20 @@ const AllProjects = () => {
 
     setTypingTimeout(timeout);
   }
- const calculateRating = (project: any) =>{
-     if (!project?.review || project.review.length === 0) return 0;
 
-    const total = project.review.reduce(
+ 
+   const calculateRating = (project: any) =>{
+     if (!project?.Review || project.Review.length === 0) return 0;
+
+    const total = project.Review.reduce(
       (sum: number, r: any) => sum + r.rating,
       0
     );
 
-    return Number((total / project.review.length).toFixed(1));
+    return Number((total / project.Review.length).toFixed(1));
 
   }
+
 
     const categories = [
     "All",
@@ -240,7 +243,7 @@ const AllProjects = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className="lg:w-64">
-            <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6 lg:hidden">
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button
@@ -385,7 +388,7 @@ const AllProjects = () => {
                 {allProjects.map((project, index) => (
                   <div
                     key={project.id}
-                    className="bg-white rounded-2xl shadow-sm overflow-hidden card-shadow animate-fade-in"
+                    className="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow hover:shadow-2xl animate-fade-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <img
@@ -395,35 +398,36 @@ const AllProjects = () => {
                     />
 
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex  items-center justify-between mb-3">
                         <span className="text-xs text-[#0B336A] font-semibold bg-[#DAE8FB] px-3 py-1 rounded-full">
                           {mapEnumToCategory(project.Category)}
                         </span>
-                        <div className="flex items-center">
-                          
-                          
-                           {Array.from({ length: 5 }).map((_, index) => {
-                                  return (
-                                    <Star
-                                      key={index}
-                                      className={`h-4 w-4 ${
-                                        index < calculateRating(project)
-                                          ? "text-yellow-400 fill-current" // full star
-                                          : "text-gray-300"              // empty star
-                                      }`}
-                                    />
-                                  );
-                                })}
-                          <span className="text-xs text-gray-500 ml-1">
-                            ({project.Review.length})
-                          </span>
-                        </div>
+                        
+                        
                       </div>
 
                       <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
                         {project.Name}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      <div className="flex items-center">
+                          
+                          
+                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <Star
+                                              key={star}
+                                              className={`h-5 w-5 ${
+                                                star <= Math.round(calculateRating(project))
+                                                  ? "text-yellow-400 fill-current"
+                                                  : "text-gray-300"
+                                              }`}
+                                            />
+                                          ))}
+
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({project.Review.length} Reviews)
+                          </span>
+                        </div>
+                      <p className="text-gray-600 text-sm mb-4 mt-2 line-clamp-2">
                         {project.Description}
                       </p>
 
