@@ -304,7 +304,9 @@ const ProjectDetail = () => {
       0
     );
 
-    return Number((total / project.review.length).toFixed(1));
+    var num= Number((total / project.review.length).toFixed(1));
+    console.log(num);
+    return num;
 
   }
 
@@ -794,9 +796,15 @@ The platform is fully responsive and optimized for performance, with clean, main
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
                             {review.reviewer.firstName +" "+ review.reviewer.lastName}
                           </h4>
+                          <p className="text-sm ">  {review.dateAdded}</p>
+                          
+
+                          </div>
+                          
                           <div className="flex items-center">
                             {[1, 2, 3, 4, 5].map((star) => (
                     <Star

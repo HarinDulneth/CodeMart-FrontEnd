@@ -46,17 +46,15 @@ const Navbar = () => {
   //   }
   // }
 
-   const calculateRating = (project: any) =>{
-     if (!project?.review || project.review.length === 0) return 0;
+const calculateRating = (project: any) => {
+  const reviews = project?.Review ?? project?.review ?? [];
+  if (reviews.length === 0) return 0;
 
-    const total = project.review.reduce(
-      (sum: number, r: any) => sum + r.rating,
-      0
-    );
+  const total = reviews.reduce((sum: number, r: any) => sum + r.rating, 0);
+  return Number((total / reviews.length).toFixed(1));
+};
 
-    return Number((total / project.review.length).toFixed(1));
 
-  }
 
   const user = getCurrentUser();
 
@@ -202,7 +200,7 @@ const Navbar = () => {
                   
                   {/* Search Results Floating Panel */}
                   {searchQuery && results.length > 0 && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-10 pt-10  bg-white rounded-3xl shadow-sm border border-gray-200 z-[100] max-h-[600px] overflow-y-auto w-[50vw]">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 px-6 pt-6  bg-white rounded-3xl shadow-sm border border-gray-200 z-[100] max-h-[600px] overflow-y-auto w-[50vw]">
                       <div className="flex flex-col ">
                         {results.slice(0, 12).map((project: any) => (
                           <Link
@@ -248,21 +246,21 @@ const Navbar = () => {
                                 </div>
                               </div>
                                <div className="flex items-center gap-0 pt-2">
-                                    {Array.from({ length: 5 }).map((_, index) => {
-                                                                     return (
-                                                                       <Star
-                                                                         key={index}
-                                                                         className={`h-4 w-4 ${
-                                                                           index < calculateRating(project)
-                                                                             ? "text-yellow-400 fill-current" // full star
-                                                                             : "text-black/30"              // empty star
-                                                                         }`}
-                                                                       />
-                                                                     );
-                                                                   })}
-                                    <span className="text-xs text-gray-500 ml-1">
-                                      ({project.review?.length || 0})
-                                    </span>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                               <Star
+                                                                                 key={star}
+                                                                                 className={`h-5 w-5 ${
+                                                                                   star <= Math.round(calculateRating(project))
+                                                                                     ? "text-yellow-400 fill-current"
+                                                                                     : "text-gray-300"
+                                                                                 }`}
+                                                                               />
+                                                                             ))}
+                                   
+                                                             <span className="text-xs text-gray-500 ml-1">
+                                                              ({project.review?.length ?? 0} Reviews)
+
+                                                             </span>
                                   </div>
                               
                               <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#5C616B]/15">
@@ -298,14 +296,14 @@ const Navbar = () => {
                   
                   {/* No Results Message */}
                   {searchQuery && results.length === 0 && !isSearching && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 px-6 pt-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
                       <p className="text-gray-600 text-base">No projects found for "<strong>{searchQuery}</strong>"</p>
                     </div>
                   )}
                   
                   {/* Loading State */}
                   {searchQuery && isSearching && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 px-6 pt-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] p-8 text-center w-[900px]">
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-2 h-2 bg-[#08244B] rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-[#08244B] rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>

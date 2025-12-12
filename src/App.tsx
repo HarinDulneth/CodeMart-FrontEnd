@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "./components/ui/sonner";
@@ -14,13 +14,31 @@ import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
 import EditProject from "./pages/EditProject";
+import Preloader from "./components/Preloader";
 import "./App.css";
 import HowItWorksScroll from "./components/ui/How/HowItWorks";
 import ScrollToTop from "./ScrollToTop";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if preloader has been shown before
+    const hasSeenPreloader = sessionStorage.getItem('hasSeenPreloader');
+    
+    if (hasSeenPreloader) {
+      setLoading(false);
+    }
+  }, []);
+
+  const handlePreloaderComplete = () => {
+    setLoading(false);
+    sessionStorage.setItem('hasSeenPreloader', 'true');
+  };
+
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
+      {loading && <Preloader onComplete={handlePreloaderComplete} />}
       <Router>
         <ScrollToTop />
         <div className="min-h-screen bg-gray-50 flex flex-col">
