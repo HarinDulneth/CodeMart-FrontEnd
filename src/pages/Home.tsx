@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
 import "./Home.css";
 import gsap from "gsap";
@@ -85,6 +85,8 @@ const Home = () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
+
+  const navigate = useNavigate();
 
   const featuredProjects = [
     {
@@ -376,7 +378,10 @@ const Home = () => {
         <section className="pb-24 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-left">
-              <button className="group flex items-left gap-2 bg-transparent text-black border border-[#1F004D] px-8 py-4 rounded-full font-semibold text-md hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <button 
+                className="group flex items-left gap-2 bg-transparent text-black border border-[#1F004D] px-8 py-4 rounded-full font-semibold text-md hover:shadow-lg transition-transform duration-300 hover:scale-105"
+                onClick={() => navigate('/sell')}
+              >
                 Sell Your Product
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -430,7 +435,7 @@ const Home = () => {
 
                       <p className="text-[#404054] text-xl font-semibold">{stat.label}</p>
 
-                      <p className="text-[#2B2D33] text-sm leading-relaxed">
+                      <p className="text-[#2B2D33] text-md leading-relaxed">
                         {stat.description}
                       </p>
                     </div>
