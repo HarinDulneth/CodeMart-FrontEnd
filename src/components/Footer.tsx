@@ -76,7 +76,7 @@ const Footer = () => {
       {/* Actual Footer Content - Overlapping */}
       <div
         ref={contentRef}
-        className="relative bg-[#171717] text-white rounded-t-3xl shadow-2xl z-20 max-w-[1700px] mx-auto"
+        className="relative bg-[#121212] text-white rounded-t-3xl shadow-2xl z-20 max-w-[1700px] mx-auto"
       >
         <div className="px-6 sm:px-8 lg:px-12 py-32">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8">

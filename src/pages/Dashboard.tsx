@@ -468,12 +468,18 @@ export default function Dashboard() {
             </div>
             <Card>
               <CardContent className="pt-6">
-                {transactions.map((transaction) => (
-                  <TransactionRow
-                    key={transaction.id}
-                    transaction={transaction}
-                  />
-                ))}
+                {userSales.length > 0 ? (
+                  userSales.map((sale) => (
+                    <TransactionRow
+                      key={sale.id}
+                      transaction={sale}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No transactions yet</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
