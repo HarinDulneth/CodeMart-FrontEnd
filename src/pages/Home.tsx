@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
 import "./Home.css";
@@ -6,10 +6,22 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
+
+// Import images from New folder
+import img1 from "../assets/New folder/61164f31a004c_visual_studio_code_python_ide.png";
+import img2 from "../assets/New folder/select-debug-pane.png";
+import img3 from "../assets/New folder/jetbrains-pycharm.jpg";
+import img4 from "../assets/New folder/0-software-development-business-plan.jpg";
+import img5 from "../assets/New folder/original-f751ef2ec4eeea44109378c2e3baf063.webp";
+import img6 from "../assets/New folder/images.jpg";
+import img7 from "../assets/New folder/images (1).jpg";
+import img8 from "../assets/New folder/images (2).jpg";
 import TeamCarousel from "../components/TeamCarousel";
 import HowItWorksScroll from "../components/ui/How/HowItWorks";
+import { Gallery6 } from "../components/ui/gallery6";
 import DemoOne from "../components/DemoOne";
 import { ThreeDMarquee } from "../components/ui/3d-marquee";
+import api from "../services/api";
 
 const Home = () => {
   
@@ -88,41 +100,47 @@ const Home = () => {
 
   const navigate = useNavigate();
 
-  const featuredProjects = [
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      description: "Full-stack React & Node.js e-commerce solution",
-      price: 299,
-      rating: 4.8,
-      image:
-        "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Web Development",
-      seller: "TechCorp",
-    },
-    {
-      id: 2,
-      title: "Mobile Banking App",
-      description: "Secure React Native banking application",
-      price: 499,
-      rating: 4.9,
-      image:
-        "https://neontri.com/wp-content/uploads/2024/04/Illustration-Innovative_Features_That_will_Define_Mobile_Banking_Apps_By_2030_512x512_v001.png",
-      category: "Mobile Development",
-      seller: "FinTech Solutions",
-    },
-    {
-      id: 3,
-      title: "AI Chat Assistant",
-      description: "Python-based AI chatbot with NLP capabilities",
-      price: 399,
-      rating: 4.7,
-      image:
-        "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "AI/ML",
-      seller: "AI Innovations",
-    },
-  ];
+  const [featuredProjects, setFeaturedProjects] = useState<any[]>([]);
+
+  const calculateRating = (project: any) => {
+    if (!project?.review || project.review.length === 0) return 0;
+
+    const total = project.review.reduce(
+      (sum: number, r: any) => sum + r.rating,
+      0
+    );
+
+    var num = Number((total / project.review.length).toFixed(1));
+    return num;
+  };
+
+  const mapEnumToCategory = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+      "WebDevelopment": "Web Development",
+      "MobileDevelopment": "Mobile Development",
+      "ArtificialIntelligence": "Artificial Intelligence",
+      "DesktopApps": "Desktop Apps",
+      "APIs": "APIs",
+      "Games": "Game Development",
+      "DevOps": "DevOps",
+      "MachingLearning": "Maching Learning",
+     
+    };
+    return categoryMap[category] || category;
+  };
+
+  useEffect(() => {
+    const fetchFeaturedProjects = async () => {
+      try {
+        const data = await api.projects.getFeatured();
+        console.log(data);
+        setFeaturedProjects(data);
+      } catch (error) {
+        console.error('Error fetching featured projects:', error);
+      }
+    };
+    fetchFeaturedProjects();
+  }, []);
 
   // const stats = [
   //   { label: "Projects Sold", value: "10,000+", icon: Code2 },
@@ -193,14 +211,14 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
                 <Link
                   to="/projects"
-                  className="btn text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center bg-[#1F004D] justify-center hover:bg-indigo-700"  /* bg-gradient-to-r from-[rgb(65,0,165)] to-[rgb(110,0,165)] */
+                  className="group btn text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-transform duration-300 hover:scale-105 flex items-center bg-gradient-to-r from-[#591A89] to-[#8C3597] justify-center hover:bg-indigo-700"  /* bg-gradient-to-r from-[rgb(65,0,165)] to-[rgb(110,0,165)] */
                 >
                   Browse Projects
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   to="/sell"
-                  className="bg-white text-[#1F004D] px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 border border-[#1F004D]"
+                  className="bg-white text-[#1F004D] px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-transform hover:scale-105 duration-300 border border-[#1F004D]"
                 >
                   Start Selling
                 </Link>
@@ -258,20 +276,19 @@ const Home = () => {
                 
               
               <div className="animate-fade-in">
-                <div className="text-sm text-indigo-600 font-semibold mb-4"></div>
-                <h2 className="text-2xl md:text-3xl font-bold font-poppins text-gray-900 mb-6">
-                  CodeMart is a software marketplace helping developers turn projects into profitable ventures.
-                  {/* <span className="text-indigo-600">
-                    {" "} */}
-                    
-                  {/* </span>{" "} */}
-                  
-                  {/* <span className="text-indigo-600"> </span> */}
+                <div className="text-sm text-[#591A89] font-semibold mb-4"></div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  CodeMart is a software marketplace
+                  <span className="text-[#591A89]">
+                    {" "}
+                    helping developers
+                  </span>{" "}
+                  turn projects into
+                  <span className="text-[#591A89]"> profitable ventures.</span>
                 </h2>
                 
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-extra pr-7">
-                  Our task was to create a bold, conversion-focused website that embodies their innovative approach and domain expertise. We redesigned the platform to not only be visually compelling but also highly accessible and intuitive, ensuring users can explore their products effortlessly while highlighting the metrics and achievements that set them apart.
-                </p>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium pr-7">
+                  Our task was to craft a bold, conversion-focused website that reflects their innovative approach and expertise, while making their platform accessible and makes their numbers shine.                </p>
               </div>
 
               {/* Right Content - Animated Logo Grid */}
@@ -284,42 +301,42 @@ const Home = () => {
                   {/* Grid 1 (Large left) */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     {/* LARGE LEFT */}
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                     {/* Small top */}
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 1</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img2} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                     {/* Small bottom */}
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 2</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img3} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
                   {/* Duplicate Grid 1 for seamless scroll */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 1</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img5} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 2</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img6} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
                   {/* Second Duplicate Grid 1 for smoother scroll */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 1</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img2} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 2</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img3} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
                 </div>
@@ -329,42 +346,42 @@ const Home = () => {
                   {/* Grid 2 (Large right) */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     {/* Small top */}
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 3</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                     {/* LARGE RIGHT */}
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img5} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                     {/* Small bottom */}
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 4</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img6} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
                   {/* Duplicate Grid 2 for seamless scroll */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 3</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img2} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 4</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img3} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
                   {/* Second Duplicate Grid 2 for smoother scroll */}
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 3</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-300 text-2xl font-bold">BIG</span>
+                    <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img5} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-8 flex items-center justify-center border border-gray-800">
-                      <span className="text-gray-400 font-bold">Small 4</span>
+                    <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
+                      <img src={img6} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
                 </div>
@@ -447,6 +464,8 @@ const Home = () => {
           </div>
         </section>
 
+        
+
         <div className="techslider">
       <div className="ticker" data-duration="20">
         <div className="ticker-wrap">
@@ -474,12 +493,29 @@ const Home = () => {
     </div>
 
         {/* Featured Projects */}
-        <section className="py-16 bg-gray-50">
+
+        {/* Featured Projects Carousel */}
+        <Gallery6
+          heading="Featured Projects"
+          demoUrl="/projects"
+          items={featuredProjects.map(project => ({
+            id: project.id.toString(),
+            title: project.name,
+            summary: project.description,
+            url: `/project/${project.id}`,
+            image: project.imageUrls?.[0] || '/placeholder.jpg',
+            category: mapEnumToCategory(project.category),
+            rating: calculateRating(project),
+            price: project.price,
+            seller: project.owner?.fullName || 'Unknown',
+            primaryLanguages: project.primaryLanguages || [],
+            reviewCount: project.review?.length || 0,
+          }))}
+        />
+
+        {/* <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              {/* <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Top Projects
-              </h2> */}
               <h1 className="featured-projects-title">Top Projects</h1>
               <p className="text-2xl text-gray-600 max-w-3xl mx-auto mt-10">
                 Discover high-quality software projects from our top developers
@@ -545,7 +581,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        </section>
+        </section> */}
       </div>
 
       <TeamCarousel />

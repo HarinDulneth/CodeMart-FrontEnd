@@ -4,7 +4,7 @@
  */
 
 // Use environment variable in production, or relative path in development
-const API_BASE_URL = import.meta.env.VITE_API_URL 
+const API_BASE_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api';
 
@@ -54,12 +54,12 @@ const apiRequest = async <T = any>(
   options: RequestInit = {}
 ): Promise<T> => {
   const token = getAuthToken();
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   };
-  
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -71,7 +71,7 @@ const apiRequest = async <T = any>(
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    
+
     // Handle unauthorized (401) - token might be expired
     if (response.status === 401) {
       setAuthToken(null);
@@ -90,7 +90,7 @@ const apiRequest = async <T = any>(
       const text = await response.text();
       data = text ? { message: text } : { message: `HTTP error! status: ${response.status}` };
     }
-    
+
     if (!response.ok) {
       // Extract error message from various response formats
       // Handle ASP.NET Core validation errors
@@ -101,8 +101,8 @@ const apiRequest = async <T = any>(
             return `${field}: ${msgArray.join(', ')}`;
           })
           .join('; ');
-        const errorMessage = data.title 
-          ? `${data.title}. ${validationErrors}` 
+        const errorMessage = data.title
+          ? `${data.title}. ${validationErrors}`
           : validationErrors;
         throw new Error(JSON.stringify(data));
       }
@@ -124,7 +124,7 @@ const apiRequest = async <T = any>(
 /**
  * API Methods
  */
-export const api = {       
+export const api = {
   // Auth endpoints
   auth: {
     login: async (email: string, password: string) => {
@@ -166,7 +166,7 @@ export const api = {
       return response;
     },
 
-    signup: async (userData: any)=>{
+    signup: async (userData: any) => {
       const response = await apiRequest<{ token: string }>('/auth/signup', {
         method: 'POST',
         body: JSON.stringify(userData),
@@ -209,10 +209,10 @@ export const api = {
     getBoughtProjects: async (id: string | number) => {
       return apiRequest<any[]>(`/user/${id}/boughtprojects`);
     },
-    getCartItems:async (id: string | number)=>{
-      return apiRequest<any[]>(`/user/${id}/cart`) 
+    getCartItems: async (id: string | number) => {
+      return apiRequest<any[]>(`/user/${id}/cart`)
     },
-    update: async (id: string| number, userData: any) => {
+    update: async (id: string | number, userData: any) => {
       const user = await apiRequest<any>(`/user/update/${id}`, {
         method: 'PUT',
         body: JSON.stringify(userData),
@@ -264,7 +264,7 @@ export const api = {
       return apiRequest<any[]>(`/user/sales/${id}/${month}`)
     },
   },
-  
+
   // Project endpoints
   projects: {
     getAll: async () => {
@@ -306,6 +306,9 @@ export const api = {
     getSortedByPrice: async () => {
       return apiRequest<any[]>('/project/sortedbyprice');
     },
+    getFeatured: async () => {
+      return apiRequest<any[]>('/project/featured');
+    },
     approve: async (id: string | number) => {
       return apiRequest<any>(`/project/approve/${id}`);
     },
@@ -334,7 +337,7 @@ export const api = {
         body: JSON.stringify(orderData),
       });
     },
-    getProjectCount: async (id: string| number) => {
+    getProjectCount: async (id: string | number) => {
       return apiRequest<any>(`/order/projectcount?projectId=${id}`);
     },
     getOrdersforUser: async (id: string | number) => {
