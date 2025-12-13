@@ -287,7 +287,7 @@ const Home = () => {
                   <span className="text-[#591A89]"> profitable ventures.</span>
                 </h2>
                 
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium pr-7">
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium pr-7">
                   Our task was to craft a bold, conversion-focused website that reflects their innovative approach and expertise, while making their platform accessible and makes their numbers shine.                </p>
               </div>
 

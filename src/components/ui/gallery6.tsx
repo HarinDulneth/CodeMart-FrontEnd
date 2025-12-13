@@ -178,15 +178,15 @@ const Gallery6 = ({
     <section className="py-32">
       <div className="container">
         <div className="mb-8 flex flex-col justify-between md:mb-14 md:flex-row md:items-end lg:mb-16">
-            <div>
-            <h2 className="mb-3 featured-projects-title justify-self-center md:mb-4 lg:mb-6">
+            <div className="text-center md:text-left mx-auto md:mx-0">
+            <h2 className="mb-3 featured-projects-title justify-items-center md:mb-4 lg:mb-6">
                 {heading}
             </h2>
             <p className="text-2xl text-gray-600 max-w-3xl">
                 Discover high-quality software projects from our top developers
             </p>
             </div>
-            <div className="mt-8 flex shrink-0 items-center justify-start gap-2">
+            <div className="mt-8 flex shrink-0 items-center justify-start mr-5 gap-2">
                 <Button
                 size="icon"
                 variant="outline"
@@ -212,11 +212,12 @@ const Gallery6 = ({
             </div>
         </div>
         </div>
-        <div className="w-full">
+        <div className="container">
             <Carousel
             setApi={setCarouselApi}
             opts={{
                 align: "start",
+                slidesToScroll: 1,
                 breakpoints: {
                 "(max-width: 768px)": {
                     dragFree: true,
@@ -225,9 +226,9 @@ const Gallery6 = ({
             }}
             className="relative left-[-1rem]"
             >
-            <CarouselContent className="-mr-4 mb-7 ml-8 2xl:ml-[max(8rem,calc(50vw-700px+1rem))] 2xl:mr-[max(0rem,calc(50vw-700px-1rem))]">
+            <CarouselContent className="mb-7">
                 {items.map((item) => (
-                <CarouselItem key={item.id} className="pl-7 md:max-w-[452px]">
+                <CarouselItem key={item.id} className="pl-7 pr-2 md:max-w-[452px]">
                     <a
                     href={item.url}
                     className="group flex flex-col justify-between overflow-hidden rounded-2xl card-shadow animate-fade-in pb-5"
