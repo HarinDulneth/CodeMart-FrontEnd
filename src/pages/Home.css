@@ -188,7 +188,7 @@ h2 {
 
 /* Modified version for featured projects section */
 .featured-projects-title {
-  font-size: 7.5rem;
+  font-size: 4.5rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.02em;
@@ -197,9 +197,7 @@ h2 {
   pointer-events: none;
   white-space: nowrap;
   font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
-  background: linear-gradient(to bottom,
-      rgb(8 42 123 / 35%) 53%,
-      rgb(255 255 255 / 0%) 76%);
+  background: rgb(5 35 100/ 50%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
