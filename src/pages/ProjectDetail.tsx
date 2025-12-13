@@ -65,6 +65,32 @@ const ProjectDetail = () => {
     return categoryMap[category] || category;
   };
 
+  const getTimeAgo = (dateString: string): string => {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffMs = now.getTime() - past.getTime();
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+
+    if (diffSeconds < 60) {
+      return diffSeconds === 1 ? '1 second ago' : `${diffSeconds} seconds ago`;
+    } else if (diffMinutes < 60) {
+      return diffMinutes === 1 ? '1 minute ago' : `${diffMinutes} minutes ago`;
+    } else if (diffHours < 24) {
+      return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+    } else if (diffDays < 30) {
+      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+    } else if (diffMonths < 12) {
+      return diffMonths === 1 ? '1 month ago' : `${diffMonths} months ago`;
+    } else {
+      return diffYears === 1 ? '1 year ago' : `${diffYears} years ago`;
+    }
+  };
+
   const handleToggleWishlist = async () => {
     try {
       if (!id) {
@@ -779,7 +805,7 @@ The platform is fully responsive and optimized for performance, with clean, main
               )}
 
               <div className="space-y-6 max-h-96 overflow-y-auto pr-4">
-                {testimonials?.map((review, index) => (
+                {testimonials?.sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()).map((review, index) => (
                   <div
                     key={index}
                     className="border-b border-gray-200 pb-6 last:border-b-0"
@@ -800,7 +826,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                             <h4 className="font-semibold text-gray-900">
                             {review.reviewer.firstName +" "+ review.reviewer.lastName}
                           </h4>
-                          <p className="text-sm ">  {review.dateAdded}</p>
+                          <p className="text-sm text-gray-500">{getTimeAgo(review.dateAdded)}</p>
                           
 
                           </div>
