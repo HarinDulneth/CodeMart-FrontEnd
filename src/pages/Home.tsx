@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
-
+import Featured_05 from "@/components/ui/globe-feature-section";
 // Import images from New folder
 import img1 from "../assets/New folder/61164f31a004c_visual_studio_code_python_ide.png";
 import img2 from "../assets/New folder/select-debug-pane.png";
@@ -22,6 +22,7 @@ import { Gallery6 } from "../components/ui/gallery6";
 import DemoOne from "../components/DemoOne";
 import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
+import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 
 const Home = () => {
   
@@ -149,6 +150,33 @@ const Home = () => {
   //   { label: "Secure Transactions", value: "100%", icon: Shield },
   // ];
 
+  const testimonials = [
+    {
+      quote:
+        "I was impressed by the food! And I could really tell that they use high-quality ingredients. The staff was friendly and attentive. I'll definitely be back for more!",
+      name: "Tamar Mendelson",
+      designation: "Restaurant Critic",
+      src:
+        "https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "This place exceeded all expectations! The atmosphere is inviting, and the staff truly goes above and beyond. I'll keep returning for more exceptional dining experience.",
+      name: "Joe Charlescraft",
+      designation: "Frequent Visitor",
+      src:
+        "https://images.unsplash.com/photo-1628749528992-f5702133b686?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "Shining Yam is a hidden gem! The impeccable service and overall attention to detail created a memorable experience. I highly recommend it!",
+      name: "Martina Edelweist",
+      designation: "Satisfied Customer",
+      src:
+        "https://images.unsplash.com/photo-1524267213992-b76e8577d046?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+    },
+  ];
+
   const stats = [
   {
     value: "420%",
@@ -271,50 +299,55 @@ const Home = () => {
         {/* Project Spotlight Section */}
         <section className="pt-32 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-[50%_50%] gap-10 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[50%_50%] items-center">
               {/* Left Content */}
-                
-              
               <div className="animate-fade-in">
                 <div className="text-sm text-[#591A89] font-semibold mb-4"></div>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                  CodeMart is a software marketplace
+                  Connecting Developers
                   <span className="text-[#591A89]">
                     {" "}
-                    helping developers
+                    Worldwide
                   </span>{" "}
-                  turn projects into
-                  <span className="text-[#591A89]"> profitable ventures.</span>
+                  to
+                  <span className="text-[#591A89]"> Build, Sell</span>
+                  {" "} and
+                  <span className="text-[#591A89]"> Scale</span>
+                  {" "}
+                  Software into
+                  <span className="text-[#591A89]"> Profitable</span>
+                  {" "} Ventures.
                 </h2>
                 
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium pr-7">
-                  Our task was to craft a bold, conversion-focused website that reflects their innovative approach and expertise, while making their platform accessible and makes their numbers shine.                </p>
+                  CodeMart is a global software marketplace designed to unlock developer potential by transforming innovative projects into sustainable, revenue-generating businesses through trust, visibility, and scale.
+                </p>
               </div>
 
-              {/* Right Content - Animated Logo Grid */}
+              {/* Right Content - Animated Logo Grid
               <div className="relative animate-fade-in overflow-hidden h-[560px] w-[150%] grid-pause-on-hover">
-                {/* Hidden barrier mask */}
+                Hidden barrier mask
                 <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none">
                 
-                {/* First Row - Scrolling container */}
+                First Row - Scrolling container
                 <div className="logo-scroll-container flex gap-6 absolute mb-6">
-                  {/* Grid 1 (Large left) */}
+                  Grid 1 (Large left)
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    {/* LARGE LEFT */}
+                    LARGE LEFT
                     <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    {/* Small top */}
+                    Small top
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img2} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    {/* Small bottom */}
+                    Small bottom
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img3} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
-                  {/* Duplicate Grid 1 for seamless scroll */}
+                  Duplicate Grid 1 for seamless scroll
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
@@ -327,7 +360,7 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Second Duplicate Grid 1 for smoother scroll */}
+                  Second Duplicate Grid 1 for smoother scroll
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
@@ -340,26 +373,26 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-                {/* Second Row - Scrolling container (directly below) */}
+                Second Row - Scrolling container (directly below)
                 <div className="logo-scroll-container flex gap-6 absolute top-[286px]">
 
-                  {/* Grid 2 (Large right) */}
+                  Grid 2 (Large right)
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
-                    {/* Small top */}
+                    Small top
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    {/* LARGE RIGHT */}
+                    LARGE RIGHT
                     <div className="row-span-2 bg-[#1a1a1a] h-[260px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img5} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
-                    {/* Small bottom */}
+                    Small bottom
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img6} alt="" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                   </div>
 
-                  {/* Duplicate Grid 2 for seamless scroll */}
+                  Duplicate Grid 2 for seamless scroll
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img1} alt="" className="w-full h-full object-cover rounded-lg"/>
@@ -372,7 +405,7 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Second Duplicate Grid 2 for smoother scroll */}
+                  Second Duplicate Grid 2 for smoother scroll
                   <div className="grid grid-cols-2 grid-rows-2 gap-6 min-w-[600px]">
                     <div className="bg-[#1a1a1a] h-[120px] rounded-xl p-2 flex items-center justify-center border border-gray-800 overflow-hidden">
                       <img src={img4} alt="" className="w-full h-full object-cover rounded-lg"/>
@@ -386,13 +419,16 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
+
+            <Featured_05 />
+            
           </div>
         </div>
         </section>
 
         {/* Stats Section */}
-        <section className="pb-24 bg-white">
+        <section className="pb-24 pt-10 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-left">
               <button 
@@ -584,7 +620,36 @@ const Home = () => {
         </section> */}
       </div>
 
-      <TeamCarousel />
+      {/* <TeamCarousel /> */}
+
+      <section>
+    {/* Light testimonials section */}
+    <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
+      <h1 className="about-title" style={{ position: "relative", top: "auto", left: "auto", transform: "none", marginBottom: "3rem" }}>REVIEWS</h1>
+      <div
+        className="items-center justify-center relative flex"
+        style={{ maxWidth: "1456px" }}
+      >
+        <CircularTestimonials
+          testimonials={testimonials}
+          autoplay={true}
+          colors={{
+            name: "#0a0a0a",
+            designation: "#454545",
+            testimony: "#171717",
+            arrowBackground: "#141414",
+            arrowForeground: "#f1f1f7",
+            arrowHoverBackground: "#00A6FB",
+          }}
+          fontSizes={{
+            name: "28px",
+            designation: "20px",
+            quote: "20px",
+          }}
+        />
+      </div>
+    </div>
+    </section>
 
       {/* <HowItWorks/> */}
       {/* How It Works */}

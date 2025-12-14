@@ -193,13 +193,16 @@ h2 {
   text-transform: uppercase;
   letter-spacing: -0.02em;
   position: relative;
+  left: 50%;
+  transform: translateX(-50%);
   margin: 0 auto -30px auto;
   pointer-events: none;
   white-space: nowrap;
   font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
-  background: linear-gradient(to bottom,
+  /* background: linear-gradient(to bottom,
       rgb(8 42 123 / 35%) 53%,
-      rgb(255 255 255 / 0%) 76%);
+      rgb(255 255 255 / 0%) 76%); */
+  background: #08244B;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
