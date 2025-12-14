@@ -746,7 +746,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                 </button>
 
                 <button
-                  className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-all duration-300"
+                  className={`w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-all duration-300 ${boughtProject ? "bg-[#F9FAFB] text-[#111827] hover:bg-[#E5E7EB] hover:text-[#111827]" : "bg-green-600"}`}
                   onClick={handleBuy}
                 >
                   {boughtProject ? "Buy Again" : "Buy Now"}

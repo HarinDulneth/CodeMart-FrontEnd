@@ -26,11 +26,9 @@
   pointer-events: none;
   white-space: nowrap;
   font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
-  background: linear-gradient(
-    to bottom,
-    rgb(8 42 123 / 35%) 30%,
-    rgb(255 255 255 / 0%) 75%
-  );
+  background: linear-gradient(to bottom,
+      rgb(8 42 123 / 35%) 30%,
+      rgb(255 255 255 / 0%) 75%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -58,6 +56,7 @@
 
 .card {
   position: absolute;
+  width: ;
   width: ;
   height: 280px;
   background: transparent;
