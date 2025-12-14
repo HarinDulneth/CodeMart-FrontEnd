@@ -375,7 +375,12 @@ const AllProjects = () => {
             </div>
 
             {/* Projects Grid */}
-            {allProjects.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+                <p className="mt-4 text-gray-600 font-medium">Loading projects...</p>
+              </div>
+            ) : allProjects.length === 0 ? (
               <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <Package className="h-16 w-16 text-gray-300 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No Projects Found</h3>

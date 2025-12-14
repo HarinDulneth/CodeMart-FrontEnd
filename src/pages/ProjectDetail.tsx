@@ -14,6 +14,9 @@ import {
 import api, { getAuthToken, getCurrentUser } from "../services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/utils";
+import CheckoutForm from "@/components/CheckoutForm";
 
 const ProjectDetail = () => {
   const [formData, setFormData] = useState<{
@@ -25,6 +28,8 @@ const ProjectDetail = () => {
   });
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const userId = getCurrentUser().id;
   const [selectedImage, setSelectedImage] = useState(0);
@@ -36,6 +41,9 @@ const ProjectDetail = () => {
   const [addedToCart, setAddedtoCart] = useState(false);
   const [boughtProject, setBoughtProject] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [ownerRating, setOwnerRating] = useState(0);
+  const [owner, setOwner] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const categories = [
     "Web Development",
@@ -52,15 +60,15 @@ const ProjectDetail = () => {
 
   const mapEnumToCategory = (category: string): string => {
     const categoryMap: Record<string, string> = {
-      "WebDevelopment": "Web Development",
-      "MobileDevelopment": "Mobile Development",
+      WebDevelopment: "Web Development",
+      MobileDevelopment: "Mobile Development",
       "AI/ML": "Artificial Intelligence",
-      "DesktopApps": "Desktop Apps",
-      "APIs": "APIs",
-      "Games": "Game Development",
-      "DataScience": "Data Science",
-      "DevOps": "DevOps",
-      "ArtificialIntelligence": "Artificial Intelligence",
+      DesktopApps: "Desktop Apps",
+      APIs: "APIs",
+      Games: "Game Development",
+      DataScience: "Data Science",
+      DevOps: "DevOps",
+      ArtificialIntelligence: "Artificial Intelligence",
     };
     return categoryMap[category] || category;
   };
@@ -77,17 +85,17 @@ const ProjectDetail = () => {
     const diffYears = Math.floor(diffDays / 365);
 
     if (diffSeconds < 60) {
-      return diffSeconds === 1 ? '1 second ago' : `${diffSeconds} seconds ago`;
+      return diffSeconds === 1 ? "1 second ago" : `${diffSeconds} seconds ago`;
     } else if (diffMinutes < 60) {
-      return diffMinutes === 1 ? '1 minute ago' : `${diffMinutes} minutes ago`;
+      return diffMinutes === 1 ? "1 minute ago" : `${diffMinutes} minutes ago`;
     } else if (diffHours < 24) {
-      return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+      return diffHours === 1 ? "1 hour ago" : `${diffHours} hours ago`;
     } else if (diffDays < 30) {
-      return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+      return diffDays === 1 ? "1 day ago" : `${diffDays} days ago`;
     } else if (diffMonths < 12) {
-      return diffMonths === 1 ? '1 month ago' : `${diffMonths} months ago`;
+      return diffMonths === 1 ? "1 month ago" : `${diffMonths} months ago`;
     } else {
-      return diffYears === 1 ? '1 year ago' : `${diffYears} years ago`;
+      return diffYears === 1 ? "1 year ago" : `${diffYears} years ago`;
     }
   };
 
@@ -152,9 +160,9 @@ const ProjectDetail = () => {
         setAddedtoCart(true);
         toast.success("Added to cart!");
       }
-      
+
       // Dispatch event to update navbar cart count
-      window.dispatchEvent(new Event('cartUpdated'));
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (err: any) {
       console.error("Cart operation failed:", err);
 
@@ -187,13 +195,26 @@ const ProjectDetail = () => {
         return;
       }
 
-      await api.users.buyProject(userId, id);
-      setBoughtProject(true);
-      toast.success("Project purchased Successfully!");
+      // Create payment intent
+      const paymentData = {
+        userId: userId,
+        projectId: id,
+        amount: (projects as any).price * 100, // Convert to cents
+      };
+
+      const response = await api.users.buyProject(paymentData);
+
+      if (response.clientSecret) {
+        setClientSecret(response.clientSecret);
+        setShowPaymentModal(true);
+        console.log(response.clientSecret);
+      } else {
+        toast.error("Failed to initialize payment");
+      }
     } catch (err: any) {
       console.error("Purchasing operation failed:", err);
 
-      let errorMessage = "Failed to purchase. Please try again."
+      let errorMessage = "Failed to purchase. Please try again.";
 
       try {
         if (err instanceof Error) {
@@ -208,6 +229,18 @@ const ProjectDetail = () => {
 
       toast.error(errorMessage);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    setBoughtProject(true);
+    setShowPaymentModal(false);
+    setClientSecret(null);
+    toast.success("Payment successful! Project purchased.");
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+    setClientSecret(null);
   };
 
   const handleOpenReviewModal = () => {
@@ -250,7 +283,7 @@ const ProjectDetail = () => {
       const response = await api.reviews.create(id, reviewData);
       console.log("review", response);
       toast.success("Review added successfully!");
-      
+
       setFormData({ comment: "", rating: 0 });
       setShowReviewModal(false);
       setSuccess(true);
@@ -270,7 +303,6 @@ const ProjectDetail = () => {
         }
       }
 
-
       toast.error(errorMessage);
     } finally {
       setIsSubmittingReview(false);
@@ -282,14 +314,18 @@ const ProjectDetail = () => {
       try {
         if (!id) {
           console.warn("No project id provided in route params");
-          return;
+          setIsLoading(false);
+          return null;
         }
         const response = await api.projects.getById(id);
         setProjects(response);
         console.log(response);
         setShowVideo(!!response.videoUrl);
+        return response; // Return the project data
       } catch (err) {
         console.error("getting project failed:", err);
+        setIsLoading(false);
+        return null;
       }
     };
 
@@ -318,23 +354,48 @@ const ProjectDetail = () => {
       }
     };
 
-    fetchProject();
-    checkStatus();
+    const getOwnerRating = async (ownerId: any) => {
+      if (!ownerId) return;
+      const ownerRating = await api.projects.getOwnerRating(ownerId);
+      setOwnerRating(ownerRating);
+    };
+
+    const getOwner = async (ownerId: any) => {
+      if (!ownerId) return;
+      const owner = await api.users.getById(ownerId);
+      setOwner(owner);
+      console.log("owner", owner);
+    };
+
+    const loadAllData = async () => {
+      setIsLoading(true);
+      const projectData = await fetchProject();
+      await checkStatus();
+      
+      // Only call these if we have project data with ownerId
+      if (projectData && projectData.ownerId) {
+        await getOwnerRating(projectData.ownerId);
+        await getOwner(projectData.ownerId);
+      }
+      
+      setIsLoading(false);
+    };
+
+    loadAllData();
   }, [id, userId, success]);
 
-  const calculateRating = (project: any) =>{
-     if (!project?.review || project.review.length === 0) return 0;
+  const calculateRating = (project: any) => {
+    if (!project?.review || project.review.length === 0) return 0;
 
     const total = project.review.reduce(
       (sum: number, r: any) => sum + r.rating,
       0
     );
 
-    var num= Number((total / project.review.length).toFixed(1));
+    var num = Number((total / project.review.length).toFixed(1));
     console.log(num);
     return num;
-
-  }
+  };
 
   const category = mapEnumToCategory(projects.category);
 
@@ -387,6 +448,17 @@ The platform is fully responsive and optimized for performance, with clean, main
   };
 
   const testimonials = projects.review;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+          <p className="mt-4 text-gray-600 font-medium">Loading project details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -567,44 +639,51 @@ The platform is fully responsive and optimized for performance, with clean, main
               {/* Price */}
               <div className="mb-8">
                 <span className="text-4xl font-bold text-gray-900">
-                  ${projects.price}</span>
-                </div>
+                  ${projects.price}
+                </span>
+              </div>
 
               {/* Primary and Secondary Tags */}
               <div className="mb-8">
                 {/* Primary Tags */}
-                {projects.primaryLanguages && projects.primaryLanguages.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">Primary Languages</p>
-                    <div className="flex flex-wrap gap-2">
-                      {projects.primaryLanguages.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-sm font-semibold text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                {projects.primaryLanguages &&
+                  projects.primaryLanguages.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">
+                        Primary Languages
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {projects.primaryLanguages.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-sm font-semibold text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-                
+                  )}
+
                 {/* Secondary Tags */}
-                {projects.secondaryLanguages && projects.secondaryLanguages.length > 0 && (
-                  <div>
-                    <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">Secondary Languages</p>
-                    <div className="flex flex-wrap gap-2">
-                      {projects.secondaryLanguages.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-sm text-gray-600 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                {projects.secondaryLanguages &&
+                  projects.secondaryLanguages.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-black uppercase tracking-wider mb-2">
+                        Secondary Languages
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {projects.secondaryLanguages.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-sm text-gray-600 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
 
               <div className="flex gap-4 mb-8">
@@ -653,27 +732,24 @@ The platform is fully responsive and optimized for performance, with clean, main
                   </div>
                 </div>
 
-                <button 
+                <button
                   className={`w-full ${
                     addedToCart
-                      ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300" 
+                      ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300"
                       : "btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
                   }`}
                   onClick={handleToggleCart}
                 >
-                  {addedToCart 
-                    ? "Remove from Cart" 
-                    : `Add to Cart - $${project.price * quantity}`}
+                  {addedToCart
+                    ? "Remove from Cart"
+                    : `Add to Cart - $${projects.price * quantity}`}
                 </button>
 
-
-                <button 
+                <button
                   className="w-full bg-green-600 text-white py-4 rounded-xl text-lg font-semibold hover:bg-green-700 hover:scale-105 transition-all duration-300"
                   onClick={handleBuy}
                 >
-                  {boughtProject 
-                    ? "Buy Again" 
-                    : "Buy Now"}
+                  {boughtProject ? "Buy Again" : "Buy Now"}
                 </button>
               </div>
 
@@ -738,8 +814,10 @@ The platform is fully responsive and optimized for performance, with clean, main
 
               {showReviewModal && (
                 <div className="mb-6 p-6 bg-gray-50 rounded-xl border-2 border-indigo-200 animate-fade-in">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Write Your Review</h3>
-                  
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                    Write Your Review
+                  </h3>
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Rating
@@ -749,7 +827,9 @@ The platform is fully responsive and optimized for performance, with clean, main
                         <button
                           key={star}
                           type="button"
-                          onClick={() => setFormData({ ...formData, rating: star })}
+                          onClick={() =>
+                            setFormData({ ...formData, rating: star })
+                          }
                           className="transition-transform hover:scale-110"
                         >
                           <Star
@@ -762,7 +842,9 @@ The platform is fully responsive and optimized for performance, with clean, main
                         </button>
                       ))}
                       {formData.rating > 0 && (
-                        <span className="ml-2 text-sm text-gray-600">({formData.rating}/5)</span>
+                        <span className="ml-2 text-sm text-gray-600">
+                          ({formData.rating}/5)
+                        </span>
                       )}
                     </div>
                   </div>
@@ -773,7 +855,9 @@ The platform is fully responsive and optimized for performance, with clean, main
                     </label>
                     <textarea
                       value={formData.comment}
-                      onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, comment: e.target.value })
+                      }
                       placeholder="Share your thoughts about this project..."
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                       rows={4}
@@ -784,71 +868,98 @@ The platform is fully responsive and optimized for performance, with clean, main
                     onClick={handleSubmitReview}
                     disabled={isSubmittingReview}
                     className={`w-full px-4 py-3 bg-[#08244B] text-white rounded-xl font-medium shadow-lg flex items-center justify-center gap-2 ${
-                      isSubmittingReview 
-                        ? 'opacity-70 cursor-not-allowed' 
-                        : 'hover:bg-[#08244B]/90 transition-all duration-300 hover:scale-105'
+                      isSubmittingReview
+                        ? "opacity-70 cursor-not-allowed"
+                        : "hover:bg-[#08244B]/90 transition-all duration-300 hover:scale-105"
                     }`}
                   >
                     {isSubmittingReview ? (
                       <>
-                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         Submitting...
                       </>
                     ) : (
-                      'Submit Review'
+                      "Submit Review"
                     )}
                   </button>
                 </div>
               )}
 
               <div className="space-y-6 max-h-96 overflow-y-auto pr-4">
-                {testimonials?.sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()).map((review, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-gray-200 pb-6 last:border-b-0"
-                  >
-                    <div className="flex items-start space-x-4">
-                      
+                {testimonials
+                  ?.sort(
+                    (a, b) =>
+                      new Date(b.dateAdded).getTime() -
+                      new Date(a.dateAdded).getTime()
+                  )
+                  .map((review, index) => (
+                    <div
+                      key={index}
+                      className="border-b border-gray-200 pb-6 last:border-b-0"
+                    >
+                      <div className="flex items-start space-x-4">
                         <img
-                            src={
-                              review.reviewer?.profilePicture ||
-                              "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                            }
-                        alt={review.reviewer?.firstName +" "+ review.reviewer?.lastName}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                            {review.reviewer.firstName +" "+ review.reviewer.lastName}
-                          </h4>
-                          <p className="text-sm text-gray-500">{getTimeAgo(review.dateAdded)}</p>
-                          
+                          src={
+                            review.reviewer?.profilePicture ||
+                            "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                          }
+                          alt={
+                            review.reviewer?.firstName +
+                            " " +
+                            review.reviewer?.lastName
+                          }
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                {review.reviewer.firstName +
+                                  " " +
+                                  review.reviewer.lastName}
+                              </h4>
+                              <p className="text-sm text-gray-500">
+                                {getTimeAgo(review.dateAdded)}
+                              </p>
+                            </div>
 
+                            <div className="flex items-center">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`h-5 w-5 ${
+                                    star <= review.rating
+                                      ? "text-yellow-400 fill-current"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                            </div>
                           </div>
-                          
-                          <div className="flex items-center">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 ${
-                        star <= review.rating
-                          ? "text-yellow-400 fill-current"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                          </div>
+                          <p className="text-gray-600">{review.comment}</p>
                         </div>
-                        <p className="text-gray-600">{review.comment}</p>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </div>
@@ -862,31 +973,38 @@ The platform is fully responsive and optimized for performance, with clean, main
               </h3>
               <div className="flex items-center space-x-4 mb-4">
                 <img
-                  src={project.seller.avatar}
-                  alt={project.seller.name}
+                  src={owner?.profilePicture || "https://api.dicebear.com/7.x/avataaars/svg?seed=Seller"}
+                  alt={owner?.firstName + " " + owner?.lastName || "Seller"}
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
                   <h4 className="font-semibold text-gray-900">
-                    {project.seller.name}
+                    {owner?.firstName && owner?.lastName 
+                      ? `${owner.firstName} ${owner.lastName}` 
+                      : "Loading..."}
                   </h4>
                   <div className="flex items-center">
-                    
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="ml-1 text-sm text-gray-600">
-                      {project.seller.rating}
-                    </span>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`h-5 w-5 ${
+                                    star <= Math.round(ownerRating)
+                                      ? "text-yellow-400 fill-current"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-500">Projects:</span>
-                  <p className="font-semibold">{project.seller.projects}</p>
+                  <p className="font-semibold">{owner.sellingProjectsCount}</p>
                 </div>
                 <div>
                   <span className="text-gray-500">Rating:</span>
-                  <p className="font-semibold">{project.seller.rating}/5</p>
+                  <p className="font-semibold">{ownerRating}/5</p>
                 </div>
               </div>
               <button className="w-full mt-4 border border-indigo-600 text-indigo-600 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
@@ -912,7 +1030,10 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <div>
                     <span className="text-gray-500">Technologies:</span>
                     <p className="font-semibold">
-                  {[...(projects.primaryLanguages || []), ...(projects.secondaryLanguages || [])].join(", ")}
+                      {[
+                        ...(projects.primaryLanguages || []),
+                        ...(projects.secondaryLanguages || []),
+                      ].join(", ")}
                     </p>
                   </div>
                 </div>
@@ -920,13 +1041,16 @@ The platform is fully responsive and optimized for performance, with clean, main
                   <User className="h-5 w-5 text-gray-400 mr-3" />
                   <div>
                     <span className="text-gray-500">Published On:</span>
-                <p className="font-semibold">
-                  {new Date(projects.uploadDate).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </p>
+                    <p className="font-semibold">
+                      {new Date(projects.uploadDate).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -943,15 +1067,39 @@ The platform is fully responsive and optimized for performance, with clean, main
                     </ul>
                   </div>
                 </div>
-
-             
               </div>
             </div>
           </div>
         </div>
-
-
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && clientSecret && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Complete Payment
+            </h2>
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: "stripe",
+                  variables: {
+                    colorPrimary: "#4f46e5",
+                  },
+                },
+              }}
+            >
+              <CheckoutForm
+                onSuccess={handlePaymentSuccess}
+                onCancel={handlePaymentCancel}
+              />
+            </Elements>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

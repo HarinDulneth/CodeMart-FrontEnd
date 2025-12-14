@@ -246,9 +246,10 @@ export const api = {
         method: 'PUT',
       });
     },
-    buyProject: async (userId: string | number, projectId: string | number) => {
-      return apiRequest<any>(`/user/buy?userId=${userId}&projectId=${projectId}`, {
-        method: 'PUT',
+    buyProject: async (paymentData: any) => {
+      return apiRequest<any>(`/user/create-payment-intent`, {
+        method: 'POST',
+        body: JSON.stringify(paymentData),
       });
     },
     getRevenue: async (id: string | number) => {
@@ -308,6 +309,9 @@ export const api = {
     },
     getFeatured: async () => {
       return apiRequest<any[]>('/project/featured');
+    },
+    getOwnerRating: async (id: string | number) => {
+      return apiRequest<any>(`/project/ownerrating/${id}`);
     },
     approve: async (id: string | number) => {
       return apiRequest<any>(`/project/approve/${id}`);
