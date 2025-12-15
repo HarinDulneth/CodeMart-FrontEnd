@@ -153,27 +153,38 @@ const Home = () => {
   const testimonials = [
     {
       quote:
-        "I was impressed by the food! And I could really tell that they use high-quality ingredients. The staff was friendly and attentive. I'll definitely be back for more!",
-      name: "Tamar Mendelson",
-      designation: "Restaurant Critic",
-      src:
-        "https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
+      name: "Sarah Chen",
+      designation: "Product Manager at TechFlow",
+      src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "This place exceeded all expectations! The atmosphere is inviting, and the staff truly goes above and beyond. I'll keep returning for more exceptional dining experience.",
-      name: "Joe Charlescraft",
-      designation: "Frequent Visitor",
-      src:
-        "https://images.unsplash.com/photo-1628749528992-f5702133b686?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+        "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
+      name: "Michael Rodriguez",
+      designation: "CTO at InnovateSphere",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "Shining Yam is a hidden gem! The impeccable service and overall attention to detail created a memorable experience. I highly recommend it!",
-      name: "Martina Edelweist",
-      designation: "Satisfied Customer",
-      src:
-        "https://images.unsplash.com/photo-1524267213992-b76e8577d046?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
+      name: "Emily Watson",
+      designation: "Operations Director at CloudScale",
+      src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
+      name: "James Kim",
+      designation: "Engineering Lead at DataPro",
+      src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      quote:
+        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
+      name: "Lisa Thompson",
+      designation: "VP of Technology at FutureNet",
+      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ];
 
@@ -303,7 +314,7 @@ const Home = () => {
               {/* Left Content */}
               <div className="animate-fade-in">
                 <div className="text-sm text-[#591A89] font-semibold mb-4"></div>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                <h2 className="text-4xl md:text-4xl font-bold text-gray-900 mb-6">
                   Connecting Developers
                   <span className="text-[#591A89]">
                     {" "}
@@ -319,10 +330,22 @@ const Home = () => {
                   {" "} Ventures.
                 </h2>
                 
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium pr-7">
+                <p className="text-xl text-gray-600 mb-10 leading-relaxed font-medium pr-7">
                   CodeMart is a global software marketplace designed to unlock developer potential by transforming innovative projects into sustainable, revenue-generating businesses through trust, visibility, and scale.
                 </p>
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex justify-left">
+                    <button 
+                      className="group flex items-left gap-2 mt-5 bg-transparent text-black border border-[#1F004D] px-8 py-4 rounded-full font-semibold text-md hover:shadow-lg transition-transform duration-300 hover:scale-105"
+                      onClick={() => navigate('/sell')}
+                    >
+                      Sell Your Product
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                </div>
               </div>
+              
 
               {/* Right Content - Animated Logo Grid
               <div className="relative animate-fade-in overflow-hidden h-[560px] w-[150%] grid-pause-on-hover">
@@ -429,17 +452,7 @@ const Home = () => {
 
         {/* Stats Section */}
         <section className="pb-24 pt-10 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-left">
-              <button 
-                className="group flex items-left gap-2 bg-transparent text-black border border-[#1F004D] px-8 py-4 rounded-full font-semibold text-md hover:shadow-lg transition-transform duration-300 hover:scale-105"
-                onClick={() => navigate('/sell')}
-              >
-                Sell Your Product
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
+          
           {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -630,23 +643,7 @@ const Home = () => {
         className="items-center justify-center relative flex"
         style={{ maxWidth: "1456px" }}
       >
-        <CircularTestimonials
-          testimonials={testimonials}
-          autoplay={true}
-          colors={{
-            name: "#0a0a0a",
-            designation: "#454545",
-            testimony: "#171717",
-            arrowBackground: "#141414",
-            arrowForeground: "#f1f1f7",
-            arrowHoverBackground: "#00A6FB",
-          }}
-          fontSizes={{
-            name: "28px",
-            designation: "20px",
-            quote: "20px",
-          }}
-        />
+        <CircularTestimonials testimonials={testimonials} />
       </div>
     </div>
     </section>

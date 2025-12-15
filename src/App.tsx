@@ -50,6 +50,7 @@ function App() {
                   <>
                     <Navbar />
                     <Home />
+                    <HowItWorksScroll />
                     <Footer />
                   </>
                 }
