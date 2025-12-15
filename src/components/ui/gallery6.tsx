@@ -177,18 +177,20 @@ const Gallery6 = ({
   return (
     <section className="py-32">
       <div className="container">
-        <div className="mb-8 flex flex-col md:items-end">
-            <div className="mx-auto w-full">
-            <div className="text-center">
+        <div className="text-center">
                 <h2 className="mb-3 featured-projects-title md:mb-4 lg:mb-6">
                     {heading}
                 </h2>
             </div>
-            <p className="text-2xl text-[#08244B] max-w-3xl text-left">
+        <div className="mb-8 flex flex-col md:items-end">
+            
+            
+            <div className="mx-auto w-full">  
+            <p className="text-2xl text-[#08244B] max-w-3xl text-center justify-self-center">
                 Discover high-quality software projects from our top developers
             </p>
             </div>
-            <div className="mt-8 flex shrink-0 items-center justify-start mr-5 gap-2">
+            <div className="mt-8 flex shrink-0 items-center justify-between mr-5 gap-2">
                 <Button
                 size="icon"
                 variant="outline"
