@@ -54,7 +54,7 @@ h2 {
 }
 
 .ticker:first-child {
-  background-color: #00ff88;
+  background-color: #C6B3FF;
   transform: rotateZ(-2deg);
   scale: 1.1;
 }
@@ -89,7 +89,7 @@ h2 {
 }
 
 .ticker:last-child .accent {
-  color: #00ff88;
+  color: #C6B3FF;
 }
 
 .comparisonSection {
@@ -188,7 +188,7 @@ h2 {
 
 /* Modified version for featured projects section */
 .featured-projects-title {
-  font-size: 4.5rem;
+  font-size: 5.5rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.02em;
@@ -199,10 +199,10 @@ h2 {
   pointer-events: none;
   white-space: nowrap;
   font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
-  /* background: linear-gradient(to bottom,
-      rgb(8 42 123 / 35%) 53%,
-      rgb(255 255 255 / 0%) 76%); */
-  background: #08244B;
+  background: linear-gradient(to bottom,
+      rgb(8 42 123 / 35%) 30%,
+      rgb(255 255 255 / 0%) 76%);
+  /* background: #08244B; */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

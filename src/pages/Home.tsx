@@ -23,6 +23,7 @@ import DemoOne from "../components/DemoOne";
 import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
+import CountUp from "@/components/ui/count-up";
 
 const Home = () => {
   
@@ -190,22 +191,26 @@ const Home = () => {
 
   const stats = [
   {
-    value: "420%",
+    value: "420",
+    suffix: "%",
     label: "More Speed",
     description: "Ut porttitor leo a diam sollicitudin. Integer enim neque volutpat ac."
   },
   {
-    value: "21.2K",
+    value: "21.2",
+    suffix: "K",
     label: "Total Ratings",
     description: "Maecenas pharetra convallis posuere morbi. Scelerisque felis."
   },
   {
-    value: "110X",
+    value: "110",
+    suffix: "X",
     label: "Efficiency Level",
     description: "Lacinia at quis risus sed vulputate. Lectus mauris ultrices eros."
   },
   {
-    value: "16M",
+    value: "16",
+    suffix: "M",
     label: "Total Users",
     description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
   },
@@ -314,7 +319,7 @@ const Home = () => {
               {/* Left Content */}
               <div className="animate-fade-in">
                 <div className="text-sm text-[#591A89] font-semibold mb-4"></div>
-                <h2 className="text-4xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-5xl md:text-5xl font-bold text-gray-900 mb-6">
                   Connecting Developers
                   <span className="text-[#591A89]">
                     {" "}
@@ -472,7 +477,7 @@ const Home = () => {
               ))}
             </div>
           </div> */}
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto pb-40">
             
             {/* Outer rounded card */}
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
@@ -495,13 +500,21 @@ const Home = () => {
                     className="gradient-card p-[2px] flex flex-col h-full"
                   >
                     <div className="space-y-2 p-8 bg-[#F3F3F7] rounded-2xl min-h-[200px] flex flex-col justify-center h-full">
-                      <h3 className="text-2xl font-bold text-[#404054]">
-                        {stat.value}
+                      <h3 className="text-3xl font-bold text-[#404054]">
+                        <CountUp
+                            from={0}
+                            to={parseFloat(stat.value)}
+                            separator=","
+                            direction="up"
+                            duration={1}
+                            className="count-up-text"
+                          />
+                        {stat.suffix}
                       </h3>
 
                       <p className="text-[#404054] text-xl font-semibold">{stat.label}</p>
 
-                      <p className="text-[#2B2D33] text-md leading-relaxed">
+                      <p className="text-[#2B2D33] text-lg leading-relaxed">
                         {stat.description}
                       </p>
                     </div>
@@ -511,35 +524,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-        </section>
-
-        
-
-        <div className="techslider">
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
-          </div>
-        </div>
-      </div>
-
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            •Web{" "}<span className="accent">Applications</span> {"  "}
-            •Mobile{" "}<span className="accent">Applications</span>{"  "}
-            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
-            • ML{" "}<span className="accent">Models</span>{"  "}
-            • API{" "}<span className="accent">&</span> Microservices{"  "}
-            •Database{" "}<span className="accent">Schemas</span> {"  "}
-            •Automation{" "}<span className="accent">Scripts</span> {"  "}
-            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
-            •DevOps{" "}<span className="accent">Tools</span>{"  "}
-          </div>
-        </div>
-      </div>
-    </div>
+        </section> 
 
         {/* Featured Projects */}
 
@@ -636,6 +621,7 @@ const Home = () => {
       {/* <TeamCarousel /> */}
 
       <section>
+
     {/* Light testimonials section */}
     <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
       <h1 className="about-title" style={{ position: "relative", top: "auto", left: "auto", transform: "none", marginBottom: "3rem" }}>REVIEWS</h1>
@@ -644,6 +630,32 @@ const Home = () => {
         style={{ maxWidth: "1456px" }}
       >
         <CircularTestimonials testimonials={testimonials} />
+      </div>
+    </div>
+
+    <div className="techslider">
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
+          </div>
+        </div>
+      </div>
+
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            •Web{" "}<span className="accent">Applications</span> {"  "}
+            •Mobile{" "}<span className="accent">Applications</span>{"  "}
+            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
+            • ML{" "}<span className="accent">Models</span>{"  "}
+            • API{" "}<span className="accent">&</span> Microservices{"  "}
+            •Database{" "}<span className="accent">Schemas</span> {"  "}
+            •Automation{" "}<span className="accent">Scripts</span> {"  "}
+            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
+            •DevOps{" "}<span className="accent">Tools</span>{"  "}
+          </div>
+        </div>
       </div>
     </div>
     </section>
