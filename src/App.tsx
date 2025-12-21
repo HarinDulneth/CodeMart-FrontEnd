@@ -18,6 +18,7 @@ import Preloader from "./components/Preloader";
 import "./App.css";
 import HowItWorksScroll from "./components/ui/How/HowItWorks";
 import ScrollToTop from "./ScrollToTop";
+import { Skiper17 } from "./components/ui/skiper17";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,6 @@ function App() {
                   <>
                     <Navbar />
                     <Home />
-                    <HowItWorksScroll />
                     <Footer />
                   </>
                 }

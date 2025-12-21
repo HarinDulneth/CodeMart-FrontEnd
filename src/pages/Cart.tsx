@@ -190,7 +190,7 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full btn-primary text-white py-4 rounded-xl text-lg font-semibold mt-6 hover:shadow-lg transition-all duration-300">
+              <button className="w-full bg-gradient-to-r from-[#4500A5] to-[#6A00A5] text-white py-4 rounded-xl text-lg font-semibold mt-6 hover:shadow-lg hover:from-[#5800A5] hover:to-[#7B00A5] transition-all duration-300">
                 Proceed to Checkout
               </button>
               

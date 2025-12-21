@@ -175,22 +175,30 @@ const Gallery6 = ({
     };
   }, [carouselApi]);
   return (
-    <section className="py-32">
+    <section className="py-24">
       <div className="container">
         <div className="text-center">
-                <h2 className="mb-3 featured-projects-title md:mb-4 lg:mb-6">
+                <h2 className="mb-1 featured-projects-title mt-5">
                     {heading}
                 </h2>
             </div>
-        <div className="mb-8 flex flex-col md:items-end">
-            
-            
             <div className="mx-auto w-full">  
-            <p className="text-2xl text-[#08244B] max-w-3xl text-center justify-self-center">
+            <p className="text-2xl text-[#08244B]/75 max-w-3xl text-center justify-self-center">
                 Discover high-quality software projects from our top developers
             </p>
             </div>
-            <div className="mt-8 flex shrink-0 items-center justify-between mr-5 gap-2">
+        <div className="mb-5 mt-8 flex items-center justify-between"> 
+          <div>
+              <Link
+              to="/projects"
+              className="group bg-transparent hover:shadow-md transition-transform duration-300 hover:scale-105 text-[#1F004D] px-8 py-3 rounded-full text-lg font-md inline-flex items-center"
+              >
+              View All Projects
+              <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+          </div>
+            
+            <div className="flex shrink-0 items-center gap-2">
                 <Button
                 size="icon"
                 variant="outline"
@@ -319,15 +327,15 @@ const Gallery6 = ({
             </CarouselContent>
             </Carousel>        
         </div>
-        <div className="text-center mt-5">
+        {/* <div className="text-center mt-5">
             <Link
             to="/projects"
-            className="group bg-transparent hover:shadow-md transition-transform duration-300 border border-[#1F004D] hover:scale-105 text-[#1F004D] px-8 py-3 rounded-full text-lg font-semibold inline-flex items-center"
-            >
-            View All Projects
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-        </div>
+              className="group bg-transparent hover:shadow-md transition-transform duration-300 border border-[#1F004D] hover:scale-105 text-[#1F004D] px-8 py-3 rounded-full text-lg font-semibold inline-flex items-center"
+              >
+              View All Projects
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+        </div> */}
     </section>
   );
 };

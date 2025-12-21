@@ -10,6 +10,7 @@ import {
   Clock,
   Code,
   Globe,
+  Loader2,
 } from "lucide-react";
 import api, { getAuthToken, getCurrentUser } from "../services/api";
 import { toast } from "sonner";
@@ -453,7 +454,7 @@ The platform is fully responsive and optimized for performance, with clean, main
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+          <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
           <p className="mt-4 text-gray-600 font-medium">Loading project details...</p>
         </div>
       </div>

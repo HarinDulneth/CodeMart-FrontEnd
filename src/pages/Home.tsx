@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
 import Featured_05 from "@/components/ui/globe-feature-section";
+import ReactLenis from "lenis/react";
 // Import images from New folder
 import img1 from "../assets/New folder/61164f31a004c_visual_studio_code_python_ide.png";
 import img2 from "../assets/New folder/select-debug-pane.png";
@@ -24,6 +25,7 @@ import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 import CountUp from "@/components/ui/count-up";
+import { Skiper17, StickyCard002 } from "@/components/ui/skiper17";
 
 const Home = () => {
   
@@ -215,7 +217,6 @@ const Home = () => {
     description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
   },
 ];
-
 
   return (
     <div className="animate-fade-in relative">
@@ -456,7 +457,7 @@ const Home = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="pb-24 pt-10 bg-white">
+        <section className="pt-10 bg-white">
           
           {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -477,7 +478,7 @@ const Home = () => {
               ))}
             </div>
           </div> */}
-          <div className="max-w-7xl mx-auto pb-40">
+          <div className="max-w-7xl mx-auto pb-32">
             
             {/* Outer rounded card */}
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
@@ -620,7 +621,7 @@ const Home = () => {
 
       {/* <TeamCarousel /> */}
 
-      <section>
+    <section>
 
     {/* Light testimonials section */}
     <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
@@ -659,6 +660,8 @@ const Home = () => {
       </div>
     </div>
     </section>
+
+    <Skiper17 />
 
       {/* <HowItWorks/> */}
       {/* How It Works */}

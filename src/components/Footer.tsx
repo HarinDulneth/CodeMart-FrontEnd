@@ -49,26 +49,37 @@ const Footer = () => {
 
   return (
     <footer ref={footerRef} className="relative">
-      {/* Full Screen Footer Image */}
+      {/* Footer Hero Container */}
       <div
         ref={imageRef}
-        className="w-screen h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
-        style={{ backgroundImage: `url(${footerimg})` }}
+        className="w-screen h-screen flex items-center justify-center"
       >
-        <div className="bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <h2 className="text-4xl md:text-6xl font-bold mb-4">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl md:text-2xl mb-8">
-              Join thousands of developers on CodeMarket
-            </p>
-            <Link
-              to="/signup"
-              className="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
-            >
-              Get Started Now
-            </Link>
+        <div className="bg-[#0E0E0E] rounded-3xl w-full overflow-hidden max-w-[1700px] mx-auto mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 py-12 pr-12 pl-15 lg:py-16 lg:pr-16 lg:pl-20">
+            <div className="flex flex-col justify-center text-white">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Ready to Get Started?
+              </h2>
+              <p className="text-lg md:text-xl lg:text-2xl mb-8 text-white/80">
+                Join thousands of developers on CodeMart
+              </p>
+              <div>
+                <Link
+                  to="/signup"
+                  className="inline-block bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
+                >
+                  Get Started Now
+                </Link>
+              </div>
+            </div>
+
+            {/* Image Section - Right */}
+            <div className="flex items-center justify-center">
+              <div 
+                className="w-full h-full lg:h-[600px] bg-cover bg-center rounded-2xl"
+                style={{ backgroundImage: `url(${footerimg})` }}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
+const isDocker = process.env.DOCKER_ENV
+const apiTarget = isDocker ? 'http://api:8080' : 'https://localhost:7198';
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -14,13 +16,18 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
+    host: true,
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
+    hmr: {
+      host: 'localhost',
+      port: 5173,
+    },
     proxy: {
-      '/api': {
-        target: process.env.ASPNETCORE_HTTPS_PORT 
-          ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
-          : process.env.ASPNETCORE_URLS 
-          ? process.env.ASPNETCORE_URLS.split(';')[0]
-          : 'https://localhost:7198',
+      "/api": {
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
       },
