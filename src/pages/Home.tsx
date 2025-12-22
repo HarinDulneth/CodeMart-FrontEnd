@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
 import "./Home.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
 import Featured_05 from "@/components/ui/globe-feature-section";
@@ -25,13 +24,12 @@ import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 import CountUp from "@/components/ui/count-up";
-import { Skiper17, StickyCard002 } from "@/components/ui/skiper17";
 
 const Home = () => {
   
   useEffect(() => {
-    // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
+    const triggers: ScrollTrigger[] = [];
+    const animations: gsap.core.Tween[] = [];
 
     // Initialize comparison animations
     gsap.utils.toArray(".comparisonSection").forEach((section: any) => {
@@ -60,45 +58,51 @@ const Home = () => {
           { xPercent: 0 },
           0
         );
+      
+      // Store this component's ScrollTrigger
+      if (tl.scrollTrigger) {
+        triggers.push(tl.scrollTrigger);
+      }
     });
 
     document.querySelectorAll(".ticker").forEach((ticker) => {
-  const inner = ticker.querySelector(".ticker-wrap");
-  if (!inner) return; // prevent null error
+      const inner = ticker.querySelector(".ticker-wrap");
+      if (!inner) return; // prevent null error
 
-  const content = inner.querySelector(".ticker-text");
-  if (!content) return; // prevent null error
+      const content = inner.querySelector(".ticker-text");
+      if (!content) return; // prevent null error
 
-  const duration = ticker.getAttribute("data-duration") || "10";
+      const duration = ticker.getAttribute("data-duration") || "10";
 
-  // Clone content
-  inner.append(content.cloneNode(true));
+      // Clone content
+      inner.append(content.cloneNode(true));
 
-  const animations: gsap.core.Tween[] = [];
+      const tickerAnimations: gsap.core.Tween[] = [];
 
-  inner.querySelectorAll(".ticker-text").forEach((element) => {
-    const animation = gsap.to(element, {
-      x: "-100%",
-      repeat: -1,
-      duration: Number(duration),
-      ease: "linear",
+      inner.querySelectorAll(".ticker-text").forEach((element) => {
+        const animation = gsap.to(element, {
+          x: "-100%",
+          repeat: -1,
+          duration: Number(duration),
+          ease: "linear",
+        });
+        tickerAnimations.push(animation);
+        animations.push(animation);
+      });
+
+      ticker.addEventListener("mouseenter", () => {
+        tickerAnimations.forEach((anim) => anim.pause());
+      });
+
+      ticker.addEventListener("mouseleave", () => {
+        tickerAnimations.forEach((anim) => anim.play());
+      });
     });
-    animations.push(animation);
-  });
 
-  ticker.addEventListener("mouseenter", () => {
-    animations.forEach((anim) => anim.pause());
-  });
-
-  ticker.addEventListener("mouseleave", () => {
-    animations.forEach((anim) => anim.play());
-  });
-});
-
-
-    // Cleanup function
+    // Cleanup function - only kill this component's triggers
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      triggers.forEach((trigger) => trigger.kill());
+      animations.forEach((anim) => anim.kill());
     };
   }, []);
 
@@ -219,7 +223,8 @@ const Home = () => {
 ];
 
   return (
-    <div className="animate-fade-in relative">
+    <ReactLenis root>
+      <div className="animate-fade-in relative">
       {/* <div
         className="
     absolute inset-x-0 top-0 h-[50vh]
@@ -528,6 +533,31 @@ const Home = () => {
         </section> 
 
         {/* Featured Projects */}
+        <div className="techslider">
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
+          </div>
+        </div>
+      </div>
+
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            •Web{" "}<span className="accent">Applications</span> {"  "}
+            •Mobile{" "}<span className="accent">Applications</span>{"  "}
+            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
+            • ML{" "}<span className="accent">Models</span>{"  "}
+            • API{" "}<span className="accent">&</span> Microservices{"  "}
+            •Database{" "}<span className="accent">Schemas</span> {"  "}
+            •Automation{" "}<span className="accent">Scripts</span> {"  "}
+            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
+            •DevOps{" "}<span className="accent">Tools</span>{"  "}
+          </div>
+        </div>
+      </div>
+    </div>
 
         {/* Featured Projects Carousel */}
         <Gallery6
@@ -634,49 +664,22 @@ const Home = () => {
       </div>
     </div>
 
-    <div className="techslider">
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
-          </div>
-        </div>
-      </div>
-
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            •Web{" "}<span className="accent">Applications</span> {"  "}
-            •Mobile{" "}<span className="accent">Applications</span>{"  "}
-            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
-            • ML{" "}<span className="accent">Models</span>{"  "}
-            • API{" "}<span className="accent">&</span> Microservices{"  "}
-            •Database{" "}<span className="accent">Schemas</span> {"  "}
-            •Automation{" "}<span className="accent">Scripts</span> {"  "}
-            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
-            •DevOps{" "}<span className="accent">Tools</span>{"  "}
-          </div>
-        </div>
-      </div>
-    </div>
+    
     </section>
 
-    <Skiper17 />
-
-      {/* <HowItWorks/> */}
+      {/* <HowItWorksScroll/> */}
       {/* How It Works */}
       {/* <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-         
-       
            
           </div> */}
 
       {/* </div> */}
       {/* </section> */}
       
-    </div>
+      </div>
+    </ReactLenis>
   );
 };
 

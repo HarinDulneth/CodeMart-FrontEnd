@@ -1,8 +1,7 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import ReactLenis from "lenis/react";
 import { useRef } from "react";
 
@@ -38,8 +37,6 @@ const StickyCard002 = ({
 
   useGSAP(
     () => {
-      gsap.registerPlugin(ScrollTrigger);
-
       const imageElements = imageRefs.current;
       const totalCards = imageElements.length;
 
@@ -55,7 +52,7 @@ const StickyCard002 = ({
       const scrollTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: ".sticky-cards",
-          start: "top top",
+          start: "top center",
           end: `+=${window.innerHeight * (totalCards)}`,
           pin: true,
           scrub: 0.5,
@@ -102,7 +99,10 @@ const StickyCard002 = ({
       return () => {
         resizeObserver.disconnect();
         scrollTimeline.kill();
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        // Only kill the ScrollTrigger associated with this timeline
+        if (scrollTimeline.scrollTrigger) {
+          scrollTimeline.scrollTrigger.kill();
+        }
       };
     },
     { scope: container },

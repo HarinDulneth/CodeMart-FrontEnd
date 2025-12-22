@@ -175,10 +175,10 @@ const Gallery6 = ({
     };
   }, [carouselApi]);
   return (
-    <section className="py-24">
+    <section className="pt-32">
       <div className="container">
         <div className="text-center">
-                <h2 className="mb-1 featured-projects-title mt-5">
+                <h2 className="mb-1 featured-projects-title">
                     {heading}
                 </h2>
             </div>
@@ -238,9 +238,9 @@ const Gallery6 = ({
             }}
             className="relative left-[-1rem]"
             >
-            <CarouselContent className="mb-7">
+            <CarouselContent className="mb-7 pl-5">
                 {items.map((item) => (
-                <CarouselItem key={item.id} className="pl-7 pr-2 md:max-w-[452px]">
+                <CarouselItem key={item.id} className="pl-7 pr-2 pb-24 md:basis-1/2 lg:basis-1/3">
                     <a
                     href={item.url}
                     className="group flex flex-col justify-between overflow-hidden rounded-2xl card-shadow animate-fade-in pb-5"
