@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
+import { ArrowRight, Star, Users, Shield, Code2, Loader2 } from "lucide-react";
 import "./Home.css";
 import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import novs from "../assets/projectex.png";
@@ -24,10 +24,18 @@ import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 import CountUp from "@/components/ui/count-up";
+import ScrollStack, { ScrollTimeline } from "@/components/ui/scroll-timeline";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const [featuredProjects, setFeaturedProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    // Only initialize animations after loading is complete
+    if (isLoading) return;
+
     const triggers: ScrollTrigger[] = [];
     const animations: gsap.core.Tween[] = [];
 
@@ -104,11 +112,7 @@ const Home = () => {
       triggers.forEach((trigger) => trigger.kill());
       animations.forEach((anim) => anim.kill());
     };
-  }, []);
-
-  const navigate = useNavigate();
-
-  const [featuredProjects, setFeaturedProjects] = useState<any[]>([]);
+  }, [isLoading]);
 
   const calculateRating = (project: any) => {
     if (!project?.review || project.review.length === 0) return 0;
@@ -137,14 +141,50 @@ const Home = () => {
     return categoryMap[category] || category;
   };
 
+ const events = [
+  {
+    year: "Step 1",
+    title: "Discover Premium Software Solutions",
+    subtitle: "Curated Marketplace Excellence",
+    description: "Discover thousands of high-quality software projects across various categories including Web Development, Mobile Apps, AI/ML, Desktop Applications, and more. Use filters and search to find exactly what you need."
+  },
+  {
+    year: "Step 2",
+    title: "Evaluate & Verify Quality",
+    subtitle: "Data-Driven Decision Making",
+    description: "View detailed project information, check ratings and reviews from other buyers, preview screenshots, and examine the technology stack. Read seller descriptions and verify project quality before making a purchase."
+  },
+  {
+    year: "Step 3",
+    title: "Complete Secure Checkout",
+    subtitle: "Enterprise-Grade Security",
+    description: "Complete your purchase using our secure payment gateway powered by Stripe. Your payment information is protected with industry-standard encryption, ensuring a safe transaction every time."
+  },
+  {
+    year: "Step 4",
+    title: "Instant Access & Deployment",
+    subtitle: "Seamless Integration Ready",
+    description: "After successful payment, instantly access your purchased projects from your dashboard. Download all project files, documentation, and resources. Access your purchases anytime from the 'Purchased' section."
+  },
+  {
+    year: "Step 5",
+    title: "Monetize Your Expertise",
+    subtitle: "Transform Code into Revenue",
+    description: "Ready to monetize your work? Upload your own software projects, set your price, and reach thousands of potential buyers worldwide. Manage your listings, track sales, and grow your developer business on CodeMart."
+  },
+]
+
   useEffect(() => {
     const fetchFeaturedProjects = async () => {
       try {
+        setIsLoading(true);
         const data = await api.projects.getFeatured();
         console.log(data);
         setFeaturedProjects(data);
       } catch (error) {
         console.error('Error fetching featured projects:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchFeaturedProjects();
@@ -221,6 +261,17 @@ const Home = () => {
     description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
   },
 ];
+
+  // Show loading screen while fetching featured projects
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-indigo-50">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ReactLenis root>
@@ -530,10 +581,8 @@ const Home = () => {
               </div>
             </div>
           </div>
-        </section> 
 
-        {/* Featured Projects */}
-        <div className="techslider">
+          <div className="techslider pb-32">
       <div className="ticker" data-duration="20">
         <div className="ticker-wrap">
           <div className="ticker-text">
@@ -558,6 +607,10 @@ const Home = () => {
         </div>
       </div>
     </div>
+        </section> 
+
+        {/* Featured Projects */}
+        
 
         {/* Featured Projects Carousel */}
         <Gallery6
@@ -651,10 +704,10 @@ const Home = () => {
 
       {/* <TeamCarousel /> */}
 
-    <section>
+    <section className="bg-[#f7f7fa]">
 
     {/* Light testimonials section */}
-    <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
+    <div className="p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
       <h1 className="about-title" style={{ position: "relative", top: "auto", left: "auto", transform: "none", marginBottom: "3rem" }}>REVIEWS</h1>
       <div
         className="items-center justify-center relative flex"
@@ -665,7 +718,17 @@ const Home = () => {
     </div>
 
     
+    
     </section>
+    <ScrollTimeline 
+      events={events}
+      title="Get Started"
+      subtitle="Your journey from discovery to deployment, simplified"
+      progressIndicator={true}
+      cardAlignment="alternating"
+      animationOrder="sequential"
+      revealAnimation="fade"
+    />
 
       {/* <HowItWorksScroll/> */}
       {/* How It Works */}

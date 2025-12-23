@@ -439,3 +439,8 @@ h2 {
 .gradient-card:hover::before {
   opacity: 0.5;
 }
+
+/* Active glow effect for timeline cards in view */
+.active-glow::before {
+  opacity: 0.5 !important;
+}

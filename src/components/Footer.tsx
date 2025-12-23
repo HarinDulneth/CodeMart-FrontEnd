@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Code, Github, Twitter, Linkedin } from "lucide-react";
 import footerimg from "../assets/footerimg.jpg";
-import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const Footer = () => {
   const footerRef = useRef<HTMLElement>(null);
@@ -10,79 +11,94 @@ const Footer = () => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const triggers: ScrollTrigger[] = [];
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
+
+    const footerTriggers: ScrollTrigger[] = [];
 
     if (footerRef.current && imageRef.current && contentRef.current) {
-      // Pin the hero image section
+      // Pin the footer image when it reaches the top of viewport
       const pinTrigger = ScrollTrigger.create({
         trigger: imageRef.current,
-        start: "top top",
-        end: () => `+=${window.innerHeight * 1.5}`,
+        start: "top+=100 top",
+        end: () => `+=${window.innerHeight}`,
         pin: true,
         pinSpacing: false,
+        scrub: false,
       });
-      triggers.push(pinTrigger);
+      footerTriggers.push(pinTrigger);
 
-      // Animate footer content to slide up from bottom
+      // Animate the footer content to slide up over the pinned image
       const slideAnimation = gsap.fromTo(
         contentRef.current,
-        { 
-          yPercent: 100,
-        },
+        { y: "-40%" },
         {
-          yPercent: 0,
-          ease: "none",
+          y: "0%",
           scrollTrigger: {
             trigger: imageRef.current,
-            start: "top top",
-            end: () => `+=${window.innerHeight * 1.5}`,
+            start: "top+=100 top",
+            end: "bottom top",
             scrub: 1,
           },
         }
       );
-
+      
+      // Store the ScrollTrigger from the animation
       if (slideAnimation.scrollTrigger) {
-        triggers.push(slideAnimation.scrollTrigger);
+        footerTriggers.push(slideAnimation.scrollTrigger);
       }
     }
 
-    // Cleanup function - only kill this component's triggers
+    // Cleanup function - only kill this footer's triggers
     return () => {
-      triggers.forEach((trigger) => trigger.kill());
+      footerTriggers.forEach((trigger) => trigger.kill());
     };
   }, []);
 
   return (
+
     <div>
-    {/* Footer Hero Container */}
-    <div
+      {/* Footer Hero Container */}
+      <div
         ref={imageRef}
-        className="relative w-screen h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center z-30"
-        style={{ backgroundImage: `url(${footerimg})` }}
+        className="w-screen h-screen flex items-center justify-center"
       >
-        <div className="bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <h2 className="text-4xl md:text-6xl font-bold mb-4">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl md:text-2xl mb-8">
-              Join thousands of developers on CodeMarket
-            </p>
-            <Link
-              to="/signup"
-              className="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
-            >
-              Get Started Now
-            </Link>
+        <div className="bg-[#0E0E0E] rounded-3xl w-full overflow-hidden max-w-[1700px] mx-auto mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 py-12 pr-12 pl-15 lg:py-16 lg:pr-16 lg:pl-20">
+            <div className="flex flex-col justify-center text-white">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Ready to Get Started?
+              </h2>
+              <p className="text-lg md:text-xl lg:text-2xl mb-8 text-white/80">
+                Join thousands of developers on CodeMart
+              </p>
+              <div>
+                <Link
+                  to="/signup"
+                  className="inline-block bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
+                >
+                  Get Started Now
+                </Link>
+              </div>
+            </div>
+
+            {/* Image Section - Right */}
+            <div className="flex items-center justify-center">
+              <div 
+                className="w-full h-full lg:h-[600px] bg-cover bg-center rounded-2xl"
+                style={{ backgroundImage: `url(${footerimg})` }}
+              />
+            </div>
           </div>
         </div>
       </div>
+    <footer ref={footerRef} className="relative">
       
-    <footer ref={footerRef} className="relative z-40">
+
       {/* Actual Footer Content - Overlapping */}
       <div
         ref={contentRef}
-        className="relative bg-[#171717] text-white rounded-t-3xl shadow-2xl z-20 max-w-[1700px] mx-auto"
+        className="relative bg-[#121212] text-white rounded-t-3xl shadow-2xl z-20 max-w-full"
       >
         <div className="px-6 sm:px-8 lg:px-12 py-32">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
