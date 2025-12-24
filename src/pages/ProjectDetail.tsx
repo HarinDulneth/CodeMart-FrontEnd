@@ -32,7 +32,15 @@ const ProjectDetail = () => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const userId = getCurrentUser().id;
+  const getUserId = () => {
+    try {
+      const user = getCurrentUser();
+      return user?.id || null;
+    } catch {
+      return null;
+    }
+  };
+  const userId = getUserId();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [projects, setProjects] = useState({});
@@ -455,7 +463,6 @@ The platform is fully responsive and optimized for performance, with clean, main
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
-          <p className="mt-4 text-gray-600 font-medium">Loading project details...</p>
         </div>
       </div>
     );
@@ -737,7 +744,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   className={`w-full ${
                     addedToCart
                       ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300"
-                      : "btn-primary text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+                      : "bg-gradient-to-r from-[#4500A5] to-[#6A00A5] text-white py-4 rounded-xl text-lg font-semibold hover:shadow-lg hover:from-[#5800A5] hover:to-[#7B00A5] hover:scale-105 transition-all duration-300"
                   }`}
                   onClick={handleToggleCart}
                 >

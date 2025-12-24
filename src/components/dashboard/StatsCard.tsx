@@ -25,7 +25,7 @@ export function StatsCard({
     <div className={cn(
       "rounded-xl p-6 shadow-xl transition-all duration-200 hover:shadow-2xl animate-fade-in",
       variant === 'default' && "bg-card",
-      variant === 'primary' && "bg-[#08244B] text-primary-foreground",
+      variant === 'primary' && "bg-gradient-to-r from-[#4500A5] to-[#5800A5] text-primary-foreground",
       variant === 'success' && "gradient-success text-success-foreground"
     )}>
       <div className="flex items-start justify-between">
