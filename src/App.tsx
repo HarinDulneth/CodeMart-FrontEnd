@@ -28,12 +28,12 @@ function App() {
     const hasSeenPreloader = sessionStorage.getItem('hasSeenPreloader');
     
     if (hasSeenPreloader) {
-      setLoading(false);
+      setLoading(true);
     }
   }, []);
 
   const handlePreloaderComplete = () => {
-    setLoading(false);
+    setLoading(true);
     sessionStorage.setItem('hasSeenPreloader', 'true');
   };
 
