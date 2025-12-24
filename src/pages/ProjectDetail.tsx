@@ -744,7 +744,7 @@ The platform is fully responsive and optimized for performance, with clean, main
                   className={`w-full ${
                     addedToCart
                       ? "btn-secondary py-4 bg-gray-200 rounded-xl text-lg font-semibold hover:shadow-md hover:scale-105 transition-all duration-300"
-                      : "bg-gradient-to-r from-[#4500A5] to-[#6A00A5] text-white py-4 rounded-xl text-lg font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+                      : "bg-gradient-to-r from-[#4500A5] to-[#6A00A5] text-white py-4 rounded-xl text-lg font-semibold hover:shadow-lg hover:from-[#5800A5] hover:to-[#7B00A5] hover:scale-105 transition-all duration-300"
                   }`}
                   onClick={handleToggleCart}
                 >
