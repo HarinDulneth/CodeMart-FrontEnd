@@ -289,6 +289,10 @@ export const api = {
     filterByRating: async (minRating: number) => {
       return apiRequest<any[]>(`/project/filter/rating?minRating=${minRating}`);
     },
+    // Fetch all reviews for infinite testimonials carousel
+    getAllReviews: async () => {
+      return apiRequest<any[]>("/review");
+    },
     filterByCategory: async (category: string) => {
       return apiRequest<any[]>(`/project/filter/category?category=${category}`);
     },

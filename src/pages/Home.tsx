@@ -25,6 +25,7 @@ import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 import CountUp from "@/components/ui/count-up";
 import ScrollStack, { ScrollTimeline } from "@/components/ui/scroll-timeline";
+import { InfiniteTestimonialsCarousel, Testimonial } from "../components/InfiniteTestimonialsCarousel";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -200,39 +201,82 @@ const Home = () => {
   const testimonials = [
     {
       quote:
-        "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
-      name: "Sarah Chen",
+        "I was able to earn from my university projects through CodeMart. The platform is simple and very supportive for students.",
+      name: "Sithika Galappaththi",
       designation: "Product Manager at TechFlow",
       src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
-      name: "Michael Rodriguez",
+        "Purchasing a project from CodeMart helped us save development time and launch faster.",
+      name: "Hiruna Mendis",
       designation: "CTO at InnovateSphere",
-      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEm6DNUG3b3vS1bc4CXcwZAxtNX-LyKolvVA&s",
     },
     {
       quote:
-        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
-      name: "Emily Watson",
+        "CodeMart makes it easy to sell real software projects and connect with serious buyers worldwide.",
+      name: "Ravindu Gamage",
       designation: "Operations Director at CloudScale",
       src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
-      name: "James Kim",
+        "The seller dashboard is clean and easy to use. Managing projects and tracking sales is very smooth.",
+      name: "Kavindu Pasan",
       designation: "Engineering Lead at DataPro",
       src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
-      name: "Lisa Thompson",
-      designation: "VP of Technology at FutureNet",
-      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "I appreciate that CodeMart focuses on functional software projects instead of just basic templates.",
+      name: "Devinda Rajawardhana",
+      designation: "Engineering Lead at DataPro",
+      src: "https://media.istockphoto.com/id/1919265357/photo/close-up-portrait-of-confident-businessman-standing-in-office.jpg?s=612x612&w=0&k=20&c=ZXRPTG9VMfYM3XDo1UL9DEpfO8iuGVSsyh8dptfKQsQ=",
     },
+    {
+      quote:
+        "Secure payments and quality reviews make CodeMart a trustworthy platform for both buyers and sellers.",
+      name: "Renuja Sathnidu",
+      designation: "Engineering Lead at DataPro",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAc5N0YKSfk82YaBDHGYbMCHfcumjb5EmCEA&s",
+    },
+    {
+      quote:
+        "Uploading projects and managing listings is straightforward. The platform feels well structured.",
+      name: "Dasun Adithya",
+      designation: "Engineering Lead at DataPro",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiF2ZPC9kxQyqk0RM9H0NyNJYcnR_1KDLvYQ&s",
+    },
+    {
+      quote:
+        "We found high-quality software projects that were easy to customize for our business needs.",
+      name: "Awanki Thathsarani",
+      designation: "VP of Technology at FutureNet",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1-LFTGXQ4j-DAqfnDenm0_Wjeaah1Aq7nTxvEG4r-KQ&s",
+    },
+     {
+      quote:
+        "CodeMart helped me turn my final-year project into a useful product and earn from it.",
+      name: "Pansilu Jayawardhana",
+      designation: "VP of Technology at FutureNet",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVTmoFIup_59JNV8ZqfukXqEwzr1R_mEi4sw&s",
+    },
+     {
+      quote:
+        "This platform motivates students to improve their projects and gain real-world experience.",
+      name: "Minidu Mandira",
+      designation: "VP of Technology at FutureNet",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThIF1mMjjuiByF3ZqKOHQS2PTrCE-Bn0dJAw&s",
+    },
+     {
+      quote:
+        "CodeMart helped me convert my university work into income. The platform feels supportive and well designed.",
+      name: "Mavithya Mihirud",
+      designation: "VP of Technology at FutureNet",
+      src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ_AakfkA5jDrdWPRTWcuOdYeN9sQTdtCSkw&s",
+    },
+    
   ];
 
   const stats = [
@@ -272,6 +316,16 @@ const Home = () => {
       </div>
     );
   }
+
+  const homeReviews: Testimonial[] = testimonials.map((t, index) => ({
+    id: index,
+    avatar: t.src,
+    name: t.name,
+    platform: "google",
+    rating: 5,
+    text: t.quote,
+    date: "2024",
+  }));
 
   return (
     <ReactLenis root>
@@ -705,20 +759,12 @@ const Home = () => {
       {/* <TeamCarousel /> */}
 
     <section className="bg-[#f7f7fa]">
-
-    {/* Light testimonials section */}
-    <div className="p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
-      <h1 className="about-title" style={{ position: "relative", top: "auto", left: "auto", transform: "none", marginBottom: "3rem" }}>REVIEWS</h1>
-      <div
-        className="items-center justify-center relative flex"
-        style={{ maxWidth: "1456px" }}
-      >
-        <CircularTestimonials testimonials={testimonials} />
-      </div>
-    </div>
-
-    
-    
+      <InfiniteTestimonialsCarousel
+        title="REVIEWS"
+        reviews={homeReviews}
+        rows={2}
+        duration={28}
+      />
     </section>
     <ScrollTimeline 
       events={events}

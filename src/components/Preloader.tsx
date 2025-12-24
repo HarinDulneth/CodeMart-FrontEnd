@@ -25,7 +25,7 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       left: 0,
       stagger: 0.1,
       ease: 'power4.out',
-      duration: 1.5,
+      duration: 1.5, 
       delay: 4,
     });
 
