@@ -10,50 +10,50 @@ const Footer = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
+  // useEffect(() => {
+  //   // Register ScrollTrigger plugin
+  //   gsap.registerPlugin(ScrollTrigger);
 
-    const footerTriggers: ScrollTrigger[] = [];
+  //   const footerTriggers: ScrollTrigger[] = [];
 
-    if (footerRef.current && imageRef.current && contentRef.current) {
-      // Pin the footer image when it reaches the top of viewport
-      const pinTrigger = ScrollTrigger.create({
-        trigger: imageRef.current,
-        start: "top+=100 top",
-        end: () => `+=${window.innerHeight}`,
-        pin: true,
-        pinSpacing: false,
-        scrub: false,
-      });
-      footerTriggers.push(pinTrigger);
+  //   if (footerRef.current && imageRef.current && contentRef.current) {
+  //     // Pin the footer image when it reaches the top of viewport
+  //     const pinTrigger = ScrollTrigger.create({
+  //       trigger: imageRef.current,
+  //       start: "top top",
+  //       end: "bottom top",
+  //       pin: true,
+  //       pinSpacing: false,
+  //       scrub: false,
+  //     });
+  //     footerTriggers.push(pinTrigger);
 
-      // Animate the footer content to slide up over the pinned image
-      const slideAnimation = gsap.fromTo(
-        contentRef.current,
-        { y: "-40%" },
-        {
-          y: "0%",
-          scrollTrigger: {
-            trigger: imageRef.current,
-            start: "top+=100 top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        }
-      );
+  //     // Animate the footer content to slide up over the pinned image
+  //     const slideAnimation = gsap.fromTo(
+  //       contentRef.current,
+  //       { y: "100%" },
+  //       {
+  //         y: "0%",
+  //         scrollTrigger: {
+  //           trigger: imageRef.current,
+  //           start: "top top",
+  //           end: "bottom top",
+  //           scrub: 1,
+  //         },
+  //       }
+  //     );
       
-      // Store the ScrollTrigger from the animation
-      if (slideAnimation.scrollTrigger) {
-        footerTriggers.push(slideAnimation.scrollTrigger);
-      }
-    }
+  //     // Store the ScrollTrigger from the animation
+  //     if (slideAnimation.scrollTrigger) {
+  //       footerTriggers.push(slideAnimation.scrollTrigger);
+  //     }
+  //   }
 
-    // Cleanup function - only kill this footer's triggers
-    return () => {
-      footerTriggers.forEach((trigger) => trigger.kill());
-    };
-  }, []);
+  //   // Cleanup function - only kill this footer's triggers
+  //   return () => {
+  //     footerTriggers.forEach((trigger) => trigger.kill());
+  //   };
+  // }, []);
 
   return (
 
@@ -63,7 +63,7 @@ const Footer = () => {
         ref={imageRef}
         className="w-screen h-screen flex items-center justify-center"
       >
-        <div className="bg-[#0E0E0E] rounded-3xl w-full overflow-hidden max-w-[1700px] mx-auto mb-20">
+        <div className="bg-[#0E0E0E] rounded-3xl w-full overflow-hidden max-w-[1700px] mx-auto mb-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 py-12 pr-12 pl-15 lg:py-16 lg:pr-16 lg:pl-20">
             <div className="flex flex-col justify-center text-white">
               <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
@@ -308,7 +308,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-white/45">
+          <div className="border-t border-gray-800 mt-8 pt-20 text-center text-white/45">
             <p>&copy; 2025 CodeMart. All rights reserved.</p>
           </div>
         </div>

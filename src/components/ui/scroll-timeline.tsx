@@ -518,7 +518,7 @@ export const ScrollTimeline = ({
 
   const { scrollYProgress } = useScroll({
     target: scrollRef,
-    offset: ["start start", "end end"],
+    offset: ["start start", "end center"],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
@@ -659,7 +659,7 @@ export const ScrollTimeline = ({
         </p>
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 pb-24">
+      <div className="relative max-w-6xl mx-auto px-4 pb-20">
         <div className="relative mx-auto">
           <div
             className={cn(getConnectorClasses(), "h-full absolute top-0 z-10")}
@@ -737,7 +737,7 @@ export const ScrollTimeline = ({
                     timelineRefs.current[index] = el;
                   }}
                   className={cn(
-                    "relative flex items-center mb-20 py-4",
+                    "relative flex items-center mb-32 py-4",
                     "flex-col lg:flex-row",
                     cardAlignment === "alternating"
                       ? index % 2 === 0
