@@ -237,28 +237,28 @@ const Home = () => {
 
   const stats = [
   {
-    value: "420",
+    value: "5000",
+    suffix: "+",
+    label: "Projects Listed",
+    description: "High-quality software projects across multiple categories available."
+  },
+  {
+    value: "2500",
+    suffix: "+",
+    label: "Active Developers",
+    description: "Talented developers worldwide selling innovative solutions."
+  },
+  {
+    value: "12000",
+    suffix: "+",
+    label: "Projects Sold",
+    description: "Successfully completed transactions connecting buyers with software."
+  },
+  {
+    value: "98",
     suffix: "%",
-    label: "More Speed",
-    description: "Ut porttitor leo a diam sollicitudin. Integer enim neque volutpat ac."
-  },
-  {
-    value: "21.2",
-    suffix: "K",
-    label: "Total Ratings",
-    description: "Maecenas pharetra convallis posuere morbi. Scelerisque felis."
-  },
-  {
-    value: "110",
-    suffix: "X",
-    label: "Efficiency Level",
-    description: "Lacinia at quis risus sed vulputate. Lectus mauris ultrices eros."
-  },
-  {
-    value: "16",
-    suffix: "M",
-    label: "Total Users",
-    description: "Fames ac turpis egestas sed tempus. Tellus mauris a diam maecenas."
+    label: "Satisfaction Rate",
+    description: "Customer satisfaction rating based on verified buyer reviews."
   },
 ];
 
@@ -513,7 +513,7 @@ const Home = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="pt-10 bg-white">
+        <section className="pt-12 bg-white">
           
           {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -534,7 +534,7 @@ const Home = () => {
               ))}
             </div>
           </div> */}
-          <div className="max-w-7xl mx-auto pb-32">
+          <div className="max-w-7xl mx-auto pb-28">
             
             {/* Outer rounded card */}
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
@@ -563,7 +563,7 @@ const Home = () => {
                             to={parseFloat(stat.value)}
                             separator=","
                             direction="up"
-                            duration={1}
+                            duration={0.25}
                             className="count-up-text"
                           />
                         {stat.suffix}
@@ -582,7 +582,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="techslider pb-32">
+          <div className="techslider pb-32 pt-20">
       <div className="ticker" data-duration="20">
         <div className="ticker-wrap">
           <div className="ticker-text">
