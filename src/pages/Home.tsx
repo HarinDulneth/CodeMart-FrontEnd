@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Star, Users, Shield, Code2 } from "lucide-react";
+import { ArrowRight, Star, Users, Shield, Code2, Loader2 } from "lucide-react";
 import "./Home.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import novs from "../assets/projectex.png";
 import vs from "../assets/vs1.png";
 import Featured_05 from "@/components/ui/globe-feature-section";
+import ReactLenis from "lenis/react";
 // Import images from New folder
 import img1 from "../assets/New folder/61164f31a004c_visual_studio_code_python_ide.png";
 import img2 from "../assets/New folder/select-debug-pane.png";
@@ -24,12 +24,20 @@ import { ThreeDMarquee } from "../components/ui/3d-marquee";
 import api from "../services/api";
 import { CircularTestimonials } from '@/components/ui/circular-testimonials';
 import CountUp from "@/components/ui/count-up";
+import ScrollStack, { ScrollTimeline } from "@/components/ui/scroll-timeline";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const [featuredProjects, setFeaturedProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
+    // Only initialize animations after loading is complete
+    if (isLoading) return;
+
+    const triggers: ScrollTrigger[] = [];
+    const animations: gsap.core.Tween[] = [];
 
     // Initialize comparison animations
     gsap.utils.toArray(".comparisonSection").forEach((section: any) => {
@@ -58,51 +66,53 @@ const Home = () => {
           { xPercent: 0 },
           0
         );
+      
+      // Store this component's ScrollTrigger
+      if (tl.scrollTrigger) {
+        triggers.push(tl.scrollTrigger);
+      }
     });
 
     document.querySelectorAll(".ticker").forEach((ticker) => {
-  const inner = ticker.querySelector(".ticker-wrap");
-  if (!inner) return; // prevent null error
+      const inner = ticker.querySelector(".ticker-wrap");
+      if (!inner) return; // prevent null error
 
-  const content = inner.querySelector(".ticker-text");
-  if (!content) return; // prevent null error
+      const content = inner.querySelector(".ticker-text");
+      if (!content) return; // prevent null error
 
-  const duration = ticker.getAttribute("data-duration") || "10";
+      const duration = ticker.getAttribute("data-duration") || "10";
 
-  // Clone content
-  inner.append(content.cloneNode(true));
+      // Clone content
+      inner.append(content.cloneNode(true));
 
-  const animations: gsap.core.Tween[] = [];
+      const tickerAnimations: gsap.core.Tween[] = [];
 
-  inner.querySelectorAll(".ticker-text").forEach((element) => {
-    const animation = gsap.to(element, {
-      x: "-100%",
-      repeat: -1,
-      duration: Number(duration),
-      ease: "linear",
+      inner.querySelectorAll(".ticker-text").forEach((element) => {
+        const animation = gsap.to(element, {
+          x: "-100%",
+          repeat: -1,
+          duration: Number(duration),
+          ease: "linear",
+        });
+        tickerAnimations.push(animation);
+        animations.push(animation);
+      });
+
+      ticker.addEventListener("mouseenter", () => {
+        tickerAnimations.forEach((anim) => anim.pause());
+      });
+
+      ticker.addEventListener("mouseleave", () => {
+        tickerAnimations.forEach((anim) => anim.play());
+      });
     });
-    animations.push(animation);
-  });
 
-  ticker.addEventListener("mouseenter", () => {
-    animations.forEach((anim) => anim.pause());
-  });
-
-  ticker.addEventListener("mouseleave", () => {
-    animations.forEach((anim) => anim.play());
-  });
-});
-
-
-    // Cleanup function
+    // Cleanup function - only kill this component's triggers
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      triggers.forEach((trigger) => trigger.kill());
+      animations.forEach((anim) => anim.kill());
     };
-  }, []);
-
-  const navigate = useNavigate();
-
-  const [featuredProjects, setFeaturedProjects] = useState<any[]>([]);
+  }, [isLoading]);
 
   const calculateRating = (project: any) => {
     if (!project?.review || project.review.length === 0) return 0;
@@ -131,14 +141,50 @@ const Home = () => {
     return categoryMap[category] || category;
   };
 
+ const events = [
+  {
+    year: "Step 1",
+    title: "Discover Premium Software Solutions",
+    subtitle: "Curated Marketplace Excellence",
+    description: "Discover thousands of high-quality software projects across various categories including Web Development, Mobile Apps, AI/ML, Desktop Applications, and more. Use filters and search to find exactly what you need."
+  },
+  {
+    year: "Step 2",
+    title: "Evaluate & Verify Quality",
+    subtitle: "Data-Driven Decision Making",
+    description: "View detailed project information, check ratings and reviews from other buyers, preview screenshots, and examine the technology stack. Read seller descriptions and verify project quality before making a purchase."
+  },
+  {
+    year: "Step 3",
+    title: "Complete Secure Checkout",
+    subtitle: "Enterprise-Grade Security",
+    description: "Complete your purchase using our secure payment gateway powered by Stripe. Your payment information is protected with industry-standard encryption, ensuring a safe transaction every time."
+  },
+  {
+    year: "Step 4",
+    title: "Instant Access & Deployment",
+    subtitle: "Seamless Integration Ready",
+    description: "After successful payment, instantly access your purchased projects from your dashboard. Download all project files, documentation, and resources. Access your purchases anytime from the 'Purchased' section."
+  },
+  {
+    year: "Step 5",
+    title: "Monetize Your Expertise",
+    subtitle: "Transform Code into Revenue",
+    description: "Ready to monetize your work? Upload your own software projects, set your price, and reach thousands of potential buyers worldwide. Manage your listings, track sales, and grow your developer business on CodeMart."
+  },
+]
+
   useEffect(() => {
     const fetchFeaturedProjects = async () => {
       try {
+        setIsLoading(true);
         const data = await api.projects.getFeatured();
         console.log(data);
         setFeaturedProjects(data);
       } catch (error) {
         console.error('Error fetching featured projects:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchFeaturedProjects();
@@ -216,9 +262,20 @@ const Home = () => {
   },
 ];
 
+  // Show loading screen while fetching featured projects
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-indigo-50">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="animate-fade-in relative">
+    <ReactLenis root>
+      <div className="animate-fade-in relative">
       {/* <div
         className="
     absolute inset-x-0 top-0 h-[50vh]
@@ -456,7 +513,7 @@ const Home = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="pb-24 pt-10 bg-white">
+        <section className="pt-10 bg-white">
           
           {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -477,7 +534,7 @@ const Home = () => {
               ))}
             </div>
           </div> */}
-          <div className="max-w-7xl mx-auto pb-40">
+          <div className="max-w-7xl mx-auto pb-32">
             
             {/* Outer rounded card */}
             <div className="bg-white pb-10 pt-10 md:p-5 rounded-2xl">
@@ -524,9 +581,36 @@ const Home = () => {
               </div>
             </div>
           </div>
+
+          <div className="techslider pb-32">
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
+          </div>
+        </div>
+      </div>
+
+      <div className="ticker" data-duration="20">
+        <div className="ticker-wrap">
+          <div className="ticker-text">
+            •Web{" "}<span className="accent">Applications</span> {"  "}
+            •Mobile{" "}<span className="accent">Applications</span>{"  "}
+            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
+            • ML{" "}<span className="accent">Models</span>{"  "}
+            • API{" "}<span className="accent">&</span> Microservices{"  "}
+            •Database{" "}<span className="accent">Schemas</span> {"  "}
+            •Automation{" "}<span className="accent">Scripts</span> {"  "}
+            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
+            •DevOps{" "}<span className="accent">Tools</span>{"  "}
+          </div>
+        </div>
+      </div>
+    </div>
         </section> 
 
         {/* Featured Projects */}
+        
 
         {/* Featured Projects Carousel */}
         <Gallery6
@@ -620,10 +704,10 @@ const Home = () => {
 
       {/* <TeamCarousel /> */}
 
-      <section>
+    <section className="bg-[#f7f7fa]">
 
     {/* Light testimonials section */}
-    <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
+    <div className="p-20 rounded-lg min-h-[300px] flex flex-col items-center justify-center relative">
       <h1 className="about-title" style={{ position: "relative", top: "auto", left: "auto", transform: "none", marginBottom: "3rem" }}>REVIEWS</h1>
       <div
         className="items-center justify-center relative flex"
@@ -633,47 +717,32 @@ const Home = () => {
       </div>
     </div>
 
-    <div className="techslider">
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            • Java • C# • Python • JavaScript • C# • React • Fluter • Angular • Next •php • C++ • HTML • CSS 
-          </div>
-        </div>
-      </div>
-
-      <div className="ticker" data-duration="20">
-        <div className="ticker-wrap">
-          <div className="ticker-text">
-            •Web{" "}<span className="accent">Applications</span> {"  "}
-            •Mobile{" "}<span className="accent">Applications</span>{"  "}
-            •UI/UX{" "}<span className="accent">Designs</span> {"  "}
-            • ML{" "}<span className="accent">Models</span>{"  "}
-            • API{" "}<span className="accent">&</span> Microservices{"  "}
-            •Database{" "}<span className="accent">Schemas</span> {"  "}
-            •Automation{" "}<span className="accent">Scripts</span> {"  "}
-            •Full-Stack{" "}<span className="accent">Projects</span> {"  "}
-            •DevOps{" "}<span className="accent">Tools</span>{"  "}
-          </div>
-        </div>
-      </div>
-    </div>
+    
+    
     </section>
+    <ScrollTimeline 
+      events={events}
+      title="Get Started"
+      subtitle="Your journey from discovery to deployment, simplified"
+      progressIndicator={true}
+      cardAlignment="alternating"
+      animationOrder="sequential"
+      revealAnimation="fade"
+    />
 
-      {/* <HowItWorks/> */}
+      {/* <HowItWorksScroll/> */}
       {/* How It Works */}
       {/* <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-         
-       
            
           </div> */}
 
       {/* </div> */}
       {/* </section> */}
       
-    </div>
+      </div>
+    </ReactLenis>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Star, Filter, Search, ChevronDown, Package } from "lucide-react";
+import { Star, Filter, Search, ChevronDown, Package, Loader2 } from "lucide-react";
 import api from "../services/api";
 
 const AllProjects = () => {
@@ -377,7 +377,7 @@ const AllProjects = () => {
             {/* Projects Grid */}
             {loading ? (
               <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+                <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
                 <p className="mt-4 text-gray-600 font-medium">Loading projects...</p>
               </div>
             ) : allProjects.length === 0 ? (

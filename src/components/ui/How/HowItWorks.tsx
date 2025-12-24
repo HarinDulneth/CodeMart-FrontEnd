@@ -1,13 +1,10 @@
 import { useEffect } from "react";
 import styles from "./HowItWorks.module.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import Lenis from "@studio-freight/lenis";
 
 export default function HowItWorksScroll() {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const lenis = new Lenis();
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add((time) => {
@@ -69,7 +66,7 @@ export default function HowItWorksScroll() {
       animateIndexOpacity(-1);
     }
 
-    ScrollTrigger.create({
+    const mainTrigger = ScrollTrigger.create({
       trigger: pinnedSection,
       start: "top top",
       end: `+=${pinnedHeight}`,
@@ -126,8 +123,9 @@ export default function HowItWorksScroll() {
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      gsap.killTweensOf("*");
+      // Only kill this component's ScrollTrigger
+      mainTrigger.kill();
+      gsap.killTweensOf([progressBarContainer, indicesContainer, stickyHeader, ...Array.from(cards), ...Array.from(indices)]);
       lenis.destroy();
     };
   }, []);

@@ -1,12 +1,17 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "@/utils/gsapConfig";
 import ReactLenis from "lenis/react";
 import { useRef } from "react";
 
 import { cn } from "@/lib/utils";
+
+import img1 from "../../assets/New folder/61164f31a004c_visual_studio_code_python_ide.png";
+import img2 from "../../assets/New folder/select-debug-pane.png";
+import img3 from "../../assets/New folder/jetbrains-pycharm.jpg";
+import img4 from "../../assets/New folder/0-software-development-business-plan.jpg";
+import img5 from "../../assets/New folder/original-f751ef2ec4eeea44109378c2e3baf063.webp";
 
 interface CardData {
   id: number | string;
@@ -32,8 +37,6 @@ const StickyCard002 = ({
 
   useGSAP(
     () => {
-      gsap.registerPlugin(ScrollTrigger);
-
       const imageElements = imageRefs.current;
       const totalCards = imageElements.length;
 
@@ -49,8 +52,8 @@ const StickyCard002 = ({
       const scrollTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: ".sticky-cards",
-          start: "top top",
-          end: `+=${window.innerHeight * (totalCards - 1)}`,
+          start: "top center",
+          end: `+=${window.innerHeight * (totalCards)}`,
           pin: true,
           scrub: 0.5,
           pinSpacing: true,
@@ -96,15 +99,18 @@ const StickyCard002 = ({
       return () => {
         resizeObserver.disconnect();
         scrollTimeline.kill();
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        // Only kill the ScrollTrigger associated with this timeline
+        if (scrollTimeline.scrollTrigger) {
+          scrollTimeline.scrollTrigger.kill();
+        }
       };
     },
     { scope: container },
   );
 
   return (
-    <div className={cn("relative h-full w-full", className)} ref={container}>
-      <div className="sticky-cards relative flex h-full w-full items-center justify-center overflow-hidden p-3 lg:p-8">
+    <div className={cn("relative w-full", className)} style={{ minHeight: '100vh' }} ref={container}>
+      <div className="sticky-cards relative flex w-full items-center justify-center overflow-hidden p-3 lg:p-8" style={{ minHeight: '100vh' }}>
         <div
           className={cn(
             "relative h-[90%] w-full max-w-sm overflow-hidden rounded-lg sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl",
@@ -135,30 +141,30 @@ const StickyCard002 = ({
 const Skiper17 = () => {
   const defaultCards = [
     {
-      id: 1,
-      image: "/images/lummi/img14.png",
-    },
-    {
-      id: 2,
-      image: "/images/lummi/img15.png",
-    },
-    {
-      id: 3,
-      image: "/images/lummi/img29.png",
-    },
-    {
-      id: 4,
-      image: "/images/lummi/img21.png",
-    },
-    {
-      id: 5,
-      image: "/images/lummi/img27.png",
-    },
+    id: 1,
+    image: img1,
+  },
+  {
+    id: 2,
+    image: img2,
+  },
+  {
+    id: 3,
+    image: img3,
+  },
+  {
+    id: 4,
+    image: img4,
+  },
+  {
+    id: 5,
+    image: img5,
+  },
   ];
 
   return (
     <ReactLenis root>
-      <div className="h-full w-full">
+      <div className="h-full w-full mt-70">
         <StickyCard002 cards={defaultCards} />
       </div>
     </ReactLenis>
@@ -166,19 +172,3 @@ const Skiper17 = () => {
 };
 
 export { Skiper17, StickyCard002 };
-
-/**
- * Skiper 17 StickyCard_002 — React + Gsap + scrollTrigger
- * We respect the original creators. This is an inspired rebuild with our own taste and does not claim any ownership.
- *
- * License & Usage:
- * - Free to use and modify in both personal and commercial projects.
- * - Attribution to Skiper UI is required when using the free version.
- * - No attribution required with Skiper UI Pro.
- *
- * Feedback and contributions are welcome.
- *
- * Author: @gurvinder-singh02
- * Website: https://gxuri.in
- * Twitter: https://x.com/Gur__vi
- */
