@@ -87,7 +87,7 @@ export function DashboardSidebar({
             className={cn(
               "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               activeTab === item.id
-                ? "bg-[#08244B] text-primary-foreground shadow-sm"
+                ? "bg-gradient-to-r from-[#4500A5] to-[#6A00A5] text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
