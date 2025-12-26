@@ -35,7 +35,7 @@ const AllProjects = () => {
         }
         else{
           response = await api.projects.getAll();
-           console.log("All Projects fetched", response);
+          console.log("All Projects fetched", response);
       
         }
 
