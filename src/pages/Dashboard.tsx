@@ -448,17 +448,38 @@ const [activeTab, setActiveTab] = useState<"overview" | "bought" | "wishlist" | 
                 </p>
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {wishlistProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  type="wishlist"
-                  onRemove={() => handleRemoveFromWishlist(project.id)}
-                  onAddToCart={() => handleAddToCart(project.id)}
-                />
-              ))}
-            </div>
+            {wishlistProjects.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {wishlistProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    type="wishlist"
+                    onRemove={() => handleRemoveFromWishlist(project.id)}
+                    onAddToCart={() => handleAddToCart(project.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="pt-12 pb-12">
+                  <div className="text-center">
+                    <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-lg font-medium text-muted-foreground mb-2">
+                      No items in your wishlist yet
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Start adding projects you love to your wishlist
+                    </p>
+                    <Link to="/projects">
+                      <Button>
+                        Browse Projects
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         );
 
@@ -533,17 +554,39 @@ const [activeTab, setActiveTab] = useState<"overview" | "bought" | "wishlist" | 
                 </Button>
               </Link>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {sellingProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  type="selling"
-                  onEdit={() => handleEditProject(project.id)}
-                  onDelete={() => handleDeleteProject(project.id)}
-                />
-              ))}
-            </div>
+            {sellingProjects.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {sellingProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    type="selling"
+                    onEdit={() => handleEditProject(project.id)}
+                    onDelete={() => handleDeleteProject(project.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="pt-12 pb-12">
+                  <div className="text-center">
+                    <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-lg font-medium text-muted-foreground mb-2">
+                      No products listed yet
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Start selling your projects and reach thousands of developers
+                    </p>
+                    <Link to="/sell">
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Your First Product
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         );
 
