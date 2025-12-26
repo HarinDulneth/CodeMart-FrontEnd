@@ -286,6 +286,11 @@ export const api = {
         body: JSON.stringify(projectData),
       });
     },
+    delete: async (id: string | number) => {
+      return apiRequest<any>(`/project/delete/${id}`, {
+        method: 'DELETE',
+      });
+    },
     filterByRating: async (minRating: number) => {
       return apiRequest<any[]>(`/project/filter/rating?minRating=${minRating}`);
     },
