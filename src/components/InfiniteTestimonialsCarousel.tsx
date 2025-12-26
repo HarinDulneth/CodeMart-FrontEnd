@@ -27,8 +27,7 @@ const platformIcons: Record<"google" | "twitter", JSX.Element> = {
         textAnchor="middle"
         fontSize="12"
         fill="#fff"
-        fontFamily="Arial"
-      >
+        fontFamily="Arial">
         G
       </text>
     </svg>

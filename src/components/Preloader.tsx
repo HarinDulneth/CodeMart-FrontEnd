@@ -50,7 +50,7 @@ const Preloader = () => {
     const tick = (now: number) => {
       const progress = Math.min((now - startTime) / duration, 1);
       const raw = progress * 100;
-  const value = Math.round(raw / 5) * 5; // step of 5
+      const value = Math.round(raw / 5) * 5; // step of 5
 
       counterElement.innerHTML =
         value
@@ -95,6 +95,15 @@ const Preloader = () => {
           ease: "power3.inOut",
           duration: 1,
           delay: 4,
+          onComplete: () => {
+            const overlay = document.querySelector<HTMLElement>(
+              ".preloader-overlay"
+            );
+            if (overlay) {
+              overlay.style.pointerEvents = "none";
+              overlay.style.display = "none";
+            }
+          },
         });
 
         gsap.to(".preloader-hero img", {
@@ -133,7 +142,6 @@ const Preloader = () => {
             <img src={download} alt="" />
             <img src={download} alt="" />
             <img src={download} alt="" />
-       
           </div>
         </div>
 

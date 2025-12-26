@@ -228,7 +228,7 @@ const SignUp = () => {
                     value={formData.occupation}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="John"
+                    placeholder="Software Engineer"
                     required
                   />
                   <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
@@ -245,7 +245,7 @@ const SignUp = () => {
                     value={formData.companyName}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Doe"
+                    placeholder="Virtusa"
                     required
                   />
                   <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />

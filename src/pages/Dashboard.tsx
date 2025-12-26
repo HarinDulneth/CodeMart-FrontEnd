@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   DashboardSidebar,
   TabId,
@@ -47,7 +48,7 @@ import Cart from "./Cart";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
+  // const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [wishlistProjects, setWishlistProjects] = useState<any[]>([]);
   const [boughtProjects, setBoughtProjects] = useState<any[]>([]);
   const [ordersforUser, setOrdersforUser] = useState<any[]>([]);
@@ -60,8 +61,13 @@ export default function Dashboard() {
   const [userRevenueLastMonth, setUserRevenueLastMonth] = useState('');
   const [userSalesLastMonth, setUserSalesLastMonth] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+const location = useLocation();
+  // const [activeTab, setActiveTab] = useState<"overview" | "purchased" | "other">("overview");
   const navigate = useNavigate();
+  const initialTab =
+  location.hash === "#purchased" ? "bought" : "overview";
+
+const [activeTab, setActiveTab] = useState<"overview" | "bought" | "wishlist" | "cart" | "transactions" | "selling" | "revenue" | "settings">(initialTab);
 
   const handleRemoveFromCart = (projectId: Project) => {
     toast.success("Removed from cart");
@@ -144,10 +150,14 @@ export default function Dashboard() {
     const salesLastMonthNumber = salesLastMonth.length;
     const difference = salesNumber - salesLastMonthNumber;
     const percentage = (difference / salesLastMonthNumber) * 100;
+
     return percentage;
   }
 
   useEffect(() => {
+    // if (location.hash === "#purchased") {
+    //   setActiveTab("bought");
+    // }
     const fetchProjectsList = async () => {
       setLoading(true);
       try {
@@ -200,7 +210,7 @@ export default function Dashboard() {
     };
 
     fetchProjectsList();
-  }, [user.id]);
+  }, [user.id,location]);
 
   const renderContent = () => {
     switch (activeTab) {
