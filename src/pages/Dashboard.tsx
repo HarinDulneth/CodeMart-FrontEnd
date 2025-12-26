@@ -16,6 +16,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -61,6 +71,8 @@ export default function Dashboard() {
   const [userRevenueLastMonth, setUserRevenueLastMonth] = useState('');
   const [userSalesLastMonth, setUserSalesLastMonth] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
 const location = useLocation();
   // const [activeTab, setActiveTab] = useState<"overview" | "purchased" | "other">("overview");
   const navigate = useNavigate();
@@ -82,7 +94,25 @@ const [activeTab, setActiveTab] = useState<"overview" | "bought" | "wishlist" | 
   };
 
   const handleDeleteProject = (projectId: number) => {
-    toast.error("Project deleted");
+    setProjectToDelete(projectId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    
+    try {
+      await api.projects.delete(projectToDelete);
+      toast.success("Project deleted successfully");
+      const sellingProjects = await api.users.getSelling(user.id);
+      setSellingProjects(sellingProjects);
+      setDeleteDialogOpen(false);
+      setProjectToDelete(null);
+    } catch (error) {
+      toast.error("Failed to delete project");
+      console.log(error);
+      setDeleteDialogOpen(false);
+    }
   };
 
   const user = getCurrentUser();
@@ -729,20 +759,44 @@ const [activeTab, setActiveTab] = useState<"overview" | "bought" | "wishlist" | 
   };
 
   return (
-    <div className="flex bg-background ml-40">
-      <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+    <>
+      <div className="flex bg-background ml-40">
+        <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <main className="flex-1 h-screen overflow-y-auto py-8 pr-8">
-        <div className="max-w-6xl mx-20">
-          {loading ? (
-            <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-              <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
-            </div>
-          ) : (
-            renderContent()
-          )}
-        </div>
-      </main>
-    </div>
+        <main className="flex-1 h-screen overflow-y-auto py-8 pr-8">
+          <div className="max-w-6xl mx-20">
+            {loading ? (
+              <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+                <Loader2 className="h-12 w-12 animate-spin text-gray-400/50" />
+              </div>
+            ) : (
+              renderContent()
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your project
+              and remove it from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteProject}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
