@@ -108,7 +108,6 @@ const Home = () => {
       });
     });
 
-    // Cleanup function - only kill this component's triggers
     return () => {
       triggers.forEach((trigger) => trigger.kill());
       animations.forEach((anim) => anim.kill());
