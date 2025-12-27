@@ -101,7 +101,7 @@ const AllProjects = () => {
         if (response.length > 1) {
           if (sortBy !== "Popular") {
             if (sortBy === "Newest") {
-              response = response.sort((a, b) => b.createdAt - a.createdAt);
+              response = response.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             } else if (sortBy === "Price: Low to High") {
               response = response.sort((a, b) => a.price - b.price);
             } else if (sortBy === "Price: High to Low") {
@@ -110,7 +110,7 @@ const AllProjects = () => {
               response = response.sort((a, b) => b.rating - a.rating);
             }
           }else{
-            response= response.sort((a,b)=>a.buyers.length- b.buyers.length)
+            response= response.sort((a,b)=> b.buyers.length - a.buyers.length)
           }
         }
 
@@ -453,7 +453,7 @@ const AllProjects = () => {
                             ${project.Price}
                           </span>
                           <p className="text-xs text-gray-500">
-                            by {project.Owner.fullName}
+                            by {project.Owner?.fullName || project.Owner?.firstName + ' ' + (project.Owner?.lastName || '')}
                           </p>
                         </div>
                         <Link
